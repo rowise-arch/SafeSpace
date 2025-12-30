@@ -1,0 +1,674 @@
+[data-theme="dark"] .popover-card {
+  box-shadow: 0 12px 36px rgba(2,6,23,0.28) !important;
+}
+
+/* Profile popover specifics */
+.profile-popover {
+  min-width: 320px;
+  font-family: Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.profile-popover .profile-card-top {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:10px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.profile-popover .avatar-large {
+  width:80px;
+  height:80px;
+  border-radius:60px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:18px;
+  background: rgba(243,244,246,1); /* light fallback */
+  color: var(--text) !important;
+}
+
+.profile-popover .profile-greeting { font-weight:700; font-size:14px; color:var(--text) !important; }
+.profile-popover .profile-email { font-size:13px; color:var(--muted) !important; }
+
+.profile-popover .profile-card-body { padding:8px 6px; display:flex; flex-direction:column; gap:8px; }
+.profile-popover .profile-item {
+  text-align:left;
+  padding:10px;
+  border-radius:8px;
+  border:0;
+  background: transparent;
+  cursor: pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color: var(--text) !important;
+}
+
+.profile-popover .profile-item .icon { font-size:18px; line-height:1; color:var(--muted) !important; }
+.profile-popover .profile-item .small { font-size:16px; opacity:0.7; }
+.profile-popover .profile-item-label { flex:1; text-align:left; color:var(--text) !important; }
+
+/* Hover/active states readable in both themes */
+.profile-popover .profile-item:hover { background: rgba(2,6,23,0.03); }
+[data-theme="dark"] .profile-popover .profile-item:hover { background: rgba(255,255,255,0.02); }
+
+[data-theme="dark"] .profile-popover .avatar-large { background: rgba(255,255,255,0.02); }
+[data-theme="dark"] .profile-popover .profile-card-top { border-bottom: 1px solid rgba(255,255,255,0.04); }
+
+
+/* --- Page-level dark-mode overrides for Student Management --- */
+/* These use !important so they override inline styles present in the HTML files */
+.card {
+  background: var(--content-bg) !important;
+  color: var(--text) !important;
+  box-shadow: 0 8px 28px rgba(2,6,23,0.12) !important;
+}
+
+.card .card-title { color: var(--muted) !important; }
+
+.search-row #searchInput {
+  background: var(--content-bg) !important;
+  color: var(--text) !important;
+  border-color: rgba(255,255,255,0.04) !important;
+  box-shadow: inset 0 1px 2px rgba(2,6,23,0.06) !important;
+}
+
+.add-user-btn.upload, .add-user-btn.email {
+  color: #fff !important;
+}
+
+.table-container, .user-table {
+  background: transparent !important;
+}
+
+.user-table thead {
+  background: transparent !important;
+}
+
+.user-table, .user-table th, .user-table td {
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+.user-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.03) !important;
+}
+
+.user-table tbody tr:hover {
+  background: rgba(255,255,255,0.02) !important;
+}
+
+.user-table tbody tr.selected { background: rgba(16,185,129,0.06) !important; }
+
+.status-enable, .status-disable {
+  background: transparent !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.action-icons .view { color: #3b82f6 !important; }
+.action-icons .edit { color: #10b981 !important; }
+.action-icons .delete { color: #ef4444 !important; }
+
+.avatar-fallback {
+  background: rgba(230,238,240,0.9) !important;
+  color: var(--text) !important;
+  border: 0 !important;
+}
+
+.user-photo { border-radius: 50% !important; box-shadow: 0 6px 18px rgba(2,6,23,0.08) !important; }
+
+/* Modal and processing card adapt to theme */
+.modal-content, .processing-card, .modal-content.wide, .photo-upload-area > div, .popover-card, .dropdown {
+  background: var(--content-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.modal { background-color: rgba(2,6,23,0.5) !important; }
+
+#imgViewerModal img { box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
+
+/* Settings panel and its buttons */
+#settingsPanel, #settingsPanel .settings-item, #settingsPanel .info-toggle, #settingsPanel .account-toggle {
+  background: var(--content-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ensure small controls like labels remain visible */
+.login-label, .profile-email, .profile-greeting, .popover .popover-empty { color: var(--muted) !important; }
+
+[data-theme="dark"] .user-table tbody tr:hover { background: rgba(255,255,255,0.02) !important; }
+
+/* Keep images and icons readable (no inversion) */
+.user-photo, img, svg { filter: none !important; opacity: 1 !important; }
+
+/* End Student Management overrides */
+
+/* Processing modal tweaks: make empty message white and give the Close button a visible background */
+.processing-card .processing-empty {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+#processingCloseBtn {
+  background: rgba(255,255,255,0.06) !important; /* subtle visible background */
+  color: #ffffff !important;
+  border: 0 !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+}
+#processingCloseBtn:hover { filter: brightness(1.06); }
+
+[data-theme="dark"] .portal-title {
+  color: var(--text) !important;
+}
+
+[data-theme="dark"] .summary-card,
+[data-theme="dark"] .monthly-trends,
+[data-theme="dark"] .weekly-trends,
+[data-theme="dark"] .todays-appointments,
+[data-theme="dark"] .recent-activity,
+[data-theme="dark"] .quick-actions,
+[data-theme="dark"] .appointment-list li,
+[data-theme="dark"] .activity-list li {
+  background-color: var(--content-bg) !important;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.32) !important;
+  border: 1px solid rgba(255,255,255,0.03) !important;
+}
+
+[data-theme="dark"] .summary-card h4,
+[data-theme="dark"] .monthly-trends h3,
+[data-theme="dark"] .weekly-trends h3,
+[data-theme="dark"] .todays-appointments h3,
+[data-theme="dark"] .recent-activity h3,
+[data-theme="dark"] .quick-actions h3 {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .summary-card .number,
+[data-theme="dark"] .activity-text,
+[data-theme="dark"] .time-info .time,
+[data-theme="dark"] .name-info .name {
+  color: var(--text) !important;
+}
+
+[data-theme="dark"] .summary-cards .summary-card:nth-child(1)::before { background: #10b981 !important; }
+[data-theme="dark"] .summary-cards .summary-card:nth-child(2)::before { background: #3b82f6 !important; }
+[data-theme="dark"] .summary-cards .summary-card:nth-child(3)::before { background: #f59e0b !important; }
+[data-theme="dark"] .summary-cards .summary-card:nth-child(4)::before { background: #ef4444 !important; }
+
+/* Make chart canvas background transparent so charts blend with dark cards */
+[data-theme="dark"] canvas { background: transparent !important; }
+
+/* Quick action buttons: ensure white text and stronger contrast on dark mode */
+[data-theme="dark"] .quick-actions .action-btn {
+  color: #fff !important;
+  box-shadow: 0 10px 28px rgba(2,6,23,0.36) !important;
+}
+
+[data-theme="dark"] .quick-actions .action-btn .material-icons { color: rgba(255,255,255,0.95) !important; }
+
+/* Make the small left arrow use the accent color */
+[data-theme="dark"] .quick-actions .qa-arrow { border-left-color: var(--accent) !important; }
+
+/* Notification styles removed per user request. */
+
+/* Keep the header/title inside the panel readable */
+.popover .popover-header { color: var(--text) !important; }
+
+[data-theme="dark"] #notifBtn,
+[data-theme="dark"] button[title="Notifications"],
+[data-theme="dark"] .icon-btn[title="Notifications"] {
+  /* Keep white icon/text only; no background in dark mode */
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] #notifBtn .material-icons,
+[data-theme="dark"] button[title="Notifications"] .material-icons,
+[data-theme="dark"] .icon-btn[title="Notifications"] .material-icons {
+  color: #ffffff !important;
+}
+
+/* If a small badge indicator exists, make it visible */
+[data-theme="dark"] .notif-badge,
+[data-theme="dark"] .notification-badge,
+[data-theme="dark"] .badge-notification {
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 14px rgba(2,6,23,0.32) !important;
+}
+
+/* Shared theme variables and overrides for SafeSpace admin
+   This file defines CSS variables for light and dark themes
+   and a set of conservative overrides so that setting
+   document.documentElement.dataset.theme = 'dark'|'light'
+   (already handled by admin_main.js) will flip the site's
+   colors while keeping images and icons visible.
+*/
+
+:root {
+  --page-bg: #f4f7fa; /* overall page background */
+  --content-bg: #ffffff; /* cards / panels */
+  --text: #111827; /* primary text */
+  --muted: #6b7280; /* secondary text */
+  --border: rgba(0,0,0,0.06);
+  --accent: #16a34a;
+  /* header background for light theme (green brand like the screenshot) */
+  --header-bg: linear-gradient(135deg, #1e8e3e 0%, #0f7a34 100%);
+  --header-solid: #1e8e3e;
+}
+
+[data-theme="dark"] {
+  --page-bg: #071028; /* dark page background */
+  --content-bg: #0b1220; /* panels */
+  --text: #e6eef6; /* primary text in dark */
+  --muted: #9aa7b6; /* muted text in dark */
+  --border: rgba(255,255,255,0.06);
+  --accent: #34d399;
+  /* header background for dark theme: slightly muted/deeper green to fit dark UI */
+  --header-bg: linear-gradient(135deg, #0b5530 0%, #073e22 100%);
+  --header-solid: #0b5530;
+}
+
+/* Apply base colors */
+html, body {
+  background-color: var(--page-bg) !important;
+  color: var(--text) !important;
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+/* Header styling that mirrors the attached design across themes */
+.header-and-sidebar-top,
+.sidebar-top {
+  background: var(--header-bg) !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+.header-and-sidebar-top .portal-title,
+.header-and-sidebar-top .main-top-bar .portal-title {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+/* Ensure user-info (greeting) is visible on header */
+.header-and-sidebar-top .user-info,
+.header-and-sidebar-top .top-greeting {
+  color: #fff !important;
+}
+
+/* Force header appearance to be identical in dark and light modes.
+   The design requires the header to keep the light-mode look even when
+   document.documentElement.dataset.theme is "dark". These overrides
+   use the light theme header colors directly and !important so they
+   won't be changed by dark-mode variable overrides. */
+.header-and-sidebar-top.force-light-header,
+.sidebar-top.force-light-header,
+.header-and-sidebar-top, .sidebar-top {
+  background: linear-gradient(135deg, #1e8e3e 0%, #0f7a34 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Ensure text and icons in the header remain white */
+.header-and-sidebar-top .portal-title,
+.header-and-sidebar-top .main-top-bar .portal-title,
+.header-and-sidebar-top .user-info,
+.header-and-sidebar-top .top-greeting,
+.header-and-sidebar-top .material-icons,
+.header-and-sidebar-top .icon-btn {
+  color: #ffffff !important;
+}
+
+/* Make the header logo/title area match the screenshot spacing */
+.sidebar-top .sidebar-logo img { height: 36px !important; }
+.sidebar-top .sidebar-logo span { color: #fff !important; }
+
+/* Cards / white backgrounds used across the UI */
+.bg-white {
+  background-color: var(--content-bg) !important;
+}
+
+/* Main layout containers */
+.container, .main-content, .sidebar, .header-and-sidebar-top {
+  background: transparent; /* allow page/card variables to show */
+}
+
+/* Make sure common Tailwind text utilities remain readable */
+.text-gray-900 { color: var(--text) !important; }
+.text-gray-800 { color: var(--text) !important; }
+.text-gray-700 { color: var(--text) !important; }
+.text-gray-600, .text-gray-500, .text-gray-400 { color: var(--muted) !important; }
+
+/* Inputs and form controls */
+input, textarea, select, button {
+  color: var(--text) !important;
+  background-color: var(--content-bg) !important;
+  border-color: var(--border) !important;
+}
+
+/* Borders / rules */
+hr, .profile-divider, .border, .border-gray-300, .border-gray-200 {
+  border-color: var(--border) !important;
+}
+
+/* Links and action texts: keep accent visible */
+a, .text-blue-600, .text-blue-500 { color: var(--accent) !important; }
+
+/* Ensure icons and images are not dimmed or inverted */
+img, svg { filter: none !important; opacity: 1 !important; }
+
+/* Subtle helpers */
+.shadow, .shadow-md { box-shadow: 0 8px 20px rgba(2,6,23,0.06); }
+
+/* Scoped fixes for the display card (dark mode options) to keep them readable */
+#display .font-medium { color: var(--text) !important; }
+#display .text-sm { color: var(--muted) !important; }
+
+/* Keep small UI elements (badges/buttons) visible */
+.icon-btn { color: inherit !important; }
+
+/* Small safety: ensure focus outlines remain visible */
+:focus { outline-color: var(--accent) !important; }
+
+/* Sidebar and header styling for dark theme (matches provided screenshot) */
+[data-theme="dark"] .header-and-sidebar-top,
+[data-theme="dark"] .sidebar-top {
+  background: var(--header-bg) !important; /* use header variable for dark theme */
+  color: var(--content-bg) !important;
+}
+
+[data-theme="dark"] .sidebar {
+  background: #05121a !important; /* very dark sidebar */
+  border-right: 1px solid rgba(255,255,255,0.03) !important;
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .nav { background: transparent !important; }
+
+[data-theme="dark"] .nav-item {
+  color: var(--muted) !important;
+  background: transparent !important;
+  transition: background-color 160ms ease, color 160ms ease, transform 120ms ease;
+}
+
+[data-theme="dark"] .nav-item .icon {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .nav-item .label {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .nav-item:hover {
+  background: rgba(255,255,255,0.02) !important;
+  color: var(--text) !important;
+}
+
+/* Active item: dark green pill with white text and icon */
+[data-theme="dark"] .nav-item.active {
+  background: rgba(16,185,129,0.12) !important; /* subtle green */
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+}
+
+[data-theme="dark"] .nav-item.active .icon,
+[data-theme="dark"] .nav-item.active .label {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .sidebar-footer .nav-item,
+[data-theme="dark"] .sidebar .nav-item {
+  border-radius: 8px;
+}
+
+/* Ensure header controls (icons, avatar) remain visible */
+[data-theme="dark"] .main-top-bar .user-info,
+[data-theme="dark"] .main-top-bar .user-avatar,
+[data-theme="dark"] .material-icons,
+[data-theme="dark"] .icon-btn {
+  color: var(--content-bg) !important;
+}
+
+/* Small visual polish */
+[data-theme="dark"] .sidebar .nav-item .label { font-weight: 600; }
+
+/* Ensure the hamburger/menu icon is always visible (white) and avoid
+   a white background when pressed — this prevents the visible 'flash'
+   when users click the sidebar/menu in dark mode. */
+.menu-icon {
+  color: #ffffff !important;
+}
+
+/* Tame the active background on the menu icon so it doesn't flash white */
+.menu-icon:active {
+  background: rgba(255,255,255,0.06) !important;
+  transform: scale(0.95) !important;
+}
+
+/* Extra safety: when in dark theme ensure nav-item active/pressed states
+   use dark-friendly overlays instead of bright white backgrounds. */
+[data-theme="dark"] .nav-item:active,
+[data-theme="dark"] .nav-item:focus {
+  background: rgba(255,255,255,0.02) !important;
+  color: var(--text) !important;
+}
+
+/* End of theme.css */
+
+/* --- Sidebar: remove white pill backgrounds and show icon + label only --- */
+/* User request: "tanggalin mo ang white background sa bawat name dapat pure icon at name lang" */
+/* Make this high-specificity and conservative so it overrides per-page inline/card styles */
+.sidebar .nav, .sidebar .nav-menu, .nav {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.sidebar .nav .nav-item,
+.sidebar .nav-item,
+.nav .nav-item {
+  background: transparent !important; /* remove white pill */
+  box-shadow: none !important;
+  border: 0 !important;
+  border-radius: 0 !important; /* remove rounded white pill */
+  padding: 8px 12px !important; /* keep comfortable hit area */
+  margin: 6px 0 !important; /* vertical spacing between items */
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.sidebar .nav .nav-item .label,
+.sidebar .nav-item .label,
+.nav .nav-item .label {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Keep icons in their natural place and avoid icon background fills */
+.sidebar .nav .nav-item .icon,
+.nav .nav-item .icon {
+  background: transparent !important;
+  width: 28px !important;
+  text-align: center !important;
+}
+
+/* Subtle hover for affordance without white flash */
+.sidebar .nav .nav-item:hover,
+.nav .nav-item:hover {
+  background: rgba(15,122,52,0.06) !important; /* subtle green tint on hover */
+  color: inherit !important;
+}
+
+/* Active item keeps a subtle indicator but not a full white pill */
+.sidebar .nav .nav-item.active,
+.nav .nav-item.active {
+  background: rgba(16,185,129,0.12) !important;
+  border-radius: 6px !important; /* small rounded indicator for active only */
+}
+
+/* Ensure footer / small nav items also follow same rule */
+.sidebar-footer .nav-item { background: transparent !important; border-radius: 0 !important; }
+
+/* End sidebar override */
+
+/* --- Quick Admin Actions: color variants for light & dark modes --- */
+/* Buttons shown in the attached mock (Add Counselor, Manage Student, Settings, View Profile)
+   Provide explicit classes and safe nth-child fallbacks so styles apply even if markup
+   doesn't include extra classes. The colors match the provided screenshot and adapt
+   for both light and dark themes. */
+.quick-actions .action-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #fff !important;
+  font-weight: 700 !important;
+  text-align: left;
+  box-shadow: 0 8px 22px rgba(2,6,23,0.16);
+  border: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Named classes (preferred) */
+.quick-actions .action-btn.add-counselor,
+.quick-actions .action-btn:nth-of-type(1) {
+  /* Add Counselor — precise green matching screenshot */
+  background: linear-gradient(180deg,#13CE86 0%, #10B981 100%) !important;
+}
+.quick-actions .action-btn.manage-student,
+.quick-actions .action-btn:nth-of-type(2) {
+  /* Manage Student — precise purple matching screenshot */
+  background: linear-gradient(180deg,#5B32D3 0%, #4F46E5 100%) !important;
+}
+.quick-actions .action-btn.settings,
+.quick-actions .action-btn:nth-of-type(3) {
+  /* Settings — precise pink matching screenshot */
+  background: linear-gradient(180deg,#FF6FA3 0%, #F43F5E 100%) !important;
+}
+.quick-actions .action-btn.view-profile,
+.quick-actions .action-btn:nth-of-type(4) {
+  /* View Profile — precise gray matching screenshot */
+  background: linear-gradient(180deg,#8F9398 0%, #6B7280 100%) !important;
+}
+
+.quick-actions .action-btn i,
+.quick-actions .action-btn .material-icons { margin-right: 10px; vertical-align: middle; }
+
+.quick-actions .action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(2,6,23,0.22);
+}
+
+/* Dark theme adjustments: slightly muted gradients and stronger contrast on text */
+[data-theme="dark"] .quick-actions .action-btn {
+  color: #fff !important;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.36) !important;
+}
+[data-theme="dark"] .quick-actions .action-btn.add-counselor,
+[data-theme="dark"] .quick-actions .action-btn:nth-of-type(1) {
+  /* Dark-mode Add Counselor (muted but still green) */
+  background: linear-gradient(180deg,#0FA46D 0%, #047857 100%) !important;
+}
+[data-theme="dark"] .quick-actions .action-btn.manage-student,
+[data-theme="dark"] .quick-actions .action-btn:nth-of-type(2) {
+  /* Dark-mode Manage Student (muted purple) */
+  background: linear-gradient(180deg,#5C2DD8 0%, #3F1F86 100%) !important;
+}
+[data-theme="dark"] .quick-actions .action-btn.settings,
+[data-theme="dark"] .quick-actions .action-btn:nth-of-type(3) {
+  /* Dark-mode Settings (muted pink) */
+  background: linear-gradient(180deg,#F26AA8 0%, #E33B63 100%) !important;
+}
+[data-theme="dark"] .quick-actions .action-btn.view-profile,
+[data-theme="dark"] .quick-actions .action-btn:nth-of-type(4) {
+  /* Dark-mode View Profile (muted gray) */
+  background: linear-gradient(180deg,#61666B 0%, #2F3740 100%) !important;
+}
+
+/* Keep button text and icon white and prevent inversion filters in dark mode */
+[data-theme="dark"] .quick-actions .action-btn, [data-theme="dark"] .quick-actions .action-btn * {
+  color: #fff !important;
+  filter: none !important;
+}
+
+/* End Quick Admin Actions */
+
+/* Popover / notification cards — use theme variables so they adapt to light/dark */
+.popover-card {
+  background: var(--content-bg) !important;
+  color: var(--text) !important;
+  border-radius: 8px !important;
+  padding: 0 !important; /* header/body provide inner padding */
+  box-shadow: 0 14px 36px rgba(2,6,23,0.18) !important;
+  min-width: 220px;
+}
+
+.popover .popover-header {
+  font-weight: 700 !important;
+  margin-bottom: 6px !important;
+  color: var(--text) !important;
+}
+
+.popover .popover-body {
+  color: var(--text) !important;
+  padding: 12px !important;
+  text-align: left;
+}
+
+/* Notification-specific visual to match dashboard screenshot: darker header + slightly different body */
+[data-theme="dark"] #notifPanel .popover-card { overflow: hidden; border-radius:8px; }
+[data-theme="dark"] #notifPanel .popover-card .popover-header {
+  background: rgba(2,8,18,0.72) !important; /* darker header */
+  color: #eef2ff !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+}
+[data-theme="dark"] #notifPanel .popover-card .popover-body {
+  background: #071021 !important;
+  color: #dbeafe !important;
+  padding: 14px 16px !important;
+  font-size: 13px !important;
+  text-align: left;
+}
+
+/* Light-mode variant: white header with subtle divider and dark body text */
+@media (prefers-color-scheme: light) {
+  #notifPanel .popover-card { overflow: hidden; border-radius:8px; }
+  #notifPanel .popover-card .popover-header {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-bottom: 1px solid rgba(15,23,42,0.06) !important;
+  }
+  #notifPanel .popover-card .popover-body {
+    background: #ffffff !important;
+    color: #0b1220 !important;
+    padding: 14px 16px !important;
+    font-size: 13px !important;
+    text-align: left;
+  }
+}
+[data-theme="dark"] #notifPanel .popover-card { box-shadow: 0 12px 36px rgba(2,6,23,0.36) !important; border: 1px solid rgba(255,255,255,0.03) !important; }
+
+.notification-dropdown {
+  border-radius: 8px !important;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.12) !important;
+}
+
+[data-theme="dark"] .popover-card {
+  box-shadow: 0 12px 36px rgba(2,6,23,0.28) !important;
+}
+

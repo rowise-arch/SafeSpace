@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Individual Inventory - Romblon State University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        input:disabled, textarea:disabled {
+            background-color: #f9fafb;
+            color: #6b7280;
+        }
+        input:not(:disabled), textarea:not(:disabled) {
+            background-color: white;
+        }
+        .photo-container {
+            transition: all 0.3s ease;
+        }
+        .photo-container:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <main class="max-w-6xl mx-auto mt-8 p-6">
+        <!-- Header Section -->
+        <section class="bg-white p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">INDIVIDUAL INVENTORY</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+
+            <!-- Data Privacy Statement -->
+            <div class="border border-gray-300 p-3 mb-6 text-sm text-gray-700 rounded">
+                <p><strong>Data Privacy Statement</strong></p>
+                <p>
+                    Romblon State University respects your right to privacy and is committed to protecting
+                    the confidentiality of your personal information. By filling out this form, you are consenting
+                    to the collection, processing, and use of the information in accordance with this privacy notice.
+                    The information you have provided is used for access provision, attendance, monitoring,
+                    evaluation, documentation, and communication purposes. The University shall only retain
+                    the said personal information until it serves its purpose, after which it shall be securely
+                    disposed of.
+                </p>
+                <div class="mt-2 flex items-center">
+                    <input type="checkbox" id="privacyAgreement" disabled class="accent-green-700 mr-2" checked>
+                    <label for="privacyAgreement" class="text-sm">I agree that my personal data shall be used as stated in the Data Privacy Notice.</label>
+                </div>
+            </div>
+
+            <!-- Student Info Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div class="md:col-span-3 space-y-4">
+                    <!-- Student ID -->
+                    <div class="flex items-center border border-gray-400">
+                        <label class="w-28 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Student ID:</label>
+                        <input type="text" value="001-2022-000523" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                    </div>
+                    
+                    <!-- Name -->
+                    <div class="flex items-center border border-gray-400">
+                        <label class="w-28 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Name:</label>
+                        <div class="flex-1 grid grid-cols-4 divide-x divide-gray-400">
+                            <input type="text" value="Falcutila" placeholder="Last Name" class="p-2 text-sm w-full border-none focus:ring-0">
+                            <input type="text" value="Marc Benedic" placeholder="First Name" class="p-2 text-sm w-full border-none focus:ring-0">
+                            <input type="text" value="M" placeholder="Middle Initial" class="p-2 text-sm w-full border-none focus:ring-0">
+                            <input type="text" placeholder="Suffix (optional)" class="p-2 text-sm w-full border-none focus:ring-0">
+                        </div>
+                    </div>
+
+                    <!-- Program and Year Level (Horizontal Layout) -->
+                    <div class="flex border border-gray-400">
+                        <!-- Program -->
+                        <div class="flex flex-1 items-center border-r border-gray-400">
+                            <label class="w-32 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Program:</label>
+                            <input 
+                                type="text" 
+                                value="BSE" 
+                                class="flex-1 p-2 text-sm border-none focus:ring-0"
+                            >
+                        </div>
+
+                        <!-- Year Level -->
+                        <div class="flex flex-1 items-center">
+                            <label class="w-32 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Year Level:</label>
+                            <input 
+                                type="text" 
+                                value="4th Year" 
+                                class="flex-1 p-2 text-sm border-none focus:ring-0"
+                            >
+                        </div>
+                    </div>
+                    
+                    <!-- Campus and College -->
+                    <div class="flex border border-gray-400">
+                        <!-- Campus -->
+                        <div class="flex flex-1 items-center border-r border-gray-400">
+                            <label class="w-32 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Campus:</label>
+                            <input 
+                                type="text" 
+                                value="Main Campus" 
+                                class="flex-1 p-2 text-sm border-none focus:ring-0"
+                            >
+                        </div>
+
+                        <!-- College -->
+                        <div class="flex flex-1 items-center">
+                            <label class="w-32 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">College:</label>
+                            <input 
+                                type="text" 
+                                value="College of Education" 
+                                class="flex-1 p-2 text-sm border-none focus:ring-0"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Academic Year Admitted -->
+                    <div>
+                        <label class="block font-semibold">Academic Year Admitted</label>
+                        <div class="flex items-center gap-4 mt-1">
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700" checked> 1st Sem
+                            </label>
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700"> 2nd Sem
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <span>Year</span>
+                                <input type="text" value="2022 - 2023" disabled class="bg-gray-100 p-2 rounded border w-32">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status of Enrolment -->
+                    <div>
+                        <label class="block font-semibold">Status of Enrolment</label>
+                        <div class="flex items-center gap-4 mt-1">
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700" checked> New
+                            </label>
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700"> Transferee
+                            </label>
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700"> Returnee
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Status -->
+                    <div class="flex items-center border border-gray-400">
+                        <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Account Status:</label>
+                        <div class="flex items-center gap-4 px-3">
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700" checked> Enabled
+                            </label>
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700"> Disabled
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Improved 1x1 Photo Section -->
+                <div class="photo-container flex flex-col items-center justify-center p-4 border-2 border-dashed border-green-300 rounded-xl bg-green-50 transition-all duration-300">
+                    <div class="relative w-40 h-48 mb-3 rounded-md overflow-hidden bg-white shadow-md">
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            class="absolute inset-0 opacity-0 cursor-pointer z-10" 
+                            id="photoInput"
+                            onchange="previewPhoto(event)"
+                        >
+                        <div id="photoPlaceholder" class="w-full h-full flex flex-col items-center justify-center text-gray-500">
+                            <i class="fas fa-camera text-3xl mb-2 text-green-500"></i>
+                            <span class="text-xs text-center px-2">1x1 ID Photo</span>
+                        </div>
+                        <img id="photoPreview" src="" alt="Student Photo" class="hidden w-full h-full object-cover">
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-xs text-gray-600 mb-2">Click to upload or change photo</p>
+                        <div class="flex justify-center space-x-2">
+                            <button onclick="document.getElementById('photoInput').click()" class="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors">
+                                <i class="fas fa-upload mr-1"></i> Upload
+                            </button>
+                            <button onclick="removePhoto()" class="text-xs bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors">
+                                <i class="fas fa-trash mr-1"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 text-center">
+                        <p class="text-xs text-gray-500">Recommended: JPG/PNG, Max 2MB</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Background Information -->
+        <section class="bg-white mt-8 p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">I. Background Information</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+
+            <!-- Present Address -->
+            <div class="flex items-center border border-gray-400">
+                <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Present Address:</label>
+                <input type="text" value="Odiongan, Romblon" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+            </div>
+
+            <!-- FB Messenger -->
+            <div class="flex items-center border border-t-0 border-gray-400">
+                <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">FB Messenger:</label>
+                <input type="text" value="jerrygoco.fb" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+            </div>
+
+            <!-- Permanent Address -->
+            <div class="flex items-center border border-t-0 border-gray-400">
+                <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Permanent Address:</label>
+                <input type="text" value="Odiongan, Romblon" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+            </div>
+            <div class="flex items-center gap-2 mt-2 ml-1">
+                <input type="checkbox" id="sameAddress" disabled class="accent-green-700" checked>
+                <label for="sameAddress" class="text-gray-700 text-sm">Check if same as present address</label>
+            </div>
+
+            <!-- Email -->
+            <div class="flex items-center border border-t-0 border-gray-400 mt-2">
+                <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Email Address:</label>
+                <input type="email" value="falcutilamarc23@gmail.com" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+            </div>
+
+            <!-- Birth Info -->
+            <div class="grid grid-cols-1 md:grid-cols-3 border border-t-0 border-gray-400">
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Date of Birth:</label>
+                    <input type="date" value="2004-06-15" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-32 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Contact No.:</label>
+                    <input type="text" value="09345678919" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Place of Birth:</label>
+                    <input type="text" value="Odiongan, Romblon" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+            </div>
+
+            <!-- Sex, Age, Civil Status, Religion -->
+            <div class="grid grid-cols-1 md:grid-cols-4 border border-t-0 border-gray-400">
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-32 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Sex:</label>
+                    <input type="text" value="Male" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-32 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Age:</label>
+                    <input type="number" value="21" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Civil Status:</label>
+                    <div class="flex gap-3 px-2">
+                        <label class="flex items-center gap-1 text-sm"><input type="checkbox" disabled class="accent-green-700" checked> Single</label>
+                        <label class="flex items-center gap-1 text-sm"><input type="checkbox" disabled class="accent-green-700"> Married</label>
+                        <label class="flex items-center gap-1 text-sm"><input type="checkbox" disabled class="accent-green-700"> Others</label>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Religion:</label>
+                    <input type="text" value="Roman Catholic" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+            </div>
+
+            <!-- If Married -->
+            <div class="grid grid-cols-1 md:grid-cols-4 border border-t-0 border-gray-400">
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-56 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Name of Spouse:</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Occupation:</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-r border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">No. of Children:</label>
+                    <input type="number" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center">
+                    <label class="w-56 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Address of Spouse:</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+            </div>
+
+            <!-- IP Member -->
+            <div class="flex items-center border border-t-0 border-gray-400">
+                <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Member of Indigenous People Community?</label>
+                <div class="flex items-center gap-3 px-2">
+                    <label class="flex items-center gap-1"><input type="checkbox" disabled class="accent-green-700"> Yes</label>
+                    <label class="flex items-center gap-1"><input type="checkbox" disabled class="accent-green-700" checked> No</label>
+                    <input type="text" placeholder="If yes, specify group" disabled class="p-1 border rounded text-sm bg-gray-100 w-56">
+                </div>
+            </div>
+
+            <!-- Present Living Arrangement -->
+            <div class="border border-t-0 border-gray-400">
+                <label class="block bg-gray-100 border-b border-gray-400 px-2 py-2 font-semibold text-sm">Present Living Arrangement:</label>
+                <div class="flex flex-wrap gap-3 px-3 py-2">
+                    <label class="flex items-center gap-1"><input type="checkbox" disabled class="accent-green-700"> Own House</label>
+                    <label class="flex items-center gap-1"><input type="checkbox" disabled class="accent-green-700"> Apartment</label>
+                    <label class="flex items-center gap-1"><input type="checkbox" disabled class="accent-green-700"> Boarding House</label>
+                    <label class="flex items-center gap-1"><input type="checkbox" disabled class="accent-green-700"> Living with Relatives/Non-Relatives</label>
+                </div>
+
+                <div class="flex border-t border-gray-400">
+                    <label class="w-64 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Name of Landlord/Landlady:</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex border-t border-gray-400">
+                    <label class="w-64 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Contact Number:</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Family Background -->
+        <section class="bg-white mt-8 p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">II. Family Background</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+
+            <!-- FATHER INFORMATION -->
+            <h4 class="text-md font-semibold text-gray-800 mb-2">Father's Information</h4>
+            <div class="border border-gray-400 rounded-md overflow-hidden text-sm text-gray-700">
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Father's Name</label>
+                    <input type="text" value="jh" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Age</label>
+                    <input type="number" value="50" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Occupation</label>
+                    <input type="text" value="Fisherman" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Contact No.</label>
+                    <input type="text" value="09" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Father's Address</label>
+                    <input type="text" value="Odiongan, Romblon" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="p-2 flex flex-col md:flex-row gap-4">
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" disabled class="accent-green-700"> Same as Permanent Address</label>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" disabled class="accent-green-700"> Same as Present Address</label>
+                </div>
+            </div>
+
+            <!-- MOTHER INFORMATION -->
+            <h4 class="text-md font-semibold text-gray-800 mt-6 mb-2">Mother's Information</h4>
+            <div class="border border-gray-400 rounded-md overflow-hidden text-sm text-gray-700">
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Mother's Name</label>
+                    <input type="text" value="vjv" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Age</label>
+                    <input type="number" value="48" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Occupation</label>
+                    <input type="text" value="Vendor" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Contact No.</label>
+                    <input type="text" value="09" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Mother's Address</label>
+                    <input type="text" value="Odiongan, Romblon" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="p-2 flex flex-col md:flex-row gap-4">
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" disabled class="accent-green-700"> Same as Permanent Address</label>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" disabled class="accent-green-700"> Same as Present Address</label>
+                </div>
+            </div>
+
+            <!-- ADDITIONAL FAMILY INFO -->
+            <h4 class="text-md font-semibold text-gray-800 mt-6 mb-2">Additional Family Details</h4>
+            <div class="border border-gray-400 rounded-md overflow-hidden text-sm text-gray-700">
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Birth Order</label>
+                    <input type="text" value="1st" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">No. of Brothers</label>
+                    <input type="number" value="1" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">No. of Sisters</label>
+                    <input type="number" value="0" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+            </div>
+
+            <!-- LEGAL GUARDIAN -->
+            <h4 class="text-md font-semibold text-gray-800 mt-6 mb-2">Legal Guardian Information</h4>
+            <div class="border border-gray-400 rounded-md overflow-hidden text-sm text-gray-700">
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Guardian's Name</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Relationship</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border-b border-gray-400">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Contact No.</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+                <div class="flex items-center">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold">Address</label>
+                    <input type="text" value="" disabled class="flex-1 p-2 border-none focus:ring-0">
+                </div>
+            </div>
+
+            <!-- MARITAL STATUS -->
+            <h4 class="text-md font-semibold text-gray-800 mt-6 mb-2">Marital Status of Parents</h4>
+            <div class="p-2 flex flex-wrap gap-4 text-sm">
+                <label><input type="checkbox" disabled class="accent-green-700" checked> Living Together</label>
+                <label><input type="checkbox" disabled class="accent-green-700"> Separated</label>
+                <label><input type="checkbox" disabled class="accent-green-700"> One/Both Deceased</label>
+                <label><input type="checkbox" disabled class="accent-green-700"> Solo Parent (Mother/Father)</label>
+                <label class="flex items-center gap-1"><input type="checkbox" disabled class="accent-green-700"> Others: <input type="text" disabled class="border-b border-gray-400 bg-transparent w-32 focus:outline-none"></label>
+            </div>
+
+            <!-- RELATIONSHIPS -->
+            <h4 class="text-md font-semibold text-gray-800 mt-6 mb-2">Current Description of Home Life</h4>
+            <div class="space-y-3 text-sm text-gray-700">
+                <div class="flex flex-wrap gap-4">
+                    <label class="font-semibold">Relationship with Mother:</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Very Close</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Close</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Distant</label>
+                </div>
+                <div class="flex flex-wrap gap-4">
+                    <label class="font-semibold">Relationship with Father:</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Very Close</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Close</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Distant</label>
+                </div>
+                <div class="flex flex-wrap gap-4">
+                    <label class="font-semibold">Relationship with Sibling/s:</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Very Close</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Close</label>
+                    <label><input type="checkbox" disabled class="accent-green-700"> Distant</label>
+                </div>
+            </div>
+
+            <!-- SIBLINGS ENROLLED AT RSU -->
+            <h4 class="text-md font-semibold text-gray-800 mt-6 mb-2">Siblings Enrolled at RSU</h4>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border text-gray-700 text-sm">
+                    <thead class="bg-green-50 text-green-700">
+                        <tr>
+                            <th class="p-2 border">Name</th>
+                            <th class="p-2 border">Program & Year Level</th>
+                            <th class="p-2 border">Contact No.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- HOUSEHOLD INFO -->
+            <div class="mt-6 flex flex-col md:flex-row gap-4">
+                <div class="flex-1 flex items-center border border-gray-400 rounded">
+                    <label class="w-64 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Number of persons in the household:</label>
+                    <input type="number" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex-1 flex items-center border border-gray-400 rounded">
+                    <label class="w-40 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Head of Household:</label>
+                    <input type="text" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+            </div>
+
+            <!-- FAMILY INCOME -->
+            <h4 class="text-md font-semibold text-gray-800 mt-6 mb-2">Estimated Family Monthly Income</h4>
+            <div class="flex flex-col mt-2 space-y-1 text-sm text-gray-700">
+                <label><input type="radio" name="familyIncome" disabled class="accent-green-700"> Less than ₱10,957</label>
+                <label><input type="radio" name="familyIncome" disabled class="accent-green-700" checked> ₱9,520 – ₱21,194</label>
+                <label><input type="radio" name="familyIncome" disabled class="accent-green-700"> ₱21,194 – ₱43,828</label>
+                <label><input type="radio" name="familyIncome" disabled class="accent-green-700"> ₱43,828 – ₱76,669</label>
+                <label><input type="radio" name="familyIncome" disabled class="accent-green-700"> ₱76,669 – ₱131,484</label>
+                <label><input type="radio" name="familyIncome" disabled class="accent-green-700"> ₱131,484 – ₱219,140</label>
+                <label><input type="radio" name="familyIncome" disabled class="accent-green-700"> ₱219,140 and up</label>
+            </div>
+        </section>
+
+        <!-- Section 3: Medical History -->
+        <section class="bg-white mt-8 p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">III. Medical History</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+
+            <!-- Therapy / Counseling -->
+            <div class="flex items-center border border-gray-400">
+                <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Have you received therapy, counseling, or treatment in the past?
+                </label>
+                <div class="flex items-center gap-4 px-3">
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700"> Yes
+                    </label>
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700"> No
+                    </label>
+                </div>
+                <input type="text" placeholder="If Yes, when and with whom?" disabled class="flex-1 p-2 text-sm border-l border-gray-400 focus:ring-0 bg-gray-100">
+            </div>
+
+            <!-- Physical Disability -->
+            <div class="flex border border-t-0 border-gray-400">
+                <label class="w-60 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Physical Disability:
+                </label>
+                <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0 bg-gray-100">
+                <label class="w-40 bg-gray-100 border-x border-gray-400 px-2 py-2 font-semibold text-sm">
+                    PWD ID No.:
+                </label>
+                <input type="text" value="" disabled class="w-48 p-2 text-sm border-none focus:ring-0 bg-gray-100">
+            </div>
+
+            <!-- Psychosocial Disability -->
+            <div class="flex border border-t-0 border-gray-400">
+                <label class="w-60 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Psychosocial Disability:
+                </label>
+                <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0 bg-gray-100">
+                <label class="w-40 bg-gray-100 border-x border-gray-400 px-2 py-2 font-semibold text-sm">
+                    PWD ID No.:
+                </label>
+                <input type="text" value="" disabled class="w-48 p-2 text-sm border-none focus:ring-0 bg-gray-100">
+            </div>
+
+            <!-- Current Medications -->
+            <div class="flex border border-t-0 border-gray-400">
+                <label class="w-60 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Current Medications:
+                </label>
+                <input type="text" value="" disabled class="flex-1 p-2 text-sm border-none focus:ring-0 bg-gray-100">
+            </div>
+            
+            <!-- PWD Status -->
+            <div class="flex items-center border border-t-0 border-gray-400">
+                <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Person with Disability (PWD)?
+                </label>
+                <div class="flex items-center gap-4 px-3">
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700"> Yes
+                    </label>
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700" checked> No
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Educational Background -->
+        <section class="bg-white mt-8 p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">IV. Educational Background</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border text-gray-700 text-sm">
+                    <thead class="bg-green-50 text-green-700">
+                        <tr>
+                            <th class="p-2 border">Level</th>
+                            <th class="p-2 border">School Name</th>
+                            <th class="p-2 border">Year Graduated</th>
+                            <th class="p-2 border">Honors Received</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2">Elementary</td>
+                            <td class="border p-2"><input type="text" value="Odiongan Central School" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="number" value="2015" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" value="With Honors" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Junior High</td>
+                            <td class="border p-2"><input type="text" value="RSU Laboratory High School" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="number" value="2019" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" value="—" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">Senior High</td>
+                            <td class="border p-2"><input type="text" value="RSU Laboratory SHS" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="number" value="2021" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" value="—" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- V. Employment History -->
+        <section class="bg-white mt-8 p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">V. Employment History</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="flex items-center border border-gray-400">
+                <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Do you have a work experience?
+                </label>
+                <div class="flex items-center gap-4 px-3">
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700"> Yes
+                    </label>
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700"> No
+                    </label>
+                </div>
+                <span class="text-gray-700 px-2 text-sm">(If yes, please fill out the table below.)</span>
+            </div>
+
+            <!-- Employment Table -->
+            <div class="overflow-x-auto border border-t-0 border-gray-400">
+                <table class="min-w-full text-gray-700 text-sm">
+                    <thead class="bg-green-50 text-green-700">
+                        <tr>
+                            <th class="p-2 border">Position Title</th>
+                            <th class="p-2 border">Agency/Company/Organization</th>
+                            <th class="p-2 border">Status of Appointment</th>
+                            <th class="p-2 border">Inclusive Dates From</th>
+                            <th class="p-2 border">Inclusive Dates To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="date" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="date" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="text" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="date" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                            <td class="border p-2"><input type="date" disabled class="bg-gray-100 p-1 rounded w-full border"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- VI. Other Relevant Information -->
+        <section class="bg-white mt-8 p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">VI. Other Relevant Information</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+
+            <!-- Scholarship -->
+            <div class="flex items-center border border-gray-400">
+                <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Are you enjoying any scholarship grant/s?
+                </label>
+                <div class="flex items-center gap-4 px-3">
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700"> Yes
+                    </label>
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" disabled class="accent-green-700"> No
+                    </label>
+                </div>
+                <input type="text" placeholder="If yes, put the name of the sponsor" disabled class="flex-1 p-2 text-sm border-l border-gray-400 bg-gray-100 focus:ring-0">
+            </div>
+
+            <!-- Interests -->
+            <div class="border border-t-0 border-gray-400">
+                <div class="flex border-b border-gray-400">
+                    <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                        Performing Arts (Sports, Drama, Singing, Dancing, etc.)
+                    </label>
+                    <input type="text" disabled class="flex-1 p-2 text-sm bg-gray-100 border-none focus:ring-0">
+                </div>
+                <div class="flex border-b border-gray-400">
+                    <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                        Creative Arts (Painting, Drawing, Photography, etc.)
+                    </label>
+                    <input type="text" disabled class="flex-1 p-2 text-sm bg-gray-100 border-none focus:ring-0">
+                </div>
+                <div class="flex border-b border-gray-400">
+                    <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                        Literary Arts (Declamation, Reading, Writing, etc.)
+                    </label>
+                    <input type="text" disabled class="flex-1 p-2 text-sm bg-gray-100 border-none focus:ring-0">
+                </div>
+                <div class="flex">
+                    <label class="w-80 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">
+                        Others, specify:
+                    </label>
+                    <input type="text" disabled class="flex-1 p-2 text-sm bg-gray-100 border-none focus:ring-0">
+                </div>
+            </div>
+            
+            <!-- Coping Mechanisms -->
+            <div class="mt-6 border border-gray-400">
+                <label class="block bg-gray-100 border-b border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Coping Mechanisms (How do you cope with stress?)
+                </label>
+                <div class="p-3">
+                    <textarea disabled class="w-full h-20 p-2 bg-gray-100 border rounded">vmjhv</textarea>
+                </div>
+            </div>
+            
+            <!-- People Who Can Help -->
+            <div class="mt-6 border border-gray-400">
+                <label class="block bg-gray-100 border-b border-gray-400 px-2 py-2 font-semibold text-sm">
+                    People who can help you in times of need
+                </label>
+                <div class="p-3">
+                    <textarea disabled class="w-full h-20 p-2 bg-gray-100 border rounded">vj, kv</textarea>
+                </div>
+            </div>
+            
+            <!-- Sensitive Information -->
+            <div class="mt-6 border border-gray-400">
+                <label class="block bg-gray-100 border-b border-gray-400 px-2 py-2 font-semibold text-sm">
+                    Sensitive Information
+                </label>
+                <div class="p-3 space-y-3">
+                    <div class="flex items-center">
+                        <label class="w-80 font-semibold">Have you experienced sensitive situations?</label>
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700"> Yes
+                            </label>
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" disabled class="accent-green-700" checked> Not applicable
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-semibold">Description (if applicable):</label>
+                        <textarea disabled class="w-full h-20 p-2 bg-gray-100 border rounded mt-1"></textarea>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="sensitiveOptIn" disabled class="accent-green-700 mr-2" checked>
+                        <label for="sensitiveOptIn" class="text-sm">I consent to the collection of sensitive information for support purposes</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- System Information Section -->
+        <section class="bg-white mt-8 p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-green-700">System Information</h3>
+                <button class="edit-btn bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800">Edit</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center border border-gray-400">
+                    <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Username:</label>
+                    <input type="text" value="bene" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border border-gray-400">
+                    <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Profile Completed:</label>
+                    <input type="text" value="Yes" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+                <div class="flex items-center border border-gray-400">
+                    <label class="w-48 bg-gray-100 border-r border-gray-400 px-2 py-2 font-semibold text-sm">Last Updated:</label>
+                    <input type="text" value="09/06/2025 9:18" disabled class="flex-1 p-2 text-sm border-none focus:ring-0">
+                </div>
+            </div>
+        </section>
+    </main>
+            <script>
+            (function(){
+                // Enhanced profile population script — deterministic mapper + uid fetch hook
+                function parseUidFromHref(href){
+                    if(!href) return null;
+                    try{ const u = new URL(href, window.location.origin); return u.searchParams.get('uid') || u.searchParams.get('studentId') || u.searchParams.get('sid'); }catch(e){ const m = href.match(/[?&](?:uid|studentId|sid)=([^&]+)/); return m ? decodeURIComponent(m[1]) : null; }
+                }
+
+                        function clearProfileForm(container){
+                            if(!container) container = document.querySelector('main') || document.body;
+                            // Do not convert readonly inputs to spans here — keep inputs editable.
+                            container.querySelectorAll('input, textarea, select').forEach(el => {
+                                const t = (el.type || '').toLowerCase();
+                                if(t === 'radio' || t === 'checkbox') el.checked = false;
+                                else if(el.tagName.toLowerCase() === 'select') try{ el.selectedIndex = -1; }catch(e){}
+                                else try{ el.value = ''; }catch(e){}
+                                // ensure inputs are enabled when clearing so user can write
+                                try{ el.disabled = false; el.readOnly = false; }catch(ex){}
+                            });
+                            const img = container.querySelector('#photoPreview'); const ph = container.querySelector('#photoPlaceholder');
+                            if(img){ img.src = ''; img.classList.add('hidden'); }
+                            if(ph) ph.style.display = '';
+                        }
+
+                function convertReadonlyInputsToSpans(container){
+                    if(!container) container = document.querySelector('main') || document.body;
+                    const selector = 'input[readonly]:not([type=radio]):not([type=checkbox]):not([type=file]), textarea[readonly], select[disabled]';
+                    const els = Array.from(container.querySelectorAll(selector));
+                    els.forEach(el => {
+                        const next = el.nextElementSibling;
+                        if(next && next.classList && next.classList.contains('profile-value')){ next.textContent = el.value || el.placeholder || ''; el.style.display = 'none'; return; }
+                        const span = document.createElement('span'); span.className = 'profile-value'; span.textContent = el.value || el.placeholder || '';
+                        try{ el.style.display = 'none'; }catch(e){}
+                        if(el.parentNode) el.parentNode.insertBefore(span, el.nextSibling);
+                    });
+                }
+
+                function restoreReadonlySpans(container){
+                    if(!container) container = document.querySelector('main') || document.body;
+                    const spans = Array.from(container.querySelectorAll('.profile-value'));
+                    spans.forEach(s => { const prev = s.previousElementSibling; if(prev && prev.tagName && (prev.tagName === 'INPUT' || prev.tagName === 'TEXTAREA' || prev.tagName === 'SELECT')){ try{ prev.style.display = ''; }catch(e){} } s.remove(); });
+                }
+
+                function convertRadioLabelText(container){
+                    if(!container) container = document.querySelector('main') || document.body;
+                    const labels = Array.from(container.querySelectorAll('label'));
+                    labels.forEach(label => {
+                        const radio = label.querySelector('input[type=radio]'); if(!radio) return;
+                        const existing = label.querySelector('.profile-value-radio');
+                        const textNodes = Array.from(label.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+                        const text = textNodes.map(n => n.textContent.trim()).join(' ');
+                        if(!text) return;
+                        if(existing){ existing.textContent = text; return; }
+                        const span = document.createElement('span'); span.className = 'profile-value-radio inactive'; span.textContent = text;
+                        textNodes.forEach(n => n.parentNode && n.parentNode.removeChild(n));
+                        label.appendChild(span);
+                    });
+                    updateRadioLabelTextStates(container);
+                }
+
+                function updateRadioLabelTextStates(container){
+                    if(!container) container = document.querySelector('main') || document.body;
+                    const labels = Array.from(container.querySelectorAll('label'));
+                    labels.forEach(label => {
+                        const radio = label.querySelector('input[type=radio]'); if(!radio) return; const span = label.querySelector('.profile-value-radio'); if(!span) return;
+                        if(radio.checked) span.classList.remove('inactive'); else span.classList.add('inactive');
+                        if(!radio._profileLabelHooked){ radio.addEventListener('change', () => updateRadioLabelTextStates(container)); radio._profileLabelHooked = true; }
+                    });
+                }
+
+                function restoreRadioLabelText(container){
+                    if(!container) container = document.querySelector('main') || document.body;
+                    const spans = Array.from(container.querySelectorAll('.profile-value-radio'));
+                    spans.forEach(s => { const label = s.parentElement; if(!label) return; const txt = document.createTextNode(' ' + s.textContent); label.insertBefore(txt, s); s.remove(); });
+                }
+
+                function findAndSetByLabel(container, labelRegex, value){
+                    if(!container) container = document.querySelector('main') || document.body; if(value === undefined || value === null) return false; const v = String(value).trim(); if(v==='') return false;
+                    const labels = Array.from(container.querySelectorAll('label'));
+                    const lab = labels.find(l => labelRegex.test((l.textContent||'').toLowerCase()));
+                    if(lab){ const el = lab.parentElement.querySelector('input, textarea, select'); if(el){ try{ el.value = v; }catch(e){} return true; } }
+                    return false;
+                }
+
+                function findAndSetInSection(container, sectionHeadingRegex, fieldLabelRegex, value){
+                    if(!container) container = document.querySelector('main') || document.body; if(value === undefined || value === null) return false; const v = String(value).trim(); if(v==='') return false;
+                    const headings = Array.from(container.querySelectorAll('h3, h4'));
+                    const heading = headings.find(h => sectionHeadingRegex.test((h.textContent||'').toLowerCase())); if(!heading) return false;
+                    let sect = heading.nextElementSibling; if(!sect) return false;
+                    const labels = Array.from(sect.querySelectorAll('label'));
+                    const lab = labels.find(l => fieldLabelRegex.test((l.textContent||'').toLowerCase()));
+                    if(lab){ const el = lab.parentElement.querySelector('input, textarea, select'); if(el){ try{ el.value = v; }catch(e){} return true; } }
+                    const inputs = Array.from(sect.querySelectorAll('input'));
+                    const contactIdxCandidates = [3,2,4];
+                    for(const idx of contactIdxCandidates){ if(inputs[idx]){ try{ inputs[idx].value = v; return true;}catch(e){} }
+                    }
+                    return false;
+                }
+
+                function setRadioByName(container, name, candidate){
+                    if(!container) container = document.querySelector('main') || document.body; if(!name || candidate === undefined || candidate === null) return false;
+                    const radios = Array.from(container.querySelectorAll('input[type=radio][name="'+name+'"]')); if(radios.length===0) return false;
+                    const cand = String(candidate).trim().toLowerCase(); let matched = false; const candNums = (cand.match(/\d{1,3}(?:,\d{3})*/g)||[]).map(s=>s.replace(/,/g,''));
+                    radios.forEach(r => { const labelText = (r.parentElement && r.parentElement.textContent) ? r.parentElement.textContent.trim().toLowerCase() : ''; const val = (r.value||'').toString().trim().toLowerCase(); if(labelText && cand && labelText.indexOf(cand)!==-1){ r.checked = true; matched = true; return; } if(val && cand && val===cand){ r.checked = true; matched = true; return; } if(candNums.length){ const labNums = (labelText.match(/\d{1,3}(?:,\d{3})*/g)||[]).map(s=>s.replace(/,/g,'')); if(labNums.length){ const allPresent = candNums.every(n => labNums.indexOf(n)!==-1); if(allPresent){ r.checked = true; matched = true; return; } } } });
+                    return matched;
+                }
+
+                function populateTableFromArray(tableEl, arr){ if(!tableEl || !Array.isArray(arr) || arr.length===0) return; const rows = tableEl.querySelectorAll('tbody tr'); for(let r=0;r<rows.length && r<arr.length;r++){ const rowInputs = rows[r].querySelectorAll('input'); const obj = arr[r] || {}; if(typeof obj === 'string'){ if(rowInputs[0]) rowInputs[0].value = obj; continue; } const vals = Object.values(obj); for(let i=0;i<rowInputs.length;i++) if(vals[i] !== undefined) try{ rowInputs[i].value = vals[i]; }catch(e){} } }
+
+                function populatePhoto(student, container){ if(!container) container = document.querySelector('main') || document.body; const p = student.photoURL || student.photoUrl || student.photo || ''; const imgEl = container.querySelector('#photoPreview'); const ph = container.querySelector('#photoPlaceholder'); if(imgEl && p){ imgEl.src = p; imgEl.classList.remove('hidden'); if(ph) ph.style.display='none'; } }
+
+                function mapStudentToForm(student){
+                    if(!student) return; const container = document.querySelector('main') || document.body; clearProfileForm(container);
+                    // Name parsing / mapping
+                    const lastName = student.last_name || student.lastName || (student.fullName ? (String(student.fullName).split(',')[0]||'').trim() : '');
+                    const firstName = student.first_name || student.firstName || (student.fullName ? (String(student.fullName).split(',')[1]||'').trim().split(' ')[0] : '');
+                    const middleInitial = student.middle_initial || student.middleInitial || '';
+                    if(lastName) findAndSetByLabel(container, /last name|surname|family name|name:\s*last/i, lastName);
+                    if(firstName) findAndSetByLabel(container, /first name|given name|name:\s*first/i, firstName);
+                    if(middleInitial) findAndSetByLabel(container, /middle initial|mi|middle name/i, middleInitial);
+                    if(student.suffix) findAndSetByLabel(container, /suffix/i, student.suffix);
+                    // Student ID
+                    const sid = student.student_id || student.studentId || student.sid || student.id; if(sid) findAndSetByLabel(container, /student id|id/i, sid);
+                    // Program/year/campus/college
+                    const prog = student.program || student.course || student.program_name || student.Course; if(prog) findAndSetByLabel(container, /program|course/i, prog);
+                    const yl = student.yearLevel || student.year_level || student.year || student.yearLevelString; if(yl) findAndSetByLabel(container, /year level|year/i, yl);
+                    if(student.campus) findAndSetByLabel(container, /campus/i, student.campus);
+                    if(student.college) findAndSetByLabel(container, /college/i, student.college);
+
+                    // Background
+                    if(student.present_address) findAndSetByLabel(container, /present address/i, student.present_address);
+                    if(student.permanent_address) findAndSetByLabel(container, /permanent address/i, student.permanent_address);
+                    if(student.email || student.email_address) findAndSetByLabel(container, /email/i, student.email || student.email_address);
+                    if(student.date_of_birth || student.dob || student.birthdate) findAndSetByLabel(container, /date of birth|dob/i, student.date_of_birth || student.dob || student.birthdate);
+                    if(student.mobile || student.contact || student.contact_no) findAndSetByLabel(container, /contact|contact no|phone|mobile/i, student.mobile || student.contact || student.contact_no);
+                    if(student.place_of_birth || student.birth_place) findAndSetByLabel(container, /place of birth/i, student.place_of_birth || student.birth_place);
+                    if(student.gender || student.sex) findAndSetByLabel(container, /sex|gender/i, student.gender || student.sex);
+                    if(student.age) findAndSetByLabel(container, /age/i, student.age);
+                    if(student.religion) findAndSetByLabel(container, /religion/i, student.religion);
+
+                    // Spouse, parents, guardian, siblings
+                    findAndSetByLabel(container, /name of spouse|spouse/i, student.spouse_name || student.spouse);
+                    findAndSetByLabel(container, /father\b|father's name/i, student.father || student.father_name);
+                    findAndSetInSection(container, /father\b|father's information/i, /contact|contact no|phone|mobile/i, student.fatherMobile || student.father_contact);
+                    findAndSetByLabel(container, /mother\b|mother's name/i, student.mother || student.mother_name);
+                    findAndSetInSection(container, /mother\b|mother's information/i, /contact|contact no|phone|mobile/i, student.motherMobile || student.mother_contact);
+                    findAndSetByLabel(container, /guardian\b|guardian's name/i, student.guardian_name || student.guardian);
+                    if(Array.isArray(student.siblings_at_rsu) && student.siblings_at_rsu.length>0){ const tbl = Array.from(container.querySelectorAll('table')).find(t => /siblings/i.test((t.previousElementSibling||{}).textContent||'')); if(tbl) populateTableFromArray(tbl, student.siblings_at_rsu); }
+
+                    // Household, income, employment, education
+                    findAndSetByLabel(container, /number of persons in the household|number of persons/i, student.household_members);
+                    findAndSetByLabel(container, /head of household/i, student.head_of_household);
+                    if(student.income) setRadioByName(container, 'familyIncome', student.income);
+                    // Education table mapping (best-effort)
+                    try{ const eduTbl = Array.from(container.querySelectorAll('table')).find(t=>/level/i.test((t.querySelector('thead')||{}).textContent||'')); if(eduTbl && Array.isArray(student.education)){ populateTableFromArray(eduTbl, student.education); } }catch(e){}
+
+                    // Medical, therapy, PWD
+                    findAndSetByLabel(container, /physical disability/i, student.physical_disability || student.physicalDisability);
+                    findAndSetByLabel(container, /psychosocial disability/i, student.psychosocial_disability || student.psychosocialDisability);
+                    try{ const medSection = Array.from(container.querySelectorAll('section')).find(s => /medical history/i.test((s.querySelector('h3')||{}).textContent||'')); if(medSection){ const txt = medSection.querySelector('input[placeholder], input[type=text]'); if(txt) txt.value = student.therapy_details || student.therapy || student.past_therapy || txt.value || ''; } }catch(e){}
+
+                    // sensitive / coping / support
+                    try{ const copingSection = Array.from(container.querySelectorAll('section')).find(s => /coping mechanisms|other relevant information/i.test((s.querySelector('h3')||{}).textContent||'')); if(copingSection){ const ta = copingSection.querySelector('textarea'); if(ta) ta.value = student.coping_mechanisms || student.copingMechanisms || student.coping || ta.value || ''; const tas = copingSection.querySelectorAll('textarea'); if(tas && tas.length>1) tas[1].value = student.people_who_can_help || student.support_people || tas[1].value || ''; } }catch(e){}
+
+                    // account/system info
+                    findAndSetByLabel(container, /username/i, student.username || student.userName || student.displayName || student.uid || '');
+                    findAndSetByLabel(container, /profile completed/i, (typeof student.profile_completed !== 'undefined') ? (student.profile_completed ? 'Yes' : 'No') : (student.profile_completed || ''));
+                    findAndSetByLabel(container, /last updated/i, student.last_updated || student.lastUpdated || student.updated_at || student.updatedAt || '');
+
+                    // Account status
+                    (function(){ const acct = student.accountStatus || student.account_status || student.login || student.login_status || student.loginStatus; if(acct !== undefined && acct !== null){ const a = String(acct).trim().toLowerCase(); if(a==='enable' || a==='enabled' || a==='true' || a==='ok') setRadioByName(container,'accountStatus','Enabled'); else if(a==='disable' || a==='disabled' || a==='false' || a==='off') setRadioByName(container,'accountStatus','Disabled'); else setRadioByName(container,'accountStatus',acct); }})();
+
+                    // privacy agreement
+                    try{ const pad = container.querySelector('#privacyAgreement'); if(pad){ const consentCandidates = [student.privacyAgreement, student.privacy_agreement, student.accepted_privacy, student.column_1, student.column1, student.consent]; const hasConsent = consentCandidates.some(v => { if(v===undefined||v===null) return false; const s = String(v).trim().toLowerCase(); if(!s) return false; if(s.indexOf('i agree')!==-1) return true; if(s.indexOf('agree')!==-1 && s.indexOf('personal data')!==-1) return true; if(['yes','true','1','accepted'].indexOf(s)!==-1) return true; return false; }); pad.checked = !!hasConsent; } }catch(e){}
+
+                    // same address
+                    try{ const same = container.querySelector('#sameAddress'); if(same) same.checked = !!(student.same_address || student.sameAddress || student.permanent_same_as_present); }catch(e){}
+
+                            // final touches
+                            populatePhoto(student, container);
+                }
+
+                async function populateProfileByUid(uid){ if(!uid) return; const container = document.querySelector('main') || document.body; // try Firebase RTDB if available
+                    try{ if(typeof getDatabase !== 'undefined' && typeof ref !== 'undefined' && typeof get !== 'undefined' && typeof child !== 'undefined'){ const db = getDatabase(); const snap = await get(child(ref(db), `students/${uid}`)); if(snap && snap.exists()){ const data = snap.val()||{}; mapStudentToForm(Object.assign({}, data, { uid })); return; } } }catch(err){ console.warn('DB fetch failed', err); }
+                    // try parent helper
+                    try{ if(typeof window.fetchStudentRecord === 'function'){ const rec = await window.fetchStudentRecord(uid); if(rec){ mapStudentToForm(rec); return; } } }catch(e){ console.warn('parent fetchStudentRecord failed', e); }
+                    // fallback to client cache
+                    if(window._studentsCache && Array.isArray(window._studentsCache)){ const found = window._studentsCache.find(s => (s.uid||s.id||s.userId||'') == uid); if(found){ mapStudentToForm(found); return; } }
+                    console.warn('Student not found for uid', uid);
+                }
+
+                // Hook into existing open API or observe modal dataset/href changes
+                if(window.__openProfileModal){ const orig = window.__openProfileModal; window.__openProfileModal = function(hrefOrEvent){ try{ orig(hrefOrEvent); }catch(e){ console.error(e); } const href = hrefOrEvent || (document.getElementById('profileModal') && document.getElementById('profileModal').dataset && document.getElementById('profileModal').dataset.href); const uid = parseUidFromHref(href); if(uid) setTimeout(()=>populateProfileByUid(uid), 50); }; }
+                else { const modal = document.getElementById('profileModal') || document.querySelector('main'); if(modal){ const obs = new MutationObserver(() => { try{ const href = modal.dataset && modal.dataset.href; if(href){ const uid = parseUidFromHref(href); if(uid) populateProfileByUid(uid); } }catch(e){} }); obs.observe(modal, { attributes:true, attributeFilter:['data-href','data-href'] }); } }
+
+                // Keep backward-compatible openIndividualInventory API used by admin page
+                window.openIndividualInventory = async function(payload){ if(!payload){ if(window.__injectedStudentData) return mapStudentToForm(window.__injectedStudentData); const params = new URLSearchParams(location.search); const uid = params.get('uid') || params.get('studentId') || params.get('sid'); if(uid) return populateProfileByUid(uid); return; } if(typeof payload === 'string' || typeof payload === 'number'){ return populateProfileByUid(String(payload)); } if(typeof payload === 'object'){ return mapStudentToForm(payload); } };
+
+                // Also support event-based opening
+                window.addEventListener('openIndividualInventory', (e)=>{ if(e && e.detail){ if(e.detail.data) return mapStudentToForm(e.detail.data); if(e.detail.studentId) return populateProfileByUid(e.detail.studentId); } if(window.__injectedStudentData) mapStudentToForm(window.__injectedStudentData); });
+
+                // If parent injected data earlier
+                if(window.__injectedStudentData) mapStudentToForm(window.__injectedStudentData);
+                else clearProfileForm(document.querySelector('main'));
+
+                        // Enable editing when an Edit button is clicked.
+                        // If the top 'INDIVIDUAL INVENTORY' edit button is clicked, enable editing for the entire inventory (main).
+                        try{
+                            document.querySelectorAll('.edit-btn').forEach(btn => {
+                                btn.addEventListener('click', () => {
+                                    // Determine the section this button belongs to. If it's the inventory header's button
+                                    // (the one whose section contains the 'INDIVIDUAL INVENTORY' heading), then
+                                    // enable editing for all sections from the top through "System Information" (inclusive).
+                                    // Otherwise enable controls only inside the current section.
+                                    const section = btn.closest('section') || document.querySelector('main');
+                                    let targetSections = [section];
+                                    try{
+                                        const heading = section.querySelector('h3, h2, h1');
+                                        if(heading && /individual inventory/i.test((heading.textContent||'').trim())){
+                                            // master edit: collect sections from the top until System Information (inclusive)
+                                            const allSections = Array.from(document.querySelectorAll('main section'));
+                                            const endIndex = allSections.findIndex(s => /system information/i.test(((s.querySelector('h3')||{}).textContent||'')));
+                                            const sliceEnd = endIndex >= 0 ? endIndex + 1 : allSections.length;
+                                            targetSections = allSections.slice(0, sliceEnd);
+                                            // hide the top button to match requested UI
+                                            try{ btn.style.display = 'none'; }catch(e){}
+                                        }
+                                    }catch(e){}
+
+                                    if(!targetSections || targetSections.length === 0) return;
+                                    // Capture current checked state of checkboxes/radios so we don't change them when toggling disabled
+                                    const toggles = targetSections.flatMap(s => Array.from(s.querySelectorAll('input[type=checkbox], input[type=radio]') || []));
+                                    const toggleStates = toggles.map(t => !!t.checked);
+
+                                    // Enable controls inside each target section
+                                    targetSections.forEach(sectionEl => {
+                                        const controls = sectionEl.querySelectorAll('input, textarea, select, button');
+                                        controls.forEach(el => {
+                                            try{ el.disabled = false; }catch(e){}
+                                            try{ if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.readOnly = false; }catch(e){}
+                                            try{ el.classList.remove('bg-gray-100'); }catch(e){}
+                                        });
+                                    });
+
+                                    // Re-enable toggles but restore their checked state explicitly
+                                    toggles.forEach((t, i) => { try{ t.disabled = false; t.checked = toggleStates[i]; }catch(e){} });
+                                    // enable photo input if present
+                                    const photo = document.querySelector('#photoInput') || document.getElementById('photoInput');
+                                    if(photo) try{ photo.disabled = false; }catch(e){}
+                                });
+                            });
+                        }catch(e){}
+            })();
+            </script>
+
+    <script>
+        function previewPhoto(event) {
+            const input = event.target;
+            const preview = document.getElementById('photoPreview');
+            const placeholder = document.getElementById('photoPlaceholder');
+            
+            if (input.files && input.files[0]) {
+                // Check file size (max 2MB)
+                if (input.files[0].size > 2 * 1024 * 1024) {
+                    alert('File size exceeds 2MB. Please choose a smaller file.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function removePhoto() {
+            const preview = document.getElementById('photoPreview');
+            const placeholder = document.getElementById('photoPlaceholder');
+            const input = document.getElementById('photoInput');
+            
+            preview.src = '';
+            preview.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            input.value = '';
+        }
+        
+        // Edit button functionality
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const section = this.closest('section');
+                const inputs = section.querySelectorAll('input, textarea, select');
+                if (!inputs || inputs.length === 0) return;
+                const isDisabled = inputs[0].disabled;
+
+                // Preserve checked state for checkboxes/radios inside the section
+                const toggles = Array.from(section.querySelectorAll('input[type=checkbox], input[type=radio]'));
+                const toggleStates = toggles.map(t => !!t.checked);
+
+                inputs.forEach(input => {
+                    try{ input.disabled = !isDisabled; }catch(e){}
+                });
+
+                // Restore toggles' checked states explicitly so we never flip them
+                toggles.forEach((t, i) => { try{ t.disabled = !isDisabled; t.checked = toggleStates[i]; }catch(e){} });
+
+                this.textContent = isDisabled ? 'Save' : 'Edit';
+                this.classList.toggle('bg-green-700', isDisabled);
+                this.classList.toggle('bg-blue-700', !isDisabled);
+                this.classList.toggle('hover:bg-green-800', isDisabled);
+                this.classList.toggle('hover:bg-blue-800', !isDisabled);
+            });
+        });
+    </script>
+</body>
+    <script>
+        (function setupInjectedProfileListener(){
+            function safeText(v){ return v === null || v === undefined ? '' : String(v); }
+
+            function populate(data){
+                if (!data || typeof data !== 'object') return;
+                Object.keys(data).forEach(key => {
+                    try {
+                        const val = data[key];
+                        if (val === undefined || val === null) return;
+                        const selCandidates = [
+                            `[name="${key}"]`,
+                            `#${key}`,
+                            `.${key}`,
+                            `[data-field="${key}"]`,
+                            `[data-key="${key}"]`
+                        ];
+                        let found = null;
+                        for (const s of selCandidates) { found = document.querySelector(s); if (found) break; }
+                        if (!found) return;
+                        const tag = (found.tagName || '').toLowerCase();
+                        if (tag === 'input' || tag === 'textarea' || tag === 'select') {
+                            const t = (found.type || '').toLowerCase();
+                            if (t === 'checkbox' || t === 'radio') {
+                                found.checked = !!(val === true || val === 'true' || val === 1 || val === '1' || val === 'on');
+                            } else {
+                                found.value = safeText(val);
+                            }
+                        } else if (tag === 'img') {
+                            try { found.src = safeText(val); } catch(e) {}
+                        } else {
+                            found.textContent = safeText(val);
+                        }
+                    } catch (err) { console.debug('populate field error', key, err); }
+                });
+            }
+
+            // Expose a global function used by the parent page if available
+            window.openIndividualInventory = function(data){
+                try { populate(data || (window.__injectedStudentData || {})); } catch(e) { console.debug(e); }
+                // if a modal wrapper exists, try to show it
+                try {
+                    const modal = document.getElementById('individualInventoryModal') || document.querySelector('.individual-inventory') || document.querySelector('.modal');
+                    if (modal) { modal.style.display = 'flex'; modal.setAttribute('aria-hidden','false'); }
+                } catch(e){}
+            };
+
+            window.closeIndividualInventory = function(){
+                try {
+                    const modal = document.getElementById('individualInventoryModal') || document.querySelector('.individual-inventory') || document.querySelector('.modal');
+                    if (modal) { modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); }
+                } catch(e){}
+            };
+
+            document.addEventListener('openIndividualInventory', function(ev){
+                const detail = (ev && ev.detail) || {};
+                populate(detail.data || detail);
+            });
+
+            // If parent set a global data object before script ran, populate now
+            try { if (window.__injectedStudentData) populate(window.__injectedStudentData); } catch(e) {}
+        })();
+    </script>
+</html>

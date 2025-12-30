@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - System Settings</title>
+    <link rel="stylesheet" href="./styles/theme.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            // Prevent browser caching of this page
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, '', window.location.href);
+            }
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    window.location.reload();
+                }
+            });
+        </script>
+     <style>
+        /* --- START OF SHARED STYLES (MATCHED TO admin_dashboard.html) --- */
+        html, body { /* Added 'html,' and '!important' for Tailwind override */
+            font-family: Arial, sans-serif !important;
+            margin: 0;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* HEADER & TOP BAR STYLES */
+        .header-and-sidebar-top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1400;
+            display: flex;
+            background-color: #1e8e3e;
+            color: #f0f3f6;
+            height: 60px;
+            transition: left 0.3s ease;
+        }
+        .sidebar-top {
+            width: 250px;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            height: 60px;
+            transition: width 0.3s ease;
+        }
+        .sidebar-top.collapsed {
+            width: 80px;
+            justify-content: center;
+        }
+        .sidebar-top.collapsed .sidebar-logo {
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: opacity 0.3s ease, width 0.3s ease;
+        }
+        .sidebar-logo img {
+            height: 40px;
+        }
+        .sidebar-logo span {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+            white-space: nowrap;
+        }
+        .menu-icon {
+            cursor: pointer;
+            font-size: 24px;
+            margin-left: auto;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            min-height: 40px;
+        }
+        .menu-icon:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .menu-icon:active {
+            transform: scale(0.95);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .main-top-bar {
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px; 
+        }
+        .main-top-bar .portal-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .main-top-bar .user-info {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        .main-top-bar .user-info .material-icons {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        .main-top-bar .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            color: #1e8e3e; 
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 18px;
+        }
+        /* SIDEBAR STYLES */
+        .sidebar {
+            width: 250px;
+            background: #f0f3f6;
+            border-right: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            height: calc(100vh - 60px);
+            z-index: 999;
+            overflow: auto;
+            transition: width 0.3s ease;
+        }
+        .nav-menu ul {
+            list-style: none;
+            padding: 12px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .nav-item {
+            color: #1f2937;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 10px;
+            border-radius: 8px;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 400;
+            font-size: 15px;
+            transition: background 0.2s, color 0.2s;
+            text-align: left;
+            width: 100%;
+        }
+        .nav-item:hover {
+            background: rgba(15,122,52,0.08) !important;
+            color: #0f7a34 !important;
+            font-weight: 400 !important;
+            border-radius: 8px !important;
+        }
+        .nav-item.active {
+            background: rgba(15,122,52,0.12) !important;
+            color: #0f7a34 !important;
+            font-weight: 600 !important;
+        }
+        .nav-item:hover .icon,
+        .nav-item.active .icon {
+            color: #1f2937 !important;
+        }
+        .nav-item .icon {
+            width: 28px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            line-height: 1;
+            color: #1f2937;
+            transition: color 0.2s;
+        }
+        .nav-item .label {
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 1;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .sidebar.collapsed {
+            width: 80px;
+        }
+        .sidebar.collapsed .nav-item .label {
+            display: none;
+        }
+        .sidebar.collapsed .nav-item .icon {
+            width: 56px;
+            font-size: 26px;
+            justify-content: center;
+        }
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 12px 6px;
+            gap: 0;
+        }
+        /* --- END OF SHARED STYLES --- */
+
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .sidebar.collapsed {
+                width: 280px;
+                transform: translateX(-100%);
+            }
+        }
+        /* MAIN CONTENT STYLES */
+        .main-content {
+            position: fixed;
+            top: 60px; 
+            left: 250px; 
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: auto; /* internal scrolling */
+            padding: 30px;
+            transition: left 0.3s ease;
+            min-height: auto;
+            background: transparent;
+        }
+
+        .main-content.shifted {
+            left: 80px; /* when sidebar collapses */
+        }
+        
+        /* Mobile overlay and responsive content */
+        @media (max-width: 768px) {
+            .main-content {
+                left: 0 !important; /* full width on small screens */
+                padding: 20px 15px;
+            }
+            .main-content.shifted {
+                left: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px 10px;
+            }
+        }
+        /* --- END OF SHARED STYLES --- */
+
+        /* --- START OF CUSTOM STYLES FOR REPLACED CONTENT --- */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 12px;
+        }
+        .sidebar-footer .nav-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:8px; }
+        .sidebar-footer .nav-item .label { transition: opacity 0.15s ease; }
+        .sidebar.collapsed .sidebar-footer .nav-item .label { display:none; }
+        .sidebar-footer { z-index: 1000; }
+        
+    /* Profile dropdown styles (shared across pages) */
+    .profile-dropdown .profile-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 12px 34px rgba(2,6,23,0.12), 0 4px 10px rgba(2,6,23,0.06);
+      overflow: hidden;
+      animation: fadeIn .12s ease;
+      transition: transform .14s ease, box-shadow .14s ease, opacity .12s ease;
+      transform-origin: top right;
+    }
+    .profile-card-top { display:flex; justify-content:center; padding:14px 12px 6px; }
+    .avatar-large {
+      width:120px; height:120px; border-radius:50%; background:#f3faf5; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:32px; position:relative; overflow:hidden; border:4px solid rgba(16,185,129,0.06);
+    }
+    .avatar-large img { width:100%; height:100%; object-fit:cover; display:block; transition: transform .18s ease; box-shadow: 0 6px 18px rgba(2,6,23,0.08); }
+    .avatar-large:hover img { transform: scale(1.02); }
+    .avatar-camera { position:absolute; right:6px; bottom:6px; border-radius:50%; background:#fff; border:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 12px rgba(2,6,23,0.06); cursor:pointer; font-size:13px; }
+    .profile-card-body { padding: 10px 18px 16px; text-align:center; display:flex; flex-direction:column; gap:8px; }
+    .profile-email { font-size:13px; color:#6b7280; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .profile-greeting { font-weight:700; font-size:18px; margin-top:4px; color:#111827; }
+    .manage-btn { display:inline-block; width:100%; padding:10px 12px; border-radius:999px; border:1px solid rgba(16,185,129,0.12); background:#10b981; color:#fff; font-weight:700; box-shadow:none; cursor:pointer; }
+    .manage-btn:hover { transform:none; filter:brightness(.98); }
+    .profile-divider { height:1px; background:#f1f5f9; margin:8px 0; }
+    .profile-actions { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .profile-link { flex:1; text-align:left; border:0; background:transparent; padding:8px; color:#374151; font-weight:600; cursor:pointer; }
+    .signout-link { flex:1; text-align:right; border:0; background:transparent; padding:8px; color:#ef4444; font-weight:700; cursor:pointer; }
+    @media (max-width:420px) { .profile-dropdown { right:8px !important; left:8px !important; min-width:auto; } }
+    .profile-dropdown[aria-hidden="false"] .profile-card { transform: translateY(-6px); box-shadow: 0 20px 54px rgba(2,6,23,0.16), 0 6px 18px rgba(2,6,23,0.06); }
+
+    .icon-btn { background: transparent !important; border: 0 !important; outline: none !important; box-shadow: none !important; padding: 6px; display: inline-flex; align-items: center; justify-content: center; color: white; cursor: pointer; }
+    .icon-btn:focus, .icon-btn:active {
+        outline: none !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* popover / dropdown visibility controlled by attributes */
+    .popover { display: none; }
+    .popover[data-open="true"] { display: block; }
+    .dropdown { display: none; }
+    .dropdown[aria-hidden="false"] { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Make sidebar logout text/icon red on hover/focus and keyboard focus */
+    #sidebarLogoutBtn { cursor: pointer; }
+    #sidebarLogoutBtn .label, #sidebarLogoutBtn .icon {
+        color: inherit;
+        transition: color 160ms ease-in-out, transform 120ms ease;
+    }
+    /* Hover and focus (mouse) */
+    #sidebarLogoutBtn:hover .label,
+    #sidebarLogoutBtn:hover .icon {
+        color: #ef4444 !important; /* red text/icon on hover */
+    }
+    /* Keyboard focus visible for accessibility */
+    #sidebarLogoutBtn:focus-visible .label,
+    #sidebarLogoutBtn:focus-visible .icon {
+        color: #ef4444 !important; /* red text/icon on keyboard focus */
+    }
+        /* Added from try.html to support the accordion effect's rotation */
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+            /* Session Note Modal (copied from todo.html) */
+            #modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 5000; /* must be above the header (1400) */
+                align-items: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.45);
+                /* use flex centering when shown */
+                display: none;
+            }
+
+        #modal>div {
+            background: #fff;
+            width: 820px;
+            max-width: calc(100% - 32px);
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(2, 6, 23, 0.2);
+            padding: 18px;
+            /* keep modal content readable within the viewport */
+            max-height: calc(100vh - 140px);
+            overflow: auto;
+        }
+
+    #modal h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    #modal label {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    #modal input,
+    #modal select,
+    #modal textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #e6eef7;
+    }
+
+    #modal textarea {
+      resize: vertical;
+    }
+
+    #modal .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #modal .btn.save {
+      background: #10b981;
+      color: #fff;
+    }
+
+    #modal .btn.submit {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    #modal .btn.close {
+      background: transparent;
+      border: 0;
+      color: #6b7280;
+      cursor: pointer;
+    }
+        /* --- END OF CUSTOM STYLES FOR REPLACED CONTENT --- */
+    </style>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen">
+        <div class="header-and-sidebar-top">
+            <aside class="sidebar-top" id="sidebarTop">
+                <div class="sidebar-logo">
+                    <img src="safespace.png" alt="SafeSpace Logo">
+                    <span>SafeSpace</span>
+                </div>
+                <i class="material-icons menu-icon" id="menuIcon">menu</i>
+            </aside>
+            <header class="main-top-bar">
+                <h1 class="portal-title">Admin Portal</h1>
+                <div class="user-info">
+                    <div class="top-greeting" aria-live="polite" style="margin-right:12px; text-align:right; color:#fff; margin-left:8px;">
+                        <div id="topGreetingName" style="font-weight:700; font-size:14px;">Good Morning, Admin</div>
+                                                        <div id="topGreetingTime" style="font-size:12px; opacity:0.95; margin-top:2px;">Tuesday, Oct 14, 2025 — 02:51 AM</div>
+                                                    </div>
+                                                    <div style="position:relative;display:inline-block;">
+                                                        <button id="notifBtn" class="icon-btn" aria-expanded="false" title="Notifications" style="color:white;background:#16a34a;padding:8px;border-radius:8px;border:0;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(22,163,74,0.15);">
+                                                            <i class="material-icons" style="color:white;font-size:20px;">notifications</i>
+                                                        </button>
+                                                        <div id="notifPanel" class="popover" data-open="false" style="position:fixed;right:20px;top:62px;min-width:260px;z-index:4500;display:none;">
+                                                            <div style="background:#fff;border-radius:10px;padding:10px;min-width:260px;box-shadow:0 12px 30px rgba(2,6,23,0.08);">
+                                                                <div class="popover-header" style="font-weight:750;color:#000;margin-bottom:6px">Notifications</div>
+                                                                <div id="notifList" class="popover-body" style="color:#000;"><div class="popover-empty">No new notifications.</div></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style="position:relative;display:inline-block;margin-left:-8px;">
+                                                        <button id="profileBtn" class="user-avatar" aria-haspopup="true" aria-expanded="false" title="Profile" style="border:0;cursor:pointer;padding:0;">A</button>
+                                                        <div id="profileDropdown" class="dropdown profile-dropdown" aria-hidden="true" style="position:fixed;right:20px;top:62px;min-width:320px;z-index:3000;">
+                                                            <div style="background:#fff;border-radius:12px;padding:10px;min-width:320px;box-shadow:0 12px 30px rgba(2,6,23,0.12);font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111;">
+                                                                <div style="display:flex;gap:12px;align-items:center;padding:10px;border-bottom:1px solid rgba(0,0,0,0.06)">
+                                                                    <div class="avatar-large" id="profileAvatar" style="width:80px;height:80px;border-radius:60px;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-weight:700;color:#111;font-size:18px"></div>
+                                                                    <div style="flex:1;min-width:0">
+                                                                        <div id="profileGreeting" style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Hi, Admin</div>
+                                                                        <div id="profileEmail" style="font-size:13px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">you@example.com</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div style="padding:8px 6px;display:flex;flex-direction:column;gap:6px">
+                                                                    <button id="accountEdit" class="profile-item" style="text-align:left;padding:10px;border-radius:8px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px">
+                                                                        <i class="material-icons icon" style="font-size:18px;line-height:1;">person</i>
+                                                                        <span style="flex:1;text-align:left">Manage your profile</span>
+                                                                    </button>
+                                                                    <button id="accountSettings" class="profile-item" style="text-align:left;padding:10px;border-radius:8px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px">
+                                                                        <i class="material-icons icon" style="font-size:18px;line-height:1;">settings</i>
+                                                                        <span style="flex:1;text-align:left">Settings & privacy</span>
+                                                                        <i class="material-icons icon" style="font-size:16px;opacity:0.7;">chevron_right</i>
+                                                                    </button>
+                                                                    <button id="accountLogout" class="profile-item" style="text-align:left;padding:10px;border-radius:8px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;gap:10px;color:#111;font-weight:600">
+                                                                        <i class="material-icons icon" style="font-size:18px;line-height:1;color:#ef4444">logout</i>
+                                                                        <span style="flex:1;text-align:left">Log Out</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+        </div>
+      </header>
+    </div>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <nav class="nav-menu">
+                <nav class="nav" id="nav" style="display:flex;flex-direction:column;gap:8px;padding:12px;">
+                    <button class="nav-item" onclick="location.href='admin_dashboard.html'" data-name="Appointment Monitoring">
+                        <span class="material-icons icon" style="font-size:26px;">dashboard</span>
+                        <span class="label" style="font-size:15px;">Home</span>
+                    </button>
+                    <button class="nav-item" onclick="location.href='admin_user_management.html'" data-name="User Management">
+                        <span class="material-icons icon" style="font-size:26px;">groups</span>
+                        <span class="label" style="font-size:15px;">Student Management</span>
+                    </button>
+                    <button class="nav-item" onclick="location.href='admin_counselor_management.html'" data-name="Counselor Management">
+                        <span class="material-icons icon" style="font-size:26px;">psychology</span>
+                        <span class="label" style="font-size:15px;">Counselor Management</span>
+                    </button>
+                     <button class="nav-item active" onclick="location.href='admin_session_report.html'" data-name="Session Reports">
+                        <span class="material-icons icon" style="font-size:26px;">fact_check</span>
+                        <span class="label">Session Reports</span>
+                      </button>
+                    <button class="nav-item" onclick="location.href='admin_content_management.html'" data-name="Content Management">
+                        <span class="material-icons icon" style="font-size:26px;">description</span>
+                        <span class="label" style="font-size:15px;">Content Management</span>
+                    </button>
+                    <button class="nav-item" onclick="location.href='admin_settings.html'" data-name="System Settings">
+                        <span class="material-icons icon" style="font-size:26px;">settings</span>
+                        <span class="label" style="font-size:15px;">System Settings</span>
+                    </button>
+                </nav>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="nav-item" id="sidebarLogoutBtn" type="button" title="Sign out">
+                    <i class="material-icons icon" style="font-size:26px;">logout</i>
+                    <span class="label" style="font-size:15px;">Logout</span>
+                </button>
+            </div>
+        </aside>
+                <main class="main-content" id="mainContent">
+                        <div class="p-0 sm:p-6 w-full">
+
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Session Reports</h2>
+
+            <!-- SUMMARY CARDS -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-green-50 border-l-4 border-green-600 p-4 rounded-lg shadow-sm">
+                    <h3 class="text-sm text-gray-600">Total Reports</h3>
+                    <p class="text-2xl font-bold text-green-700">124</p>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg shadow-sm">
+                    <h3 class="text-sm text-gray-600">Ongoing</h3>
+                    <p class="text-2xl font-bold text-yellow-600">6</p>
+                </div>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm">
+                    <h3 class="text-sm text-gray-600">Completed</h3>
+                    <p class="text-2xl font-bold text-blue-600">118</p>
+                </div>
+            </div>
+
+            <!-- SEARCH + FILTER -->
+            <div class="flex justify-between items-center mb-4">
+                <input type="text" placeholder="🔍 Search by student or counselor" class="w-1/2 border border-gray-300 rounded-lg p-2 focus:ring-green-400 focus:outline-none" />
+                <select class="border border-gray-300 rounded-lg p-2 focus:ring-green-400 focus:outline-none">
+                    <option>All Sessions</option>
+                    <option>Ongoing</option>
+                    <option>Completed</option>
+                </select>
+            </div>
+
+            <!-- SESSION REPORTS TABLE -->
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-green-600 text-white">
+                        <tr>
+                            <th class="px-6 py-3 text-left">Student</th>
+                            <th class="px-6 py-3 text-left">Counselor</th>
+                            <th class="px-6 py-3 text-left">Date</th>
+                          
+                            <th class="px-6 py-3 text-left">Status</th>
+                            <th class="px-6 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-3">Cristine Joy Bonifacio</td>
+                            <td class="px-6 py-3">John Dela Cruz</td>
+                            <td class="px-6 py-3">Oct 23, 2025</td>
+                            <td class="px-6 py-3 text-green-600 font-semibold">Completed</td>
+                            <td class="px-6 py-3 text-center">
+                                <button class="text-sm text-green-700 hover:underline">View</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-3">Mark Rivera</td>
+                            <td class="px-6 py-3">Sarah Lopez</td>
+                            <td class="px-6 py-3">Oct 21, 2025</td>
+                            <td class="px-6 py-3 text-yellow-600 font-semibold">Ongoing</td>
+                            <td class="px-6 py-3 text-center">
+                                <button class="text-sm text-green-700 hover:underline">View</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-3">Daniel Cruz</td>
+                            <td class="px-6 py-3">Mary Santos</td>
+                            <td class="px-6 py-3">Oct 18, 2025</td>
+                            <td class="px-6 py-3 text-green-600 font-semibold">Completed</td>
+                            <td class="px-6 py-3 text-center">
+                                <button class="text-sm text-green-700 hover:underline">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+                        </div>
+                </main>
+        </div>
+
+
+                
+
+                
+
+                
+
+    <script>
+        // The original script content for sidebar and mobile responsiveness is kept here.
+        const menuIcon = document.getElementById('menuIcon');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const sidebarTop = document.getElementById('sidebarTop'); 
+        
+        // Create overlay for mobile
+        const overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        document.body.appendChild(overlay);
+        
+        // Mobile detection
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+        
+        // Toggle sidebar with mobile responsiveness
+        menuIcon.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (isMobile()) {
+                // Mobile behavior - overlay sidebar
+                const isOpen = sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active', isOpen);
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            } else {
+                // Desktop behavior - collapse sidebar
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('shifted', isCollapsed);
+                sidebarTop.classList.toggle('collapsed', isCollapsed);
+            }
+        });
+        
+        // Close mobile sidebar when clicking overlay
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (!isMobile()) {
+                // Reset mobile states when switching to desktop
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                // Ensure desktop state is consistent
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                mainContent.classList.toggle('shifted', isCollapsed);
+                sidebarTop.classList.toggle('collapsed', isCollapsed);
+            } else {
+                // Reset desktop states when switching to mobile
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('shifted');
+                sidebarTop.classList.remove('collapsed');
+            }
+        });
+        
+        // Close mobile sidebar when clicking a menu item
+        document.querySelectorAll('.nav-item').forEach(link => { 
+            link.addEventListener('click', () => {
+                if (isMobile()) {
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+        
+        // Initialize state for desktop on load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isMobile()) {
+                // Default to uncollapsed on desktop 
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('shifted');
+                sidebarTop.classList.remove('collapsed');
+            }
+        });
+        
+        // JAVASCRIPT FOR ACCORDION FUNCTIONALITY
+        function toggleSection(id) {
+            const section = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                section.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+    </script>
+        <script type="module">
+            // Note: This module requires the Firebase helpers exported by `admin_main.js`.
+            // Assumption: session report records are stored under the RTDB path `session_reports`.
+            // If your DB uses a different path (e.g. `sessions`), change the PATH constant below.
+            import { requireAdminAuth, setTheme, getTheme, get, ref, db, update, fmtTime, enableSearchFilter, auth, onAuthStateChanged, isAdminUid } from './admin_main.js';
+            import { loadAdminProfileInto, startGreetingClock } from './admin_profile_loader.js';
+
+            requireAdminAuth();
+            loadAdminProfileInto({ greetingSelector: '#topGreetingName', avatarSelector: '.main-top-bar .user-avatar', timeSelector: '#topGreetingTime' });
+            startGreetingClock('#topGreetingName', '#topGreetingTime');
+
+            // Wire theme radios (applies globally via admin_main.js)
+            const radios = document.querySelectorAll('.theme-radio');
+            if (radios && radios.length) {
+                // initialize checked state from stored theme
+                try {
+                    const current = getTheme ? getTheme() : (localStorage.getItem('safespace_theme') || 'system');
+                    radios.forEach(r => { r.checked = (r.value === (current || 'system')); });
+                } catch (e) {
+                    radios.forEach(r => { r.checked = (r.value === 'system'); });
+                }
+
+                radios.forEach(r => r.addEventListener('change', (e) => {
+                    const val = e.target.value;
+                    try { if (typeof setTheme === 'function') setTheme(val); else window.setTheme && window.setTheme(val); } catch (err) { console.error('setTheme error', err); }
+                }));
+            }
+
+            // -------------------------
+            // Session Reports data loader
+            // -------------------------
+            const PATH = 'Session_report'; // <--- change this if your DB uses another path
+
+            function guessField(obj, names) {
+                for (const n of names) if (obj[n] !== undefined && obj[n] !== null) return obj[n];
+                return '';
+            }
+
+            function createRow(rec) {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50';
+                const student = guessField(rec, ['student_name','student','student_fullname','name']);
+                // Prefer personnel_name/personel_name fields from session (these hold the counselor's displayed name)
+                const counselor = guessField(rec, ['personel_name','personnel_name','personnelName','personnel','counselorName','counselor','counselor_name','counselor_fullname']);
+                const rawDate = guessField(rec, ['date','ts','timestamp','created_at']);
+                const dateText = (typeof rawDate === 'number' || /^[0-9]+$/.test(String(rawDate))) ? fmtTime(Number(rawDate)) : (rawDate ? String(rawDate) : '');
+                const status = guessField(rec, ['status','state','progress']) || 'Unknown';
+
+                tr.innerHTML = `
+                    <td class="px-6 py-3">${escapeHtml(student)}</td>
+                    <td class="px-6 py-3">${escapeHtml(counselor)}</td>
+                    <td class="px-6 py-3">${escapeHtml(dateText)}</td>
+                    <td class="px-6 py-3 ${status && status.toLowerCase().includes('ongo') ? 'text-yellow-600' : 'text-green-600'} font-semibold">${escapeHtml(status)}</td>
+                    <td class="px-6 py-3 text-center"><button class="text-sm text-green-700 hover:underline view-session-btn">View</button></td>
+                `;
+                tr.dataset.status = (status || '').toLowerCase();
+                // Attach click handler to View button to open modal in view-only mode
+                try {
+                    const btn = tr.querySelector('.view-session-btn');
+                    if (btn) {
+                        btn.addEventListener('click', (ev) => {
+                            ev.preventDefault();
+                            // open modal and populate fields using this record (rec)
+                            try { showSessionModal(rec); } catch (e) { console.error('showSessionModal error', e); }
+                        });
+                    }
+                } catch (e) { console.error(e); }
+                // attach the raw record object to the row element so delegated handlers can access it
+                try { tr.__sessionRec = rec; } catch (e) { /* noop */ }
+                return tr;
+            }
+
+            function escapeHtml(s){ if (s === null || s === undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+            async function loadReports() {
+                try {
+                    const tbody = document.querySelector('.main-content table tbody');
+                    const searchInput = document.querySelector('.main-content input[type="text"]');
+                    const statusSelect = document.querySelector('.main-content select');
+                    const cards = Array.from(document.querySelectorAll('.grid.grid-cols-3 > div'));
+                    if (!tbody) return;
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding:12px;color:#666">Loading...</td></tr>';
+
+                    const snap = await get(ref(db, PATH));
+                    let rows = [];
+                    if (!snap || !snap.exists()) {
+                        rows = [];
+                    } else {
+                        const val = snap.val();
+                        // The DB shape may be nested like:
+                        // Session_report -> studentUid -> recordId -> { meta, sessions: { session_1: {...} } }
+                        // Flatten to one row per session so the table can render each session as a separate row.
+                        if (val && typeof val === 'object') {
+                            for (const studentUid of Object.keys(val)) {
+                                const studentNode = val[studentUid];
+                                if (!studentNode || typeof studentNode !== 'object') continue;
+                                for (const recordId of Object.keys(studentNode)) {
+                                    const record = studentNode[recordId];
+                                    if (!record || typeof record !== 'object') continue;
+                                    // If sessions is present, iterate each session entry
+                                    if (record.sessions && typeof record.sessions === 'object') {
+                                        for (const sKey of Object.keys(record.sessions)) {
+                                            const sessionObj = record.sessions[sKey] || {};
+                                            // Merge session fields with meta (meta takes lower priority)
+                                            const flat = Object.assign({}, record.meta || {}, sessionObj);
+                                            // attach helpful metadata for debugging/actions
+                                            flat._studentUid = studentUid;
+                                            flat._recordId = recordId;
+                                            flat._sessionKey = sKey;
+                                            rows.push(flat);
+                                        }
+                                    } else {
+                                        // Fallback: if no sessions object, push the record itself
+                                        rows.push(record);
+                                    }
+                                }
+                            }
+                        } else if (Array.isArray(val)) {
+                            rows = val;
+                        }
+                    }
+
+                    // populate table
+                    tbody.innerHTML = '';
+                    let total = 0, ongoing = 0, completed = 0;
+                    for (const r of rows) {
+                        const rec = r || {};
+                        const status = (guessField(rec, ['status','state','progress']) || '').toString().toLowerCase();
+                        total++;
+                        if (status.includes('ongo')) ongoing++; else if (status.includes('complete') || status.includes('done')) completed++; else completed++;
+                        tbody.appendChild(createRow(rec));
+                    }
+
+                    if (!tbody.children.length) tbody.innerHTML = '<tr><td colspan="5" style="padding:12px;color:#666">No session reports found.</td></tr>';
+
+                    // Update summary cards if present
+                    try { if (cards.length >= 3) { cards[0].querySelector('p') && (cards[0].querySelector('p').textContent = String(total)); cards[1].querySelector('p') && (cards[1].querySelector('p').textContent = String(ongoing)); cards[2].querySelector('p') && (cards[2].querySelector('p').textContent = String(completed)); } } catch(e){}
+
+                    // enable client-side search & status filtering
+                    try {
+                        if (typeof enableSearchFilter === 'function' && searchInput) enableSearchFilter(searchInput, tbody, 5);
+                        if (statusSelect) statusSelect.addEventListener('change', function(){ const s = (this.value||'').toLowerCase(); for (const r of Array.from(tbody.rows)) { const st = r.dataset.status||''; r.style.display = (!s || s==='all sessions' || s==='all' || st.includes(s)) ? '' : 'none'; } });
+                    } catch(e){ console.error('Search wiring error', e); }
+                    } catch (err) {
+                    console.error('loadReports error', err);
+                    const tbody = document.querySelector('.main-content table tbody'); if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding:12px;color:#b91c1c">Failed to load reports. See console for details.</td></tr>';
+                }
+            }
+
+            // Only load reports after auth state is known and the user is verified as admin.
+            // This prevents unauthenticated clients from attempting DB reads (which can cause Permission denied).
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    // Not signed in: redirect to login (requireAdminAuth would normally also redirect, but ensure it here)
+                    try { window.location.href = 'login.html'; } catch(e){}
+                    return;
+                }
+                try {
+                    const ok = await isAdminUid(user.uid);
+                    if (!ok) {
+                        try { await (window.signOutUser ? window.signOutUser() : Promise.resolve()); } catch(e){}
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    // authorized admin -> load reports
+                    loadReports();
+                } catch (err) {
+                    console.error('auth check error', err);
+                    window.location.href = 'login.html';
+                }
+            });
+
+        </script>
+    <script src="./profile_dropdown.js"></script>
+    <script>
+        (function(){
+            
+
+            // Logs & Monitoring wiring
+            document.getElementById('openActivityLogs')?.addEventListener('click', function(){
+                // Reuse existing System Logs modal
+                const open = document.getElementById('syslogsModal'); if(open){ open.style.display = 'flex'; }
+                try{ const input = document.getElementById('logsSearch'); if(input){ input.value=''; input.focus(); } }catch(e){}
+            });
+
+            document.getElementById('exportActivityLogs')?.addEventListener('click', function(){
+                try{
+                    const logs = JSON.parse(localStorage.getItem('system_logs') || '[]');
+                    const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'activity_logs.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                }catch(e){ alert('No logs to export'); }
+            });
+
+            // Demo system health population (client-side demo only)
+            function updateDemoHealth(){
+                const cpu = (Math.random()*60 + 5).toFixed(1) + '%';
+                const mem = (Math.random()*50 + 20).toFixed(1) + '%';
+                const disk = (Math.random()*70 + 10).toFixed(1) + '%';
+                const uptime = Math.floor(Math.random()*72) + ' hrs';
+                document.getElementById('healthCpu') && (document.getElementById('healthCpu').textContent = cpu);
+                document.getElementById('healthMem') && (document.getElementById('healthMem').textContent = mem);
+                document.getElementById('healthDisk') && (document.getElementById('healthDisk').textContent = disk);
+                document.getElementById('healthUptime') && (document.getElementById('healthUptime').textContent = uptime);
+            }
+            updateDemoHealth();
+            // refresh every 30s while on this page
+            setInterval(updateDemoHealth, 30000);
+        })();
+    </script>
+        <script>
+        (function(){
+            if (window.__sidebarLogoutHandlerAdded) return; window.__sidebarLogoutHandlerAdded = true;
+            function attachLogout(){
+                const sidebarLogout = document.getElementById('sidebarLogoutBtn');
+                if (!sidebarLogout) return;
+                sidebarLogout.addEventListener('click', () => {
+                    const profileLogout = document.getElementById('accountLogout');
+                    if (profileLogout) { profileLogout.click(); return; }
+                    if (typeof window.signOutAndRedirect === 'function') { window.signOutAndRedirect(); return; }
+                    try { localStorage.removeItem('authToken'); } catch(e){}
+                    window.location.href = 'login.html';
+                });
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attachLogout); else attachLogout();
+        })();
+        </script>
+            <div id="confirmModalLogout" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.45);align-items:center;justify-content:center;z-index:3000">
+                <div style="background:#fff;border-radius:12px;padding:18px;max-width:420px;width:92%;box-shadow:0 12px 40px rgba(2,6,23,0.2)">
+                    <h3 id="confirmModalLogoutTitle" style="margin:0 0 8px 0;font-size:16px;font-weight:700">Confirm</h3>
+                    <div id="confirmModalLogoutMessage" style="font-size:15px;margin-bottom:12px;color:#111">Are you sure you want to sign out?</div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end">
+                        <button id="confirmModalLogoutCancel" style="background:#6c757d;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer">Cancel</button>
+                        <button id="confirmModalLogoutOk" style="background:#00723f;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer">Confirm</button>
+                    </div>
+                </div>
+            </div>
+            <script>
+            (function(){
+                function attachLogout(){
+                    const sidebarLogout = document.getElementById('sidebarLogoutBtn');
+                    if (!sidebarLogout) return;
+                    if (sidebarLogout._logoutHandlerAttached) return;
+                    sidebarLogout._logoutHandlerAttached = true;
+                    const confirmModal = document.getElementById('confirmModalLogout');
+                    const confirmOk = document.getElementById('confirmModalLogoutOk');
+                    const confirmCancel = document.getElementById('confirmModalLogoutCancel');
+                    function doLogout(){
+                        const profileLogout = document.getElementById('accountLogout');
+                        if (profileLogout) { profileLogout.click(); return; }
+                        if (typeof window.signOutAndRedirect === 'function') { window.signOutAndRedirect(); return; }
+                        try { localStorage.removeItem('authToken'); } catch(e){}
+                        window.location.href = 'login.html';
+                    }
+                    sidebarLogout.addEventListener('click', () => {
+                        if (!confirmModal || !confirmOk || !confirmCancel) { if (confirm('Are you sure you want to sign out?')) doLogout(); return; }
+                        confirmModal.style.display = 'flex';
+                        function cleanup(){ confirmModal.style.display = 'none'; confirmOk.removeEventListener('click', onOk); confirmCancel.removeEventListener('click', onCancel); document.removeEventListener('keydown', onKeyDown); }
+                        function onOk(){ cleanup(); doLogout(); }
+                        function onCancel(){ cleanup(); }
+                        function onKeyDown(e){ if (e.key === 'Escape') cleanup(); }
+                        confirmOk.addEventListener('click', onOk);
+                        confirmCancel.addEventListener('click', onCancel);
+                        document.addEventListener('keydown', onKeyDown);
+                    });
+                }
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attachLogout); else attachLogout();
+            })();
+            </script>
+        <!-- Session Report Modal (View-only) -->
+        <div id="modal" style="display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.45);">
+        <div class="modal-inner"
+            style="position:relative;margin:auto;background:#fff;width:820px;max-width:calc(100% - 24px);border-radius:6px;box-shadow:0 12px 40px rgba(2,6,23,0.2);padding:14px;max-height:calc(100vh - 140px);overflow:auto;">
+
+            <style>
+            /* Modal base */
+                .modal-inner { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#0f172a }
+
+                /* Grid layout */
+    .grid-modal { display:block; }
+                /* Header box (paper-like two-row layout) */
+                .grid-header { grid-column: 1 / -1; margin-bottom:12px }
+                .header-box { border:1px solid #cfcfcf; padding:10px 12px; border-radius:6px; background:#fbfbfb }
+                .header-row { display:flex; gap:12px; align-items:center }
+                .header-row.small-gap { gap:8px; margin-top:8px }
+                .header-box label { font-size:13px; color:#374151; display:block; margin-bottom:6px }
+                /* Underline style inputs for paper look */
+                .header-box input[type="text"], .header-box input[type="date"], .header-box input[type="time"] {
+                    width:100%; border:0; border-bottom:1px solid rgba(0,0,0,0.6); padding:6px 4px; background:transparent; border-radius:0;
+                }
+
+                /* Section card */
+    .grid-section { border-radius:10px; background:#ffffff; padding:12px; border:1px solid #eef2f7; box-shadow:0 6px 20px rgba(15,23,42,0.04) }
+    .section-title { font-weight:800; margin-bottom:8px; color:#071132; font-size:14px }
+
+                /* Inputs / selects */
+                .grid-header input, .grid-header select, .grid-section input, .grid-section select {
+                    width:100%; padding:8px 10px; border-radius:8px; border:1px solid #e6eef7; background:#fbfdff; box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
+                }
+
+                /* Ruled textarea with soft lines */
+                textarea.ruled {
+                    width:100%; min-height:100px; padding:12px; border-radius:8px; border:1px solid #eef2f7; resize:vertical; background:linear-gradient(180deg,#fff,#fff);
+                    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 28px, rgba(15,23,42,0.03) 28px); background-size:100% 28px;
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+                }
+
+                /* Checkbox group */
+    /* Align checkbox labels vertically with inputs */
+    .grid-section .checkbox-group { display:flex; gap:14px; align-items:center; flex-wrap:wrap }
+    .grid-section .checkbox-group label { display:inline-flex; align-items:center; gap:8px; color:#0b1220; margin-right:8px }
+
+                /* Signature inputs */
+    .sign-row input { border:0; border-bottom:1px solid rgba(2,6,23,0.6); padding:8px 6px; background:transparent }
+
+    /* Small label styles to line up section labels */
+    .grid-header label, .grid-section .section-title { display:block }
+    .grid-header label { color:#3b4450; font-size:12px; margin-bottom:6px }
+
+                /* Buttons */
+                #submitNote { background: linear-gradient(90deg,#2563eb,#4f46e5); color:white; border-radius:10px; padding:10px 14px; box-shadow:0 8px 16px rgba(37,99,235,0.12); border:0; cursor:pointer }
+                #submitNote:hover { transform:translateY(-1px); filter:brightness(.98) }
+                #saveDraft { background:#fde68a; color:#1f2937; border-radius:10px; padding:10px 14px; border:0; cursor:pointer }
+                #saveDraft:hover { transform:translateY(-1px) }
+
+                /* Close button */
+                #closeModal { font-size:18px; background:transparent; border-radius:6px; padding:6px; }
+
+                /* Responsive */
+                @media (max-width:880px) { .grid-modal { grid-template-columns: 1fr } }
+
+                /* Print rules: produce a clean, full-page print of the session report only */
+                @media print {
+                    /* Hide all UI except the modal and its contents */
+                    body * { visibility: hidden !important; }
+                    #modal, #modal * { visibility: visible !important; }
+
+                    /* Position the modal at the page origin and make it full width for edge-to-edge look */
+                    #modal { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: white !important; }
+                    .modal-inner { box-shadow: none !important; background: white !important; color: #000 !important; }
+
+                    /* Remove any overlay/backdrop visual (overlay is hidden by visibility rules above but ensure no dark bg prints) */
+                    #modal { background: white !important; }
+
+                    /* Page size and zero margins to allow edge-to-edge PDF export where the printer supports it */
+                    @page { size: A4; margin: 0; }
+                }
+            </style>
+
+            <div style="display:flex;justify-content:center;align-items:center;margin-bottom:80px;position:relative">
+                <div style="flex:1;text-align:center;font-weight:800">SESSION REPORT</div>
+                <button id="closeModal" style="position:absolute;right:6px;top:6px;background:transparent;border:0;color:#6b7280;cursor:pointer">✕</button>
+            </div>
+
+            <form id="noteForm">
+                <div class="grid-modal">
+
+                    <!-- Header box: two-row, paper-like (preserve IDs) -->
+                    <div class="grid-header">
+                        <div class="header-box" style="display:flex;flex-direction:column;gap:8px">
+                            <!-- Row 1: Name (left) and Date (right) -->
+                            <div class="header-row" style="display:flex;gap:12px;align-items:center">
+                                <div style="flex:1">
+                                    <label for="studentName" style="font-size:12px;color:#374151;display:block;margin-bottom:6px">Name</label>
+                                    <input id="studentName" name="studentName" type="text" readonly value="" style="width:100%;border:0;border-bottom:1px solid rgba(0,0,0,0.6);padding:6px 4px;background:transparent;font-weight:600" />
+                                </div>
+                                <div style="width:180px">
+                                    <label for="noteDate" style="font-size:12px;color:#374151;display:block;margin-bottom:6px">Date</label>
+                                    <input id="noteDate" name="noteDate" type="date" style="width:100%;border:0;border-bottom:1px solid rgba(0,0,0,0.6);padding:6px 4px;background:transparent" />
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Session No., Time Started, Time Ended -->
+                            <div class="header-row small-gap" style="display:flex;gap:18px;align-items:center">
+                                <div style="width:120px">
+                                    <label for="sessionNo" style="font-size:12px;color:#374151;display:block;margin-bottom:6px">Session No.</label>
+                                    <input id="sessionNo" name="sessionNo" type="text" style="width:100%;border:0;border-bottom:1px solid rgba(0,0,0,0.6);padding:6px 4px;background:transparent" />
+                                </div>
+                                <div style="width:160px">
+                                    <label for="timeStarted" style="font-size:12px;color:#374151;display:block;margin-bottom:6px">Time Started</label>
+                                    <input id="timeStarted" name="timeStarted" type="time" style="width:100%;border:0;border-bottom:1px solid rgba(0,0,0,0.6);padding:6px 4px;background:transparent" />
+                                </div>
+                                <div style="width:160px">
+                                    <label for="timeEnded" style="font-size:12px;color:#374151;display:block;margin-bottom:6px">Time Ended</label>
+                                    <input id="timeEnded" name="timeEnded" type="time" style="width:100%;border:0;border-bottom:1px solid rgba(0,0,0,0.6);padding:6px 4px;background:transparent" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Left column: I and II -->
+                    <div>
+                        <div class="grid-section">
+                            <div class="section-title">I. Presenting Problem</div>
+                            <textarea id="presentingProblem" name="presentingProblem" class="ruled" rows="8"></textarea>
+                        </div>
+
+                        <div class="grid-section" style="margin-top:10px">
+                            <div class="section-title">II. Session Summary</div>
+                            <textarea id="sessionSummary" name="sessionSummary" class="ruled" rows="10"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Right column: III, IV/V, VI -->
+                    <div>
+                        <div class="grid-section">
+                            <div class="section-title">III. Observation/s</div>
+                            <textarea id="observations" name="observations" class="ruled" rows="8"></textarea>
+                        </div>
+
+                        <div class="grid-section" style="margin-top:10px">
+                            <div class="section-title">IV. Action Taken</div>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="actionTaken" value="Consultation"> Consultation</label>
+                                <label><input type="checkbox" name="actionTaken" value="Coaching"> Coaching</label>
+                                <label><input type="checkbox" name="actionTaken" value="Counseling"> Counseling</label>
+                                <label style="display:flex;align-items:center;gap:6px">Others:<input id="actionOthers" name="actionOthers" type="text" placeholder="Specify" style="border:0;border-bottom:1px solid #cfcfcf;padding:4px;background:transparent"></label>
+                            </div>
+
+                            <div style="margin-top:8px">
+                                <div class="section-title">V. Intervention</div>
+                                <textarea id="intervention" name="intervention" class="ruled" rows="6"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="grid-section" style="margin-top:10px">
+                            <div class="section-title">VI. Recommendation/s</div>
+                            <div class="checkbox-group" style="margin-bottom:8px">
+                                <label><input type="checkbox" name="recommendation" value="Follow-up"> Follow-up</label>
+                                <label><input type="checkbox" name="recommendation" value="Termination"> Termination</label>
+                                <label><input type="checkbox" name="recommendation" value="Referral"> Referral</label>
+                            </div>
+                            <div>
+                                <label style="display:block;margin-bottom:6px">Remarks</label>
+                                <textarea id="remarks" name="remarks" class="ruled" rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signatures row spanning two columns -->
+                    <div class="sign-row">
+                        <div style="flex:1">
+                            <label style="font-size:12px;color:#374151">Personnel's Signature over Printed Name</label>
+                            <input id="personnelName" name="personnelName" type="text" style="width:100%;border:0;border-bottom:1px solid #111;padding:6px;background:transparent" />
+                        </div>
+                        <div style="width:160px">
+                            <label style="font-size:12px;color:#374151">Date</label>
+                            <input id="personnelDate" name="personnelDate" type="date" style="width:100%;border:0;padding:6px;background:transparent" />
+                        </div>
+                        <div style="flex:1">
+                            <label style="font-size:12px;color:#374151">Noted by (Director)</label>
+                            <input id="notedBy" name="notedBy" type="text" placeholder="Director" style="width:100%;border:0;border-bottom:1px solid #111;padding:6px;background:transparent" />
+                        </div>
+                        <div style="width:160px">
+                            <label style="font-size:12px;color:#374151">Date</label>
+                            <input id="notedDate" name="notedDate" type="date" style="width:100%;border:0;padding:6px;background:transparent" />
+                        </div>
+                    </div>
+
+                    <!-- Actions (span) -->
+                    <div style="grid-column:1 / -1; display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+                        <div id="modalHelpText" style="font-size:12px;color:#6b7280">You can Save Draft or Submit (final).</div>
+                                    <div style="display:flex;gap:8px">
+                                        <!-- Print button appears in View-only mode -->
+                                        <button type="button" id="printReport" style="padding:8px 12px;border-radius:6px;background:#10b981;color:#fff;border:0;cursor:pointer;display:none">Print</button>
+                                        <!-- Save Noted: admin can write 'Noted by (Director)' for a session -->
+                                        <button type="button" id="saveNoted" style="padding:8px 12px;border-radius:6px;background:#10b981;color:#fff;border:0;cursor:pointer;display:none">Save Noted</button>
+                                        <button type="button" id="saveDraft" style="padding:8px 12px;border-radius:6px;background:#fde68a;border:0;cursor:pointer">Save draft</button>
+                                        <button type="submit" id="submitNote" style="padding:8px 12px;border-radius:6px;background:#2563eb;color:#fff;border:0;cursor:pointer">Submit</button>
+                                    </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+        <script>
+            // Modal helpers
+            function byId(id){ return document.getElementById(id); }
+            function showSessionModal(rec){
+                    if(!rec) return;
+                    // Map fields with fallbacks
+                    const studentName = rec.student_name || rec.studentName || rec.name || rec.student || '';
+                    const date = (rec.date && String(rec.date).length>=4) ? rec.date : (rec.noted_date || rec.personnel_date || '');
+                    const sessionNo = rec.session_number || rec.sessionNo || rec.session_no || rec._sessionKey || '';
+                    const timeStarted = rec.start_time || rec.timeStarted || rec.startTime || '';
+                    const timeEnded = rec.end_time || rec.timeEnded || rec.endTime || '';
+
+                    byId('studentName').value = studentName;
+                    byId('noteDate').value = date;
+                    byId('sessionNo').value = sessionNo;
+                    byId('timeStarted').value = timeStarted;
+                    byId('timeEnded').value = timeEnded;
+
+                    byId('presentingProblem').value = rec.presenting_problem || rec.presentingProblem || rec.concern || rec.meta?.concern || '';
+                    byId('sessionSummary').value = rec.session_summary || rec.sessionSummary || rec.summary || '';
+                    byId('observations').value = rec.observations || '';
+                    // action taken (array)
+                    const actions = Array.isArray(rec.action_taken) ? rec.action_taken : (rec.actionTaken ? (Array.isArray(rec.actionTaken)?rec.actionTaken:[rec.actionTaken]) : []);
+                    document.querySelectorAll('input[name="actionTaken"]').forEach(inp => { inp.checked = actions.includes(inp.value); });
+                    byId('actionOthers').value = actions.filter(a=>!['Consultation','Coaching','Counseling'].includes(a)).join(', ');
+
+                    byId('intervention').value = rec.intervention || '';
+                    const recs = Array.isArray(rec.recommendations) ? rec.recommendations : [];
+                    document.querySelectorAll('input[name="recommendation"]').forEach(inp => { inp.checked = recs.includes(inp.value); });
+                    byId('remarks').value = rec.remarks || rec.remark || '';
+
+                    byId('personnelName').value = rec.personnel_name || rec.personel_name || rec.personnelName || rec.personnel_name || rec.personnel || '';
+                    byId('personnelDate').value = rec.personnel_date || rec.personnelDate || rec.personnel_date || '';
+                    byId('notedBy').value = rec.noted_by || rec.notedBy || '';
+                    byId('notedDate').value = rec.noted_date || rec.notedDate || '';
+
+                    // View-only mode: hide Save/Submit, show Print and SaveNoted
+                    byId('saveDraft').style.display = 'none';
+                    byId('submitNote').style.display = 'none';
+                    byId('printReport').style.display = '';
+                    byId('saveNoted').style.display = '';
+
+                    // Make inputs readonly/disabled for view-only except notedBy which admins can edit
+                    Array.from(document.querySelectorAll('#modal input, #modal textarea')).forEach(el => { el.setAttribute('readonly',''); el.disabled = true; });
+                    // enable notedBy and notedDate fields for admin input
+                    const notedEl = byId('notedBy'); if (notedEl) { notedEl.removeAttribute('readonly'); notedEl.disabled = false; }
+                    const notedDateEl = byId('notedDate'); if (notedDateEl) { notedDateEl.removeAttribute('readonly'); notedDateEl.disabled = false; }
+
+                    // set active record for save handlers
+                    window.__activeSessionRecord = rec;
+                    // show modal (use flex so centering/align-items works)
+                    byId('modal').style.display = 'flex';
+                    // prevent background scrolling while modal is open
+                    document.body.style.overflow = 'hidden';
+            }
+
+        function closeSessionModal(){
+            byId('modal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+            document.addEventListener('click', function(e){
+                    if (e.target && e.target.id === 'closeModal') { closeSessionModal(); }
+                    if (e.target && e.target.id === 'printReport') { window.print(); }
+                    if (e.target && e.target.id === 'saveNoted') {
+                        // Save only the noted_by and noted_date fields back to the DB for this session
+                        const tr = e.target.closest('tr');
+                        // Prefer active record from the modal context if available
+                        const rec = (window.__activeSessionRecord) ? window.__activeSessionRecord : (tr && tr.__sessionRec ? tr.__sessionRec : null);
+                        if (!rec) { alert('Record context not found. Cannot save.'); return; }
+                        const studentUid = rec._studentUid || rec.student_uid || rec.studentUid || '';
+                        const recordId = rec._recordId || rec.id || '';
+                        const sessionKey = rec._sessionKey || rec.session_key || rec.sessionKey || ('session_' + (rec.session_number || rec.sessionNo || '1'));
+                        if (!studentUid || !recordId || !sessionKey) {
+                            alert('Insufficient record identifiers to save.');
+                            return;
+                        }
+                        const notedByVal = (byId('notedBy') && byId('notedBy').value) ? byId('notedBy').value.trim() : '';
+                        const notedDateVal = (byId('notedDate') && byId('notedDate').value) ? byId('notedDate').value : (new Date().toISOString().split('T')[0]);
+                        if (!notedByVal) { if (!confirm('Noted by is empty. Do you want to save anyway?') ) return; }
+                        // Build update path: Session_report/{studentUid}/{recordId}/sessions/{sessionKey}
+                        const updatePath = `${PATH}/${studentUid}/${recordId}/sessions/${sessionKey}`;
+                        const payload = { noted_by: notedByVal, noted_date: notedDateVal };
+                        // Perform update
+                        (async () => {
+                            try {
+                                await update(ref(db, updatePath), payload);
+                                // reflect change in UI record
+                                rec.noted_by = notedByVal; rec.noted_date = notedDateVal;
+                                alert('Noted by saved.');
+                            } catch (err) {
+                                console.error('saveNoted error', err);
+                                alert('Failed to save noted-by. See console for details.');
+                            }
+                        })();
+                    }
+            });
+
+        // Save helpers: build payload and update DB for the active session
+        async function saveSessionPayload(payload) {
+            const rec = window.__activeSessionRecord;
+            if (!rec) { alert('No active session selected.'); return false; }
+            const studentUid = rec._studentUid || rec.student_uid || rec.studentUid || '';
+            const recordId = rec._recordId || rec.id || '';
+            const sessionKey = rec._sessionKey || rec.session_key || rec.sessionKey || ('session_' + (rec.session_number || rec.sessionNo || '1'));
+            if (!studentUid || !recordId || !sessionKey) {
+                alert('Insufficient record identifiers to save.');
+                return false;
+            }
+            const updatePath = `${PATH}/${studentUid}/${recordId}/sessions/${sessionKey}`;
+            try {
+                await update(ref(db, updatePath), payload);
+                // keep local record in sync
+                Object.assign(rec, payload);
+                return true;
+            } catch (err) {
+                console.error('saveSessionPayload error', err);
+                alert('Failed to save session. See console for details.');
+                return false;
+            }
+        }
+
+        // Save Draft button handler (saves as draft, not submitted)
+        document.getElementById('saveDraft')?.addEventListener('click', async function(ev){
+            ev.preventDefault();
+            const payload = {
+                presenting_problem: byId('presentingProblem')?.value || '',
+                session_summary: byId('sessionSummary')?.value || '',
+                observations: byId('observations')?.value || '',
+                intervention: byId('intervention')?.value || '',
+                remarks: byId('remarks')?.value || '',
+                action_taken: Array.from(document.querySelectorAll('input[name="actionTaken"]:checked')).map(i=>i.value),
+                recommendations: Array.from(document.querySelectorAll('input[name="recommendation"]:checked')).map(i=>i.value),
+                personel_name: byId('personnelName')?.value || '',
+                personnel_date: byId('personnelDate')?.value || '',
+                noted_by: byId('notedBy')?.value || '',
+                noted_date: byId('notedDate')?.value || '',
+                submitted_for_approval: false,
+                saved_at: Date.now()
+            };
+            const ok = await saveSessionPayload(payload);
+            if (ok) alert('Draft saved.');
+        });
+
+        // Submit (final) - form submit
+        document.getElementById('noteForm')?.addEventListener('submit', async function(ev){
+            ev.preventDefault();
+            const payload = {
+                presenting_problem: byId('presentingProblem')?.value || '',
+                session_summary: byId('sessionSummary')?.value || '',
+                observations: byId('observations')?.value || '',
+                intervention: byId('intervention')?.value || '',
+                remarks: byId('remarks')?.value || '',
+                action_taken: Array.from(document.querySelectorAll('input[name="actionTaken"]:checked')).map(i=>i.value),
+                recommendations: Array.from(document.querySelectorAll('input[name="recommendation"]:checked')).map(i=>i.value),
+                personel_name: byId('personnelName')?.value || '',
+                personnel_date: byId('personnelDate')?.value || '',
+                noted_by: byId('notedBy')?.value || '',
+                noted_date: byId('notedDate')?.value || '',
+                submitted_for_approval: true,
+                saved_at: Date.now()
+            };
+            const ok = await saveSessionPayload(payload);
+            if (ok) {
+                alert('Session submitted.');
+                // optionally close modal
+                closeSessionModal();
+            }
+        });
+
+            // Delegate: if any dynamically-created .view-session-btn inside main-content clicked but missed attachment, handle here
+        document.querySelector('#mainContent').addEventListener('click', function(e){
+            const btn = e.target.closest && e.target.closest('.view-session-btn');
+            if (!btn) return;
+            // try to find the record data attached to the row
+            const tr = btn.closest('tr');
+            if (!tr) return;
+            // prefer the attached record object if present
+            const rec = tr.__sessionRec;
+            if (rec && typeof rec === 'object') { showSessionModal(rec); return; }
+            // fallback: build a simple record from cells
+            const cells = Array.from(tr.children).map(td => td.textContent && td.textContent.trim());
+            const fallback = {
+                student_name: cells[0] || '',
+                // counselor in second cell (not used in modal population here)
+                date: cells[2] || cells[1] || '',
+                status: cells[3] || '',
+            };
+            showSessionModal(fallback);
+        });
+        </script>
+</body>
+</html>

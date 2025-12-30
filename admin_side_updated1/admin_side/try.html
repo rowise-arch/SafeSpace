@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Individual Inventory — Romblon State University</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @page { size: A4; margin: 20mm; }
+    @media print {
+      html, body { width: 210mm; height: 297mm; }
+      .no-print { display: none !important; }
+      .page-break { page-break-after: always; }
+    }
+    /* privacy box and photo box to mirror sample layout */
+    .privacy-photo-row { display:flex; gap:12px; align-items:flex-start; margin-top:12px; }
+    .privacy-box {
+      flex: 1 1 0;
+      border: 1px solid #111827;
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.2;
+      background: #fff;
+      max-height: 140px;
+      overflow: hidden;
+    }
+    .privacy-box strong { display:block; margin-bottom:6px; }
+    .photo-box {
+      width: 88px; /* ~1x1 inch on many printers */
+      height: 120px;
+      border: 1px solid #111827;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      color:#374151;
+      background:#fafafa;
+      flex-shrink:0;
+    }
+    .header-small-note { font-size: 11px; color: #374151; margin-top:6px; }
+    .form-line {
+      display: inline-block;
+      border-bottom: 1px solid #111827;
+      padding-bottom: 3px;
+      flex: 1;
+    }
+
+    .label-sm { font-size: 0.83rem; }
+
+    /* Compact boxed header form (Name / Program / Academic Year / Status) */
+    .header-form { margin-top:12px; border:1px solid #111827; border-collapse:collapse; width:100%; font-size:13px; }
+    .header-form td { padding:6px; border-top:1px solid #111827; vertical-align:middle; }
+    .header-form .label-cell { background:#e6e6e6; width:160px; font-weight:600; }
+    .header-form .value-cell { padding:10px; }
+    .header-form .underline { border-bottom:1px solid #000; height:22px; width:100%; display:block; }
+    .header-form .sublabels { display:flex; gap:8px; margin-top:6px; font-size:12px; color:#111827; }
+    .header-form .sublabels span { display:inline-block; text-align:left; }
+    .chk { display:inline-flex; align-items:center; gap:6px; margin-right:14px; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+  <div class="max-w-[800px] mx-auto p-6">
+    <!-- Top controls -->
+    <div class="flex justify-between items-center mb-4 no-print">
+      <div class="flex items-center gap-3">
+        <button onclick="window.history.back()" class="px-3 py-1 rounded bg-green-700 text-white">Back</button>
+        <button onclick="window.print()" class="px-3 py-1 rounded border border-gray-300">Print</button>
+      </div>
+      <div class="text-sm text-gray-600">SafeSpace • Student Profile</div>
+    </div>
+
+    <!-- Form header -->
+    <div class="border border-gray-300 p-4 rounded">
+      <div class="flex items-start gap-4">
+        <div class="w-20 h-20 flex-shrink-0">
+          <img src="https://via.placeholder.com/120x120.png?text=RSU+Logo" alt="RSU Logo" class="w-20 h-20 object-contain" />
+        </div>
+        <div class="flex-1 text-center">
+          <h1 class="text-xl font-semibold">ROMBLON STATE UNIVERSITY</h1>
+          <div class="mt-2 text-lg font-semibold">INDIVIDUAL INVENTORY</div>
+          <div class="mt-1 text-sm text-gray-600">Fill out all required fields accurately. Put N/A if not applicable.</div>
+        </div>
+        <div class="w-20"></div>
+      </div>
+      <!-- New row: big privacy box on left, 1x1 photo box on right -->
+      <div class="privacy-photo-row">
+        <div class="privacy-box">
+          <strong>Data Privacy Statement</strong>
+          <p style="margin:0">Romblon State University respects your right to privacy and is committed to protecting the confidentiality of your personal information. By filling out this form, you are consenting to the collection, processing, and use of the information in accordance with this privacy notice. The information you have provided is used for access provision, attendance, monitoring, evaluation, documentation, and communication purposes. The University shall only retain the said personal information until it serves its purpose, after which it shall be securely disposed of. For concerns and queries on Data Privacy, email <span class="underline">dpo@rsu.edu.ph</span>.</p>
+        </div>
+        <div class="photo-box">
+          1x1 Photo
+        </div>
+      </div>
+      <div class="header-small-note">Fill out all required fields in the form accurately and completely, and put N/A if the section does not apply to you.</div>
+      <!-- Compact boxed header form (Name / Program / Academic Year / Status) -->
+      <table class="header-form" role="presentation" aria-label="Header fields">
+        <tr>
+          <td class="label-cell">Name:</td>
+          <td class="value-cell">
+            <span class="underline" aria-hidden="true"></span>
+            <div class="sublabels" aria-hidden="true">
+              <span style="flex:1">Last Name,</span>
+              <span style="flex:1">First Name,</span>
+              <span style="flex:.6">Suffix,</span>
+              <span style="flex:1">Middle Name</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="label-cell">Program/Year Level:</td>
+          <td class="value-cell">
+            <span class="underline" style="width:60%" aria-hidden="true"></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="label-cell">Academic Year Admitted:</td>
+          <td class="value-cell">
+            <label class="chk"><input type="checkbox" /> 1st Sem</label>
+            <label class="chk"><input type="checkbox" /> 2nd Sem</label>
+            <span style="margin-left:6px;">Year</span>
+            <span style="display:inline-block;width:56px;border-bottom:1px solid #000;margin:0 6px;height:18px;vertical-align:middle;"></span>
+            <span style="display:inline-block;width:56px;border-bottom:1px solid #000;height:18px;vertical-align:middle;"></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="label-cell">Status of Enrolment:</td>
+          <td class="value-cell">
+            <label class="chk"><input type="checkbox" /> New</label>
+            <label class="chk"><input type="checkbox" /> Transferee</label>
+            <label class="chk"><input type="checkbox" /> Returnee</label>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <form class="mt-6 space-y-6">
+
+      <!-- I. Background Information -->
+      <section class="border border-gray-200 p-4 rounded">
+        <div class="flex justify-between items-center mb-3">
+          <div class="text-sm font-semibold">I. BACKGROUND INFORMATION</div>
+          <div class="text-sm">1x1 Photo</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-32 label-sm">Name:</div>
+            <div class="form-line">Juan Dela Cruz</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-36 label-sm">Program/Year Level:</div>
+            <div class="form-line">BSIT / 2nd Year</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-44 label-sm">Academic Year Admitted:</div>
+            <div class="form-line">2023 - 2024</div>
+            <div class="w-12 label-sm">Sem:</div>
+            <div class="form-line">1st Sem</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-40 label-sm">Status of Enrolment:</div>
+            <div class="form-line">New</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-36 label-sm">Present Address:</div>
+            <div class="form-line">Brgy. Poblacion, Odiongan, Romblon</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-36 label-sm">Permanent Address:</div>
+            <div class="form-line">Same as Present</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-36 label-sm">E-mail Address:</div>
+            <div class="form-line">juandelacruz@rsu.edu.ph</div>
+            <div class="w-36 label-sm">FB Messenger:</div>
+            <div class="form-line">juan.dc.fb</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-48 label-sm">Date of Birth:</div>
+            <div class="form-line">05/20/2004</div>
+            <div class="w-36 label-sm">Contact No.:</div>
+            <div class="form-line">0912 345 6789</div>
+            <div class="w-16 label-sm">Sex:</div>
+            <div class="form-line">Male</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-32 label-sm">Age:</div>
+            <div class="form-line">21</div>
+            <div class="w-36 label-sm">Place of Birth:</div>
+            <div class="form-line">Romblon, Philippines</div>
+            <div class="w-36 label-sm">Civil Status:</div>
+            <div class="form-line">Single</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-36 label-sm">Religion:</div>
+            <div class="form-line">Roman Catholic</div>
+            <div class="w-44 label-sm">If Married, Name of Spouse:</div>
+            <div class="form-line">N/A</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-36 label-sm">Occupation:</div>
+            <div class="form-line">Student</div>
+            <div class="w-40 label-sm">No. of Children:</div>
+            <div class="form-line">0</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-64 label-sm">Are you a member of Indigenous People Community?</div>
+            <div class="form-line">No</div>
+            <div class="w-44 label-sm">If yes, what group:</div>
+            <div class="form-line">—</div>
+          </div>
+
+          <div class="flex flex-col gap-1 mt-2">
+            <div class="label-sm">Present Living Arrangement:</div>
+            <div class="flex items-center gap-2">
+              <div class="form-line">Boarding House</div>
+              <div class="text-sm text-gray-600">(Own House / Apartment / Boarding House / Living with Relatives)</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2 mt-2">
+            <div class="w-36 label-sm">Name of Landlord/Landlady:</div>
+            <div class="form-line">Mrs. Santos</div>
+            <div class="w-40 label-sm">Contact Number:</div>
+            <div class="form-line">0912 666 7777</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- II. Family History -->
+      <section class="border border-gray-200 p-4 rounded">
+        <div class="text-sm font-semibold mb-3">II. FAMILY HISTORY</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-2">
+            <div class="label-sm">Father’s Name:</div>
+            <div class="form-line">Pedro Dela Cruz</div>
+            <div class="label-sm mt-1">Age:</div>
+            <div class="form-line">50</div>
+            <div class="label-sm mt-1">Occupation:</div>
+            <div class="form-line">Fisherman</div>
+            <div class="label-sm mt-1">Contact No.:</div>
+            <div class="form-line">0912 123 4567</div>
+            <div class="label-sm mt-1">Address:</div>
+            <div class="form-line">Poblacion, Odiongan</div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="label-sm">Mother’s Name:</div>
+            <div class="form-line">Maria Dela Cruz</div>
+            <div class="label-sm mt-1">Age:</div>
+            <div class="form-line">48</div>
+            <div class="label-sm mt-1">Occupation:</div>
+            <div class="form-line">Vendor</div>
+            <div class="label-sm mt-1">Contact No.:</div>
+            <div class="form-line">0912 987 6543</div>
+            <div class="label-sm mt-1">Address:</div>
+            <div class="form-line">Same as Present</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 mt-2">
+          <div class="w-48 label-sm">Birth Order:</div>
+          <div class="form-line">1st</div>
+          <div class="w-48 label-sm">No. of Brother/s:</div>
+          <div class="form-line">2</div>
+          <div class="w-48 label-sm">No. of Sister/s:</div>
+          <div class="form-line">1</div>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 mt-2">
+          <div class="w-64 label-sm">If not living with parents, name of Legal Guardian:</div>
+          <div class="form-line">N/A</div>
+          <div class="w-44 label-sm">Relationship:</div>
+          <div class="form-line">—</div>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 mt-2">
+          <div class="w-64 label-sm">Marital Status of Parents:</div>
+          <div class="form-line">Living Together</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+          <div class="flex flex-col gap-2">
+            <div class="label-sm">Current Description of Home Life:</div>
+            <div class="form-line">Supportive, Stable</div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="label-sm">Relationship with parents:</div>
+            <div class="form-line">Very Close</div>
+            <div class="label-sm mt-1">Relationship with sibling/s:</div>
+            <div class="form-line">Very Close</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 mt-2">
+          <div class="w-56 label-sm">Number of persons in the household:</div>
+          <div class="form-line">5</div>
+          <div class="w-36 label-sm">Head of household:</div>
+          <div class="form-line">Pedro Dela Cruz</div>
+        </div>
+      </section>
+
+      <!-- III. Medical History -->
+      <section class="border border-gray-200 p-4 rounded">
+        <div class="text-sm font-semibold mb-3">III. MEDICAL HISTORY</div>
+
+        <div class="grid grid-cols-1 gap-3">
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-64 label-sm">Have you received therapy, counseling, or treatment in the past?</div>
+            <div class="form-line">No</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-48 label-sm">If Yes, when and with whom?</div>
+            <div class="form-line">—</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-48 label-sm">Physical Disability:</div>
+            <div class="form-line">None</div>
+            <div class="w-56 label-sm">PWD ID No.:</div>
+            <div class="form-line">—</div>
+          </div>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+            <div class="w-56 label-sm">Psychosocial Disability:</div>
+            <div class="form-line">None</div>
+            <div class="w-56 label-sm">PWD ID No.:</div>
+            <div class="form-line">—</div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <div class="label-sm">Current Medications:</div>
+            <div class="form-line">N/A</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IV. Educational Background -->
+      <section class="border border-gray-200 p-4 rounded">
+        <div class="text-sm font-semibold mb-3">IV. EDUCATIONAL BACKGROUND</div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm border-collapse border border-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-2 border text-left">Level</th>
+                <th class="p-2 border text-left">Name of School</th>
+                <th class="p-2 border text-left">Degree</th>
+                <th class="p-2 border text-left">Year of Attendance (From)</th>
+                <th class="p-2 border text-left">Year of Attendance (To)</th>
+                <th class="p-2 border text-left">Year Graduated</th>
+                <th class="p-2 border text-left">Academic Honors Received</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-2 border">Elementary</td>
+                <td class="p-2 border">Odiongan Central School</td>
+                <td class="p-2 border">—</td>
+                <td class="p-2 border">2008</td>
+                <td class="p-2 border">2014</td>
+                <td class="p-2 border">2014</td>
+                <td class="p-2 border">With Honors</td>
+              </tr>
+              <tr>
+                <td class="p-2 border">Junior High School</td>
+                <td class="p-2 border">RSU Laboratory High School</td>
+                <td class="p-2 border">—</td>
+                <td class="p-2 border">2014</td>
+                <td class="p-2 border">2018</td>
+                <td class="p-2 border">2018</td>
+                <td class="p-2 border">—</td>
+              </tr>
+              <tr>
+                <td class="p-2 border">Senior High School</td>
+                <td class="p-2 border">RSU Laboratory SHS</td>
+                <td class="p-2 border">STEM</td>
+                <td class="p-2 border">2018</td>
+                <td class="p-2 border">2020</td>
+                <td class="p-2 border">2020</td>
+                <td class="p-2 border">—</td>
+              </tr>
+              <tr>
+                <td class="p-2 border">College</td>
+                <td class="p-2 border">Romblon State University</td>
+                <td class="p-2 border">BS Information Technology</td>
+                <td class="p-2 border">2020</td>
+                <td class="p-2 border">—</td>
+                <td class="p-2 border">—</td>
+                <td class="p-2 border">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- V. Employment History -->
+      <section class="border border-gray-200 p-4 rounded">
+        <div class="text-sm font-semibold mb-3">V. EMPLOYMENT HISTORY</div>
+
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2">
+          <div class="w-56 label-sm">Do you have a work experience?</div>
+          <div class="form-line">No</div>
+        </div>
+      </section>
+
+      <!-- VI. Other Information -->
+      <section class="border border-gray-200 p-4 rounded">
+        <div class="text-sm font-semibold mb-3">VI. OTHER INFORMATION</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-2">
+            <div class="label-sm">Special Skills/Hobbies:</div>
+            <div class="form-line">Basketball, Coding</div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="label-sm">Clubs/Organizations:</div>
+            <div class="form-line">IT Society</div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="label-sm">Awards/Recognitions:</div>
+            <div class="form-line">Best Debater 2019</div>
+          </div>
+        </div>
+      </section>
+
+    </form>
+
+    <div class="text-center text-xs text-gray-500 mt-6">
+      GCS-02-001 • Creation Date: 2021-02-14 • Revision Date: 2024-02-12
+    </div>
+
+    <div class="text-center text-sm text-gray-600 mt-10 no-print">
+      © 2025 SafeSpace | Counseling Management System
+    </div>
+  </div>
+</body>
+</html>
