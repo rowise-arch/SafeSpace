@@ -1,69 +1,40 @@
-# Prompt for a Context Diagram of the SafeSpace Platform
+# Prompt for an Image-Generating AI to Create a Context Diagram
 
-## System Description
+**Subject:** A context diagram for a web application called "SafeSpace Platform".
 
-The **SafeSpace Platform** is a web-based application designed to connect students with counselors for mental health support. The platform provides separate interfaces for students, counselors, and administrators, and it integrates with external services for notifications and authentication.
+**Style:** A clean, modern, and professional software engineering diagram. Use simple icons and clear labels. The diagram should be easy to understand at a glance.
 
-## Core Components
+**Layout:**
+- In the center of the image, draw a large circle and label it **"SafeSpace Platform"**. This is the main system.
+- Arrange the following external entities around the central circle:
 
-- **Central System:** "SafeSpace Platform"
-- **Actors:**
-    - **Student:** The primary user of the platform seeking counseling and resources.
-    - **Counselor:** A registered professional providing counseling services.
-    - **Administrator:** A system manager responsible for platform oversight.
-- **External Systems:**
-    - **Firebase:** Used for sending push notifications to users.
-    - **SMTP Server:** Used for sending 2-factor authentication (2FA) emails.
+**External Entities (Actors):**
+1.  **Student:** Use an icon of a person or a student with a backpack. Place this to the left of the central system.
+2.  **Counselor:** Use an icon of a person with a clipboard or a friendly professional. Place this to the right of the central system.
+3.  **Administrator:** Use an icon of a person with a gear or a computer screen. Place this at the top of the central system.
 
-## Data Flows
+**External Entities (Systems):**
+4.  **Firebase:** Use the Firebase logo. Place this at the bottom right.
+5.  **SMTP Server:** Use an icon of an envelope or an email server. Place this at the bottom left.
 
-### Student -> SafeSpace Platform
--   Login/Logout Credentials
--   Profile Information (create, update)
--   Appointment Requests
--   Messages to Counselors
--   Assessment Submissions
+**Data Flows (Arrows):**
+Draw arrows between the external entities and the central "SafeSpace Platform" to represent the flow of information. Each arrow should have a clear, concise label.
 
-### SafeSpace Platform -> Student
--   Profile Data
--   Appointment Confirmations/Reminders
--   Messages from Counselors
--   Mental Health Resources
--   Psychological Test Results
+**Arrows from Actors to the Platform:**
+- From **Student** to **Platform**: Label arrows with "Login Info", "Profile Updates", "Appointment Requests", "Messages".
+- From **Counselor** to **Platform**: Label arrows with "Login & 2FA", "Availability", "Session Notes", "Messages".
+- From **Administrator** to **Platform**: Label arrows with "Login", "User Management", "Content Updates", "Report Requests".
 
-### Counselor -> SafeSpace Platform
--   Login/Logout Credentials (including 2FA codes)
--   Profile Information (create, update)
--   Appointment Availability
--   Messages to Students
--   Session Notes
+**Arrows from the Platform to Actors:**
+- From **Platform** to **Student**: Label arrows with "Profile Data", "Confirmations", "Resources", "Messages".
+- From **Platform** to **Counselor**: Label arrows with "Student Profiles", "Schedule", "Messages".
+- From **Platform** to **Administrator**: Label arrows with "Dashboard Data", "User Reports", "System Logs".
 
-### SafeSpace Platform -> Counselor
--   Student Profiles
--   Appointment Schedules
--   Messages from Students
--   Account Verification Emails (via SMTP)
+**Arrows between the Platform and External Systems:**
+- From **Platform** to **Firebase**: Label the arrow "Push Notification Request".
+- From **Platform** to **SMTP Server**: Label the arrow "Send 2FA Email".
 
-### Administrator -> SafeSpace Platform
--   Login/Logout Credentials
--   User Management Actions (create, suspend, delete accounts)
--   Content Management Actions (update resources, tests)
--   Report Generation Requests
-
-### SafeSpace Platform -> Administrator
--   System Dashboards
--   User Activity Reports
--   Session Logs
--   Content Previews
-
-### SafeSpace Platform -> External Systems
--   **To Firebase:** Push Notification requests (e.g., new message, appointment reminder).
--   **To SMTP Server:** 2-Factor Authentication email requests for counselors.
-
-## Diagram Request
-
-Please create a **Level 0 Context Diagram** for the "SafeSpace Platform." The diagram should illustrate:
-1.  The "SafeSpace Platform" as a single, central process.
-2.  All external actors: **Student**, **Counselor**, and **Administrator**.
-3.  All external systems: **Firebase** and **SMTP Server**.
-4.  Labeled arrows representing the key data flows between the external entities and the central system, as described above.
+**Final Touches:**
+- Use a consistent color scheme.
+- Ensure all text is legible.
+- The overall composition should be balanced and professional.
