@@ -1,0 +1,163 @@
+/*
+ * SafeSpace shared design foundation (student, counselor and admin apps).
+ *
+ * 1. Design tokens (--ss-*). Prefixed so they never collide with a page's own variables; new work uses these, old
+ *    inline styles are migrated page by page.
+ * 2. Accessibility baseline that applies to every page as soon as the file is linked: visible keyboard focus,
+ *    reduced motion, no tap delay, no iOS input zoom, skip link and screen-reader helpers.
+ *
+ * Link it last in <head>:  <link rel="stylesheet" href="../../../shared/assets/css/safespace.css">
+ *
+ * Contrast (WCAG 2.1, computed): text/surface 17.7, muted/surface 7.6, primary/white 6.0, white/primary 6.0,
+ * danger/white 6.5, success/white 5.0, warning/white 5.0, info/white 6.7, input border/white 4.8 (needs 3),
+ * dark: text 16.1, muted 7.0, primary 10.2, danger 6.4. The old #10b981 (2.5), #ef4444 (3.8) and #1e8e3e (4.2) fail
+ * AA as TEXT; keep them for fills and icons only.
+ */
+:root {
+  /* brand */
+  --ss-primary: #00723f;
+  --ss-primary-hover: #005c33;
+  --ss-primary-soft: #e6f4ec;
+  --ss-on-primary: #ffffff;
+  --ss-accent: #10b981;            /* fills and icons only, never text on light surfaces */
+
+  /* neutrals */
+  --ss-bg: #f3f4f6;
+  --ss-surface: #ffffff;
+  --ss-surface-2: #f9fafb;
+  --ss-text: #111827;
+  --ss-text-muted: #4b5563;
+  --ss-border: #e5e7eb;            /* decorative dividers */
+  --ss-border-strong: #6b7280;     /* input / control boundaries (3:1 required) */
+
+  /* status */
+  --ss-danger: #b91c1c;
+  --ss-danger-soft: #fef2f2;
+  --ss-success: #15803d;
+  --ss-success-soft: #f0fdf4;
+  --ss-warning: #b45309;
+  --ss-warning-soft: #fffbeb;
+  --ss-info: #1d4ed8;
+  --ss-info-soft: #eff6ff;
+
+  --ss-focus: #00723f;
+  --ss-focus-halo: #ffffff;
+  --ss-scrim: rgba(0, 0, 0, 0.5);
+
+  /* type: 12 14 16 18 20 24 32, body 16px / 1.5 */
+  --ss-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ss-text-xs: 0.75rem;
+  --ss-text-sm: 0.875rem;
+  --ss-text-md: 1rem;
+  --ss-text-lg: 1.125rem;
+  --ss-text-xl: 1.25rem;
+  --ss-text-2xl: 1.5rem;
+  --ss-text-3xl: 2rem;
+  --ss-leading: 1.5;
+
+  /* spacing (4/8 rhythm) */
+  --ss-space-1: 4px;
+  --ss-space-2: 8px;
+  --ss-space-3: 12px;
+  --ss-space-4: 16px;
+  --ss-space-6: 24px;
+  --ss-space-8: 32px;
+  --ss-space-12: 48px;
+
+  /* shape and elevation */
+  --ss-radius-sm: 6px;
+  --ss-radius: 10px;
+  --ss-radius-lg: 16px;
+  --ss-shadow-1: 0 1px 2px rgba(17, 24, 39, 0.08);
+  --ss-shadow-2: 0 4px 12px rgba(17, 24, 39, 0.10);
+  --ss-shadow-3: 0 12px 32px rgba(17, 24, 39, 0.16);
+
+  /* motion: micro-interactions 150-300 ms, exits faster than entrances */
+  --ss-dur-fast: 150ms;
+  --ss-dur: 200ms;
+  --ss-dur-slow: 300ms;
+  --ss-ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ss-ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* layers */
+  --ss-z-sticky: 100;
+  --ss-z-dropdown: 200;
+  --ss-z-modal: 1000;
+  --ss-z-toast: 1100;
+
+  /* minimum comfortable touch target */
+  --ss-target: 44px;
+}
+
+/* Admin (and any page that sets it) switches theme with data-theme on <html>. */
+[data-theme="dark"] {
+  --ss-primary: #4ade80;
+  --ss-primary-hover: #86efac;
+  --ss-primary-soft: #14532d;
+  --ss-on-primary: #052e16;
+  --ss-accent: #34d399;
+  --ss-bg: #0b1220;
+  --ss-surface: #111827;
+  --ss-surface-2: #1f2937;
+  --ss-text: #f3f4f6;
+  --ss-text-muted: #9ca3af;
+  --ss-border: #374151;
+  --ss-border-strong: #6b7280;
+  --ss-danger: #f87171;
+  --ss-danger-soft: #450a0a;
+  --ss-success: #4ade80;
+  --ss-success-soft: #052e16;
+  --ss-warning: #fbbf24;
+  --ss-warning-soft: #451a03;
+  --ss-info: #60a5fa;
+  --ss-info-soft: #172554;
+  --ss-focus: #86efac;
+  --ss-focus-halo: #0b1220;
+  --ss-scrim: rgba(0, 0, 0, 0.6);
+  --ss-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --ss-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --ss-shadow-3: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Accessibility baseline -------------------------------------------------------------------------------- */
+
+/* Keyboard focus must always be visible. Many pages set `outline: none` on :focus; !important is deliberate so this wins. */
+:where(a, button, input, select, textarea, summary, [tabindex], [role="button"], [role="tab"], [role="switch"]):focus-visible {
+  outline: 3px solid var(--ss-focus) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 2px var(--ss-focus-halo) !important;
+}
+
+/* Respect the system setting: no decorative motion, no smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Removes the 300 ms tap delay and double-tap zoom on controls (pinch zoom still works). */
+:where(a, button, input, select, textarea, label, summary, [role="button"]) { touch-action: manipulation; }
+:where(button, [role="button"], summary, select, input[type="checkbox"], input[type="radio"], label[for]) { cursor: pointer; }
+:where(button, input, select, textarea):disabled { cursor: not-allowed; }
+
+/* iOS zooms the page when a focused input has a font size under 16px. */
+@media (max-width: 768px) {
+  :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) { font-size: max(16px, 1em); }
+}
+
+/* Skip link: <a class="ss-skip-link" href="#main">Skip to main content</a> as the first element of <body>. */
+.ss-skip-link {
+  position: absolute; left: var(--ss-space-4); top: -100px; z-index: var(--ss-z-toast);
+  background: var(--ss-primary); color: var(--ss-on-primary); padding: var(--ss-space-2) var(--ss-space-4);
+  border-radius: var(--ss-radius-sm); text-decoration: none; font-weight: 600;
+}
+.ss-skip-link:focus { top: var(--ss-space-4); }
+
+/* Visually hidden but available to screen readers. */
+.ss-sr-only {
+  position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
