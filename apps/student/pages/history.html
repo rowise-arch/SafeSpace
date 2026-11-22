@@ -2502,7 +2502,7 @@
 
       // 5) Discover sessions from closed consultations
       try {
-        const consultSnap = await db.ref('consultations').once('value');
+        const consultSnap = await window.myConsultations(uid);
         if (consultSnap && consultSnap.exists()) {
           consultSnap.forEach(child => {
             const consult = child.val();

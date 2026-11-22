@@ -80,6 +80,13 @@
     };
     // 2FA counts only if the server stamped THIS sign-in and the stamp has not expired.
     window.hasTwoFA = function (i) { return !!i && i.twofaUntil > Date.now() && i.twofaAuthTime > 0 && i.twofaAuthTime === i.authTime; };
+    // The student's own consultations. The database rules only allow queries scoped to the signed-in user,
+    // so pages must use this instead of reading the whole `consultations` collection.
+    window.myConsultations = function (uid) {
+      uid = uid || (firebase.auth().currentUser || {}).uid;
+      if (!uid) return Promise.reject(new Error('Not signed in'));
+      return window.db.ref('consultations').orderByChild('studentId').equalTo(uid).once('value');
+    };
     // A usable student session: student role and, if the student turned 2FA on, this sign-in passed it.
     window.isStudentSession = function (i) { return !!i && i.role === 'student' && (!i.mfaRequired || window.hasTwoFA(i)); };
 

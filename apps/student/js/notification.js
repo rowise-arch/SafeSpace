@@ -584,7 +584,7 @@ function setupRealtimeMessageMonitoring(studentUid) {
   messageListeners.clear();
 
   // Listen for changes to all consultations (we'll filter for this student's consultations)
-  const consultationsRef = window.db.ref('consultations');
+  const consultationsRef = window.db.ref('consultations').orderByChild('studentId').equalTo(studentUid);
   console.log('Listening to consultations path for message changes');
   
   const listener = consultationsRef.on('child_changed', (snapshot) => {

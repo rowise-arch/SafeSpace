@@ -1788,8 +1788,10 @@
         // If consultId not provided but appointmentId is, try to resolve a consultation by appointmentId
         if (!consultId && appointmentId && window.db){
           try{
-            const snap = await db.ref('consultations').orderByChild('appointmentId').equalTo(appointmentId).once('value');
-            const val = snap.val() || {};
+            const snap = await window.myConsultations();
+            const all = snap.val() || {};
+            const val = {};
+            Object.keys(all).forEach(function (k) { if (String((all[k] || {}).appointmentId) === String(appointmentId)) val[k] = all[k]; });
             const keys = Object.keys(val);
             if (keys.length) {
               consultId = keys[0];
@@ -2013,7 +2015,7 @@
       try{
         if (!counselorUid) return null;
         if (!db) return null;
-        const snap = await db.ref('consultations').once('value');
+        const snap = await window.myConsultations();
         const all = snap.val() || {};
         const keys = Object.keys(all);
         const me = currentUserChat && currentUserChat.uid ? currentUserChat.uid : null;
@@ -2631,7 +2633,7 @@
             const room = modal && modal.dataset && modal.dataset.room ? modal.dataset.room : null;
             if (room){
               // scan consultations once to find a match by room fields
-              const snap = await db.ref('consultations').once('value');
+              const snap = await window.myConsultations();
               const all = snap.val() || {};
               for (const k of Object.keys(all)){
                 const c = all[k] || {};
@@ -3159,7 +3161,7 @@
               // If an appointment id was provided, try to resolve a consultation by appointmentId
               if (!consultParam && appointmentParam && db) {
                 try{
-                  const snap = await db.ref('consultations').once('value');
+                  const snap = await window.myConsultations();
                   const all = snap.val() || {};
                   for (const k of Object.keys(all)){
                     const c = all[k] || {};
@@ -3275,8 +3277,7 @@
 
     async function findOrAttachActiveConsultation() {
       // Search consultations where studentId === currentUserChat.uid OR any ACCEPTED session for this student
-  const consRef = db.ref('consultations');
-      const snap = await consRef.once('value');
+      const snap = await window.myConsultations();
       const data = snap.val() || {};
       const all = Object.keys(data).map(k=>({ id:k, ...data[k] }));
       const mine = all.find(c => c.studentId === currentUserChat.uid);
@@ -3712,7 +3713,7 @@
           if (sv) studentDbKey = Object.keys(sv)[0];
         }catch(e){ console.warn('Failed to read student record', e); }
 
-  const snap = await db.ref('consultations').once('value');
+  const snap = await window.myConsultations();
         const data = snap.val() || {};
         let items = Object.keys(data).map(k=>({ id:k, ...data[k]}));
 
@@ -3846,7 +3847,7 @@
       if (counselorUid) fetchAndSetCounselorProfile(counselorUid);
       currentSessions = [];
       activeConsultationId = null;
-  const ref = db.ref('consultations');
+  const ref = db.ref('consultations').orderByChild('studentId').equalTo(currentUserChat.uid);
       _consultationsListenerRef = ref;
       ref.on('value', snap => {
         const all = snap.val() || {};

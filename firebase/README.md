@@ -69,8 +69,11 @@ The student pages need the roster in `/roster` (move pre-registered `students` r
 removed: it never took part in sign-in. Local testing: open any student page with `?emulator=1`;
 `tests/e2e/student_flow.py` runs the whole journey in Chrome (16 checks).
 
-Still on the old model (will hit permission errors under the new rules until converted): `messages.html` and
-`history.html` read the whole `consultations` collection; the counselor pages beyond login; the admin pages.
+The student `messages`, `history` and notification code now read consultations through `window.myConsultations()` /
+scoped queries (`tests/e2e/student_consultations.py`, 6 checks).
+
+Still on the old model (will hit permission errors under the new rules until converted): the counselor pages beyond
+login (`message.html` reads the whole `consultations` collection); the admin pages.
 
 ## Configuration
 Copy `functions/.env.example` to `functions/.env` for SMTP. With no SMTP configured the emulator writes mail to
