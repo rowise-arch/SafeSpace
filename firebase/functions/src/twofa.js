@@ -64,8 +64,11 @@ const verifyLoginCode = onCall(async (req) => {
     throw new HttpsError('invalid-argument', 'Incorrect code.');
   }
   await ref.remove();
+  // Bind the stamp to *this* password sign-in. A later sign-in (new auth_time) has to pass 2FA again.
+  const authTime = req.auth.token.auth_time;
+  if (!authTime) throw new HttpsError('failed-precondition', 'Sign in again.');
   const twofaUntil = Date.now() + SESSION_MS;
-  await mergeClaims(uid, { twofa_until: twofaUntil });
+  await mergeClaims(uid, { twofa_until: twofaUntil, twofa_auth_time: authTime });
   return { ok: true, twofaUntil };
 });
 

@@ -278,6 +278,8 @@ export async function getUsername(uid) {
 export const login = authLogin;
 export const logout = authLogout;
 export const watchAuth = authWatchAuth;
+// Server-side session helpers (Cloud Functions + custom claims), see auth-db.js
+export { callFunction, getSessionInfo, hasTwoFA, isCounselorSession } from './auth-db.js';
 
 /* attach to window for quick debugging */
 window.firebaseAuth = auth;

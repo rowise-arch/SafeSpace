@@ -44,6 +44,20 @@ await auth.currentUser.getIdToken(true);                      // pick up the two
 counselor-owned path, so skipping the 2FA screen no longer gets a counselor any data. Students and admins are not
 enforced yet (admins have no 2FA UI; student 2FA is optional per account).
 
+## Switching the counselor login over
+The counselor login (`apps/counselor/pages/login.html`) now signs in with the Firebase SDK, then calls
+`sendLoginCode`/`verifyLoginCode`. It needs, in this order:
+1. Functions + rules deployed to the project.
+2. `node functions/scripts/backfill-claims.js --apply` so existing counselors/admins/students get their `role` claim
+   (dry run without `--apply`). Accounts without the claim are told they cannot sign in here.
+3. SMTP configured for the functions.
+
+The 2FA stamp is bound to the sign-in it was issued for (`twofa_auth_time` must equal the token's `auth_time`), so a
+password sign-in on another device needs its own code. Signing in again elsewhere ends the earlier device's session.
+
+Local browser testing: serve `apps/counselor` and open `/pages/login.html?emulator=1` (`?emulator=0` to switch back).
+`tests/e2e/counselor_login.py` drives this with Playwright.
+
 ## Configuration
 Copy `functions/.env.example` to `functions/.env` for SMTP. With no SMTP configured the emulator writes mail to
 `/_dev_outbox` (read it in the emulator UI); production refuses to run without SMTP.

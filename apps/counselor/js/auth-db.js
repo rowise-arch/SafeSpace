@@ -3,12 +3,29 @@
 // Import this as an ES module: import { initFirebase, auth, db, login, logout, getByPath, queryCounselorsBy } from './auth-db.js'
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, get, ref, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getDatabase, connectDatabaseEmulator, get, ref, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getAuth, connectAuthEmulator, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFunctions, connectFunctionsEmulator, httpsCallable } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-functions.js";
 
 let _app = null;
 let _db = null;
 let _auth = null;
+let _fns = null;
+
+// Cloud Functions region; must match firebase/functions/index.js
+const FUNCTIONS_REGION = 'asia-southeast1';
+
+// Local development against the Firebase emulators (see firebase/README.md).
+// Open any counselor page on localhost with ?emulator=1 to switch on, ?emulator=0 to switch off.
+function useEmulators() {
+  try {
+    if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return false;
+    const q = new URLSearchParams(location.search).get('emulator');
+    if (q === '1') localStorage.setItem('dev_use_emulators', '1');
+    if (q === '0') localStorage.removeItem('dev_use_emulators');
+    return localStorage.getItem('dev_use_emulators') === '1';
+  } catch (e) { return false; }
+}
 
 // Default firebase config (centralized)
 const _defaultFirebaseConfig = {
@@ -24,14 +41,48 @@ const _defaultFirebaseConfig = {
 
 export function initFirebase(config) {
   if (_app) return { app: _app, db: _db, auth: _auth };
-  const cfg = config || _defaultFirebaseConfig;
+  const emu = useEmulators();
+  const base = config || _defaultFirebaseConfig;
+  // The emulators run under the demo project id used by firebase/package.json scripts.
+  const cfg = emu ? { ...base, projectId: 'demo-safespace', databaseURL: 'https://demo-safespace-default-rtdb.firebaseio.com' } : base;
   _app = initializeApp(cfg);
   _db = getDatabase(_app);
   _auth = getAuth(_app);
+  _fns = getFunctions(_app, FUNCTIONS_REGION);
+  if (emu) {
+    connectAuthEmulator(_auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+    connectDatabaseEmulator(_db, '127.0.0.1', 9000);
+    connectFunctionsEmulator(_fns, '127.0.0.1', 5001);
+    console.warn('[SafeSpace] Using Firebase emulators');
+  }
   return { app: _app, db: _db, auth: _auth };
 }
 
 export function authInstance() { return _auth; }
+
+// Call a Cloud Function (callable) and return its data.
+export async function callFunction(name, data) {
+  if (!_fns) throw new Error('Firebase not initialized. Call initFirebase(config) first.');
+  const res = await httpsCallable(_fns, name)(data || {});
+  return res.data;
+}
+
+// Role + 2FA state from the signed-in user's ID token claims (set server-side only).
+export async function getSessionInfo(user, forceRefresh = false) {
+  const u = user || (_auth && _auth.currentUser);
+  if (!u) return { role: null, twofaUntil: 0, twofaAuthTime: 0, authTime: 0 };
+  const tok = await u.getIdTokenResult(forceRefresh);
+  return {
+    role: tok.claims.role || null,
+    twofaUntil: Number(tok.claims.twofa_until || 0),
+    twofaAuthTime: Number(tok.claims.twofa_auth_time || 0),
+    authTime: Number(tok.claims.auth_time || 0),
+  };
+}
+// 2FA counts only if the server stamped THIS sign-in (same auth_time) and the stamp has not expired.
+export const hasTwoFA = (info) => !!info && info.twofaUntil > Date.now() && info.twofaAuthTime > 0 && info.twofaAuthTime === info.authTime;
+// A counselor session is only usable with the counselor role AND a valid server-verified 2FA stamp.
+export const isCounselorSession = (info) => !!info && info.role === 'counselor' && hasTwoFA(info);
 export function dbInstance() { return _db; }
 
 // Simple wrapper: get a snapshot value by path
@@ -145,6 +196,14 @@ export function requireSignIn({ loginPage = 'login.html', onUserChange } = {}) {
         return;
       }
 
+      // Signed in, but not as a verified counselor (no role claim, other role, or 2FA missing/expired):
+      // send back to the login page, which explains why and starts 2FA when needed.
+      if (!isCounselorSession(await getSessionInfo(user))) {
+        const path = window.location.pathname || '';
+        if (!path.endsWith(loginPage)) window.location.replace(loginPage);
+        return;
+      }
+
       // Signed in: if UID changed, clear caches so pages reload user-specific data
       if (lastUid && lastUid !== user.uid) {
         try { clearUserCache({ onClear: onUserChange }); } catch (e) {}
@@ -162,6 +221,6 @@ export function requireSignIn({ loginPage = 'login.html', onUserChange } = {}) {
 }
 
 // Attach for debugging convenience (optional)
-window._authDbHelper = { initFirebase, authInstance, dbInstance, getByPath, queryCounselorsBy, login, logout, watchAuth, enforceCounselorRouting };
+window._authDbHelper = { callFunction, getSessionInfo, initFirebase, authInstance, dbInstance, getByPath, queryCounselorsBy, login, logout, watchAuth, enforceCounselorRouting };
 
 // Example: The app that imports this file should call initFirebase() once before using other helpers.

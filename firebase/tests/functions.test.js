@@ -60,6 +60,14 @@ test('2FA: code is emailed (never returned), verifies once, stamps the claim', a
   const tok = await user.getIdTokenResult(true);
   assert.ok(tok.claims.twofa_until > Date.now());
   assert.equal(tok.claims.role, 'counselor', 'role claim must survive the merge');
+  assert.equal(tok.claims.twofa_auth_time, tok.claims.auth_time, 'stamp is bound to this sign-in');
+  // a later password sign-in has a new auth_time, so the old stamp no longer matches
+  await signOut(cauth);
+  await new Promise((r) => setTimeout(r, 1200));
+  const again = await signIn(email);
+  const tok2 = (await again.getIdTokenResult(true)).claims;
+  assert.ok(tok2.auth_time > tok.claims.auth_time);
+  assert.notEqual(tok2.twofa_auth_time, tok2.auth_time, 'a fresh sign-in must require 2FA again');
   // single use
   assert.equal(await code(call('verifyLoginCode', { code: good })), 'functions/failed-precondition');
   await signOut(cauth);

@@ -6,7 +6,7 @@ import { ref, get, set, update, query, orderByChild, equalTo } from 'firebase/da
 let env;
 // counselors also need the server-issued 2FA stamp (see functions/src/twofa.js)
 const as = (uid, role, extra = {}) =>
-  env.authenticatedContext(uid, role ? { role, ...(role === 'counselor' ? { twofa_until: Date.now() + 3600e3 } : {}), ...extra } : {}).database();
+  env.authenticatedContext(uid, role ? { role, auth_time: 1700000000, ...(role === 'counselor' ? { twofa_until: Date.now() + 3600e3, twofa_auth_time: 1700000000 } : {}), ...extra } : {}).database();
 const anon = () => env.unauthenticatedContext().database();
 
 before(async () => {
@@ -53,7 +53,9 @@ test('a signed-in user without a role claim gets no access', async () => {
 test('counselor without a valid 2FA stamp is treated as unauthorised', async () => {
   const noTwofa = env.authenticatedContext('cou1', { role: 'counselor' }).database();
   const expired = as('cou1', 'counselor', { twofa_until: Date.now() - 1000 });
-  for (const db of [noTwofa, expired]) {
+  // stamp from an earlier sign-in (different auth_time) must not count for a new sign-in
+  const otherSignIn = as('cou1', 'counselor', { auth_time: 1700009999 });
+  for (const db of [noTwofa, expired, otherSignIn]) {
     await assertFails(get(ref(db, 'students')));
     await assertFails(get(ref(db, 'Session_report/stu1')));
     await assertFails(get(ref(db, 'appointments_by_counselor/cou1')));
