@@ -72,8 +72,12 @@ removed: it never took part in sign-in. Local testing: open any student page wit
 The student `messages`, `history` and notification code now read consultations through `window.myConsultations()` /
 scoped queries (`tests/e2e/student_consultations.py`, 6 checks).
 
-Still on the old model (will hit permission errors under the new rules until converted): the counselor pages beyond
-login (`message.html` reads the whole `consultations` collection); the admin pages.
+Counselor pages: `message.html` listens to consultations with a `counselorId`/`studentId` scoped query, and
+`students.html` counts a student's sessions from the counselor's own `appointments_by_counselor` list instead of listing
+the student's node (`tests/e2e/counselor_data.py`, 5 checks). `appointment.html` still tries a date/time fallback lookup in
+`appointments_by_student/{uid}`; the rules refuse it and the code already skips the student-side write in that case.
+
+Still on the old model: the admin pages, and counselor writes to another user's `activity/{uid}` (`js/main.js` log helper).
 
 ## Configuration
 Copy `functions/.env.example` to `functions/.env` for SMTP. With no SMTP configured the emulator writes mail to

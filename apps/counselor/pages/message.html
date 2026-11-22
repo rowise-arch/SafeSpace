@@ -4953,7 +4953,8 @@
         }
 
         function setupConsultationListener() {
-          const consRef = ref(db, 'consultations');
+          // The rules only allow queries scoped to the signed-in user (as counselor or as student)
+          const consRef = query(ref(db, 'consultations'), orderByChild(userRole === 'student' ? 'studentId' : 'counselorId'), equalTo(currentUserId));
           onValue(consRef, (snap) => {
             const data = snap.val() || {};
             consultations = Object.keys(data).map(k => ({ id: k, ...data[k] }));

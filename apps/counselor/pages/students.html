@@ -2080,7 +2080,7 @@
     </script>
   
   <script type="module">
-  import { db, watchAuth } from '../js/main.js';
+  import { db, auth, watchAuth } from '../js/main.js';
   import { ref, get, query, orderByChild, equalTo } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js';
 
     function initialsOf(name){
@@ -2304,10 +2304,12 @@
           if (!uid) return out;
 
           try {
-            const aSnap = await get(ref(db, `appointments_by_student/${uid}`));
+            // counselors may not list a student's whole appointment node; use the counselor's own list instead
+            const myUid = auth && auth.currentUser && auth.currentUser.uid;
+            const aSnap = await get(ref(db, `appointments_by_counselor/${myUid}`));
             if (!aSnap.exists()) return out;
             const apptsObj = aSnap.val();
-            const appts = Object.values(apptsObj || {});
+            const appts = Object.values(apptsObj || {}).filter(a => a && String(a.student_uid) === String(uid));
             out.sessions = appts.filter(a => a && (a.session_number || a.status)).length || appts.length || 0;
 
             function parseApptDate(a){
