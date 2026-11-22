@@ -77,7 +77,19 @@ Counselor pages: `message.html` listens to consultations with a `counselorId`/`s
 the student's node (`tests/e2e/counselor_data.py`, 5 checks). `appointment.html` still tries a date/time fallback lookup in
 `appointments_by_student/{uid}`; the rules refuse it and the code already skips the student-side write in that case.
 
-Still on the old model: the admin pages, and counselor writes to another user's `activity/{uid}` (`js/main.js` log helper).
+Admin pages: sign-in checks the `role: admin` claim and then requires an emailed code (admins need the 2FA stamp for
+every sign-in, in the rules and in every admin function). `user-management` lists activated students and imported
+`roster` entries, imports CSV rows into `roster` (codes are never taken from the file), sends invitations through
+`inviteStudents` and toggles student login through `setStudentAccess`. `counselor-management` creates, disables and
+deletes counselors through `createCounselor` / `setCounselorAccess` / `deleteCounselor`; the browser no longer creates
+accounts or sees passwords, and EmailJS is gone from the admin app (`tests/e2e/admin_flow.py`, 15 checks).
+Admin functions find records keyed by the old ids through their stored `uid` (`.indexOn uid`), so they work before and
+after the key migration. **Before switching over, give every admin account the claim:**
+`node functions/scripts/set-role.js <email> admin` (the old `admins/{uid}` record alone no longer grants access).
+
+Still on the old model: admin pages other than user/counselor management (dashboard, content, reports, psych tests,
+session reports read data the rules may now refuse; not yet audited), deleting an activated student's login account,
+and counselor writes to another user's `activity/{uid}` (`js/main.js` log helper).
 
 ## Configuration
 Copy `functions/.env.example` to `functions/.env` for SMTP. With no SMTP configured the emulator writes mail to

@@ -6,7 +6,7 @@ import { ref, get, set, update, query, orderByChild, equalTo } from 'firebase/da
 let env;
 // counselors also need the server-issued 2FA stamp (see functions/src/twofa.js)
 const as = (uid, role, extra = {}) =>
-  env.authenticatedContext(uid, role ? { role, auth_time: 1700000000, ...(role === 'counselor' ? { twofa_until: Date.now() + 3600e3, twofa_auth_time: 1700000000 } : {}), ...extra } : {}).database();
+  env.authenticatedContext(uid, role ? { role, auth_time: 1700000000, ...(role === 'counselor' || role === 'admin' ? { twofa_until: Date.now() + 3600e3, twofa_auth_time: 1700000000 } : {}), ...extra } : {}).database();
 const anon = () => env.unauthenticatedContext().database();
 
 before(async () => {
@@ -193,4 +193,11 @@ test('notifications are readable only by their owner', async () => {
   await assertFails(get(ref(as('stu1', 'student'), 'notifications/cou1')));
   await assertSucceeds(set(ref(as('stu1', 'student'), 'notifications/cou1/n2'), { unread: true })); // create for another user
   await assertFails(set(ref(as('stu1', 'student'), 'notifications/cou1/n1'), { unread: false })); // but not overwrite
+});
+
+test('admin rights need the 2FA stamp of this sign-in', async () => {
+  await assertSucceeds(get(ref(as('adm1', 'admin'), 'students')));
+  await assertFails(get(ref(as('adm1', 'admin', { twofa_until: 0 }), 'students')));
+  await assertFails(get(ref(as('adm1', 'admin', { twofa_auth_time: 1 }), 'students')));
+  await assertFails(set(ref(as('adm1', 'admin', { twofa_until: 0 }), 'config/loginEnabled'), false));
 });

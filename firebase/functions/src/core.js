@@ -26,6 +26,22 @@ function requireRole(req, ...roles) {
   if (!role || !roles.includes(role)) throw new HttpsError('permission-denied', 'Not allowed.');
   return role;
 }
+/** Admin-only calls also need a 2FA stamp for this sign-in (same as the database rules). */
+function requireAdmin(req) {
+  requireRole(req, 'admin');
+  if (!hasStamp(req)) throw new HttpsError('permission-denied', 'Verify a code first.');
+}
+/**
+ * Finds a user's record under `students` or `counselors`. New records are keyed by uid; records created before the
+ * rework are keyed by school/counselor id and carry a `uid` field, so fall back to that (needs .indexOn uid).
+ */
+async function findUserKey(path, uid) {
+  if ((await db().ref(`${path}/${uid}`).get()).exists()) return uid;
+  const snap = await db().ref(path).orderByChild('uid').equalTo(uid).limitToFirst(1).get();
+  let key = null;
+  snap.forEach((c) => { key = c.key; });
+  return key;
+}
 function str(value, name, { max = 200, required = true } = {}) {
   if (value === undefined || value === null || value === '') {
     if (required) throw new HttpsError('invalid-argument', `${name} is required.`);
@@ -95,4 +111,4 @@ async function sendMail({ to, subject, text }) {
   throw new HttpsError('failed-precondition', 'Email is not configured.');
 }
 
-module.exports = { admin, db, auth, HttpsError, requireAuth, requireRole, hasStamp, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail, IN_EMULATOR };
+module.exports = { admin, db, auth, HttpsError, requireAuth, requireRole, requireAdmin, findUserKey, hasStamp, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail, IN_EMULATOR };

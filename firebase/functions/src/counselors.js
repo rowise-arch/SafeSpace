@@ -1,7 +1,7 @@
 'use strict';
 const crypto = require('node:crypto');
 const { onCall } = require('firebase-functions/v2/https');
-const { db, auth, HttpsError, requireRole, str, email, mergeClaims, sendMail } = require('./core');
+const { db, auth, HttpsError, requireRole, requireAdmin, findUserKey, str, email, mergeClaims, sendMail } = require('./core');
 
 async function nextCounselorId() {
   const snap = await db().ref('counselors').get();
@@ -15,7 +15,7 @@ async function nextCounselorId() {
 
 /** Admin: creates the login account (claim role=counselor) and counselors/{uid}; emails a set-password link. */
 const createCounselor = onCall(async (req) => {
-  requireRole(req, 'admin');
+  requireAdmin(req);
   const d = req.data || {};
   const emailAddr = email(d.email_address, 'email_address');
   const first_name = str(d.first_name, 'first_name', { max: 80 });
@@ -44,6 +44,10 @@ const createCounselor = onCall(async (req) => {
       college: str(d.college, 'college', { max: 120, required: false }),
       campus: str(d.campus, 'campus', { max: 120, required: false }),
       photo_url: str(d.photo_url, 'photo_url', { max: 2000, required: false }),
+      phone_number: str(d.phone_number, 'phone_number', { max: 40, required: false }),
+      birthday: str(d.birthday, 'birthday', { max: 40, required: false }),
+      gender: str(d.gender, 'gender', { max: 30, required: false }),
+      role: str(d.role, 'role', { max: 60, required: false }) || 'Counselor',
       status: 'Active', login: 'Enable', login_access: true, created_at: new Date().toISOString(),
     });
     const link = await auth().generatePasswordResetLink(emailAddr);
@@ -63,24 +67,25 @@ const createCounselor = onCall(async (req) => {
 
 /** Admin: enable/disable a counselor. Disabling is enforced by Auth itself, not just a database flag. */
 const setCounselorAccess = onCall(async (req) => {
-  requireRole(req, 'admin');
+  requireAdmin(req);
   const uid = str(req.data && req.data.uid, 'uid', { max: 128 });
   const enabled = !!(req.data && req.data.enabled);
-  const exists = (await db().ref(`counselors/${uid}`).get()).exists();
-  if (!exists) throw new HttpsError('not-found', 'Counselor not found.');
+  const key = await findUserKey('counselors', uid);
+  if (!key) throw new HttpsError('not-found', 'Counselor not found.');
   await auth().updateUser(uid, { disabled: !enabled });
   if (!enabled) await auth().revokeRefreshTokens(uid);
-  await db().ref(`counselors/${uid}`).update({ login: enabled ? 'Enable' : 'Disable', login_access: enabled });
+  await db().ref(`counselors/${key}`).update({ login: enabled ? 'Enable' : 'Disable', login_access: enabled });
   return { ok: true };
 });
 
 /** Admin: remove a counselor's login and profile. */
 const deleteCounselor = onCall(async (req) => {
-  requireRole(req, 'admin');
+  requireAdmin(req);
   const uid = str(req.data && req.data.uid, 'uid', { max: 128 });
-  if (!(await db().ref(`counselors/${uid}`).get()).exists()) throw new HttpsError('not-found', 'Counselor not found.');
+  const key = await findUserKey('counselors', uid);
+  if (!key) throw new HttpsError('not-found', 'Counselor not found.');
   await auth().deleteUser(uid).catch((e) => { if (e.code !== 'auth/user-not-found') throw e; });
-  await db().ref(`counselors/${uid}`).remove();
+  await db().ref(`counselors/${key}`).remove();
   return { ok: true };
 });
 

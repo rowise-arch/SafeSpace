@@ -61,7 +61,10 @@ export function enableSearchFilter(searchInput, tbody, columns = 7) {
 // =============================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import { getDatabase, ref, get, set, update, remove } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getAuth, sendPasswordResetEmail, signOut, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { connectAuthEmulator } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { connectDatabaseEmulator } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";
 import { getStorage, ref as storageRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
 
 const firebaseConfig = {
@@ -75,10 +78,39 @@ const firebaseConfig = {
   measurementId: "G-YY33W1QM2N"
 };
 
+// Local development against the Firebase emulators (see firebase/README.md):
+// open any admin page on localhost with ?emulator=1 to switch on, ?emulator=0 to switch off.
+let useEmulators = false;
+try {
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+    const emuParam = new URLSearchParams(location.search).get('emulator');
+    if (emuParam === '1') localStorage.setItem('dev_use_emulators', '1');
+    if (emuParam === '0') localStorage.removeItem('dev_use_emulators');
+    useEmulators = localStorage.getItem('dev_use_emulators') === '1';
+  }
+} catch (e) { /* ignore */ }
+if (useEmulators) {
+  firebaseConfig.projectId = 'demo-safespace';
+  firebaseConfig.databaseURL = 'https://demo-safespace-default-rtdb.firebaseio.com';
+}
+
 // Default app (for admin session)
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
+const functions = getFunctions(app, 'asia-southeast1'); // keep in sync with firebase/functions/index.js
+if (useEmulators) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  connectDatabaseEmulator(db, '127.0.0.1', 9000);
+  connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+  console.warn('[SafeSpace admin] Using Firebase emulators');
+}
+
+// Calls a callable Cloud Function (see firebase/functions); returns its data.
+export async function callFunction(name, data) {
+  const res = await httpsCallable(functions, name)(data || {});
+  return res.data;
+}
 
 // Export app, auth, db and common helpers so other pages can use the same initialized instances
 export {
@@ -93,17 +125,12 @@ export {
   remove,
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
   getStorage,
   storageRef,
   getDownloadURL
 };
-
-// Secondary app just for creating users safely (avoids messing with admin session)
-const secondaryApp = initializeApp(firebaseConfig, "Secondary");
-const secondaryAuth = getAuth(secondaryApp);
 
 // Read all counselors
 export async function fetchCounselors() {
@@ -154,61 +181,18 @@ async function generateNextCounselorId() {
   return id;
 }
 
-// Add counselor record and create auth user; returns { id, password, uid }
-export async function addCounselorRecord({
-  username,
-  first_name,
-  last_name,
-  email_address,
-  specialization,
-  department,
-  status = "Active",
-  campus,
-  photo_url,
-  // accept college aliases that other code may provide
-  college,
-  college_name,
-  collegeName,
-  college_display
-}) {
-  const id = await generateNextCounselorId();
-  // Create login account if email provided
-  const password = generateRandomString();
-  let uid = null;
-  if (email_address) {
-    try {
-      const cred = await createUserWithEmailAndPassword(secondaryAuth, email_address, password);
-      uid = cred.user?.uid || null;
-    } finally {
-      try { await signOut(secondaryAuth); } catch {}
-    }
-  }
-
-  // Only add to database if Auth user creation succeeded (or no email provided)
-  // Normalize college value from any provided alias
-  const collegeValue = (college || college_name || collegeName || college_display || "").toString();
-
-  const payload = {
-    counselor_id: id,
-    username: username || "",
-    first_name: first_name || "",
-    last_name: last_name || "",
-    email_address: email_address || "",
-    specialization: specialization || "",
-    department: department || "",
-    status: status || "Active",
-    campus: campus || "",
-    photo_url: photo_url || "",
-    college: collegeValue,
-    login: "Enable",
-    login_access: true,
-    created_at: new Date().toISOString(),
-    uid: uid || null
-  };
-
-  await set(ref(db, `counselors/${id}`), payload);
-
-  return { id, password, uid };
+// Creates a counselor on the server: login account, role claim, database record and a set-password email.
+// No password is ever generated or shown in the browser. Returns { id, uid }.
+export async function addCounselorRecord(data) {
+  const d = data || {};
+  const res = await callFunction('createCounselor', {
+    email_address: d.email_address, first_name: d.first_name, last_name: d.last_name,
+    username: d.username, specialization: d.specialization, department: d.department,
+    campus: d.campus, photo_url: d.photo_url, phone_number: d.phone_number, birthday: d.birthday,
+    gender: d.gender, role: d.role,
+    college: d.college || d.college_name || d.collegeName || d.college_display || ''
+  });
+  return { id: res.uid, uid: res.uid, counselor_id: res.counselor_id };
 }
 
 // Update counselor fields
@@ -216,56 +200,117 @@ export async function updateCounselor(id, data) {
   await update(ref(db, `counselors/${id}`), data || {});
 }
 
-// Delete counselor
-export async function deleteCounselor(id) {
-  await remove(ref(db, `counselors/${id}`));
+async function uidOfCounselor(id) {
+  const rec = await getCounselor(id);
+  if (!rec) throw new Error('Counselor not found.');
+  return rec.uid || id;
 }
 
-// Toggle login access
+// Delete counselor: removes the login account and the profile (server-side)
+export async function deleteCounselor(id) {
+  await callFunction('deleteCounselor', { uid: await uidOfCounselor(id) });
+}
+
+// Toggle login access: enforced by Firebase Auth (disabled accounts cannot sign in) and mirrored in the record
 export async function toggleCounselorLogin(id, enabled) {
-  await update(ref(db, `counselors/${id}`), {
-    login: enabled ? "Enable" : "Disable",
-    login_access: !!enabled
-  });
+  await callFunction('setCounselorAccess', { uid: await uidOfCounselor(id), enabled: !!enabled });
 }
 
 // -----------------------------
 // Admin authentication helpers
 // -----------------------------
-// Checks Realtime Database under `admins/{uid}` for admin record
+// The role comes from a custom claim that only the server can set (firebase/functions/scripts/set-role.js);
+// admin access additionally needs a 2FA stamp tied to THIS sign-in (same rule as the database).
+export async function getSessionInfo(user, forceRefresh) {
+  user = user || auth.currentUser;
+  if (!user) return { role: null, twofaUntil: 0, twofaAuthTime: 0, authTime: 0 };
+  const t = await user.getIdTokenResult(!!forceRefresh);
+  const c = t.claims || {};
+  return { role: c.role || null, twofaUntil: Number(c.twofa_until || 0), twofaAuthTime: Number(c.twofa_auth_time || 0), authTime: Number(c.auth_time || 0) };
+}
+export function hasTwoFA(i) { return !!i && i.twofaUntil > Date.now() && i.twofaAuthTime > 0 && i.twofaAuthTime === i.authTime; }
+export async function isAdminSession(user) {
+  const i = await getSessionInfo(user, false);
+  return i.role === 'admin' && hasTwoFA(i);
+}
+// Kept for pages that still call it: true only for the signed-in user when they hold a verified admin session
 export async function isAdminUid(uid) {
-  if (!uid) return false;
-  try {
-    console.debug('isAdminUid: checking admins/' + uid);
-    const snap = await get(ref(db, `admins/${uid}`));
-    console.debug('isAdminUid: db snapshot received for', uid, snap.exists());
-    if (!snap.exists()) return false;
-    const val = snap.val();
-    console.debug('isAdminUid: data=', val);
-    if (!val) return false;
-    const role = val.role || val.position || '';
-    const enabled = (val.enable || val.enabled || '').toString().toLowerCase();
-    // treat missing enable as allowed but prefer explicit 'enable'
-    const isEnabled = !enabled || enabled === 'enable' || enabled === 'true';
-    return (role === 'admin' || role === 'Administrator' || role === 'administrator') && isEnabled;
-  } catch (err) {
-    console.error('isAdminUid error', err);
-    return false;
-  }
+  if (!auth.currentUser || (uid && auth.currentUser.uid !== uid)) return false;
+  return isAdminSession(auth.currentUser);
 }
 
-// Sign in and enforce admin-only access. Redirects to admin-dashboard.html on success.
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+// Email-code dialog. Resolves true once the server accepted the code for this sign-in, false if the user closed it.
+export function promptTwoFA(title) {
+  return new Promise((resolve) => {
+    const old = document.getElementById('ss2faModal');
+    if (old) old.remove();
+    document.body.insertAdjacentHTML('beforeend',
+      '<div id="ss2faModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100000;display:flex;align-items:center;justify-content:center;">' +
+      '<div role="dialog" aria-modal="true" style="background:#fff;color:#222;border-radius:10px;padding:1.5rem 2rem;min-width:320px;max-width:90vw;text-align:center;position:relative;box-shadow:0 4px 16px rgba(0,0,0,.25);">' +
+      '<button id="ss2faClose" aria-label="Close" style="position:absolute;top:8px;right:14px;font-size:1.3rem;cursor:pointer;background:none;border:none;">&times;</button>' +
+      '<h3 style="margin:0 0 .75rem;color:#00723f;">' + esc(title || 'Two-Factor Authentication') + '</h3>' +
+      '<p id="ss2faMsg" style="margin:0 0 1rem;">Sending a 6-digit code to your email...</p>' +
+      '<div id="ss2faStep2" style="display:none;">' +
+      '<input id="ss2faCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter code" style="width:100%;padding:.5rem;border:1px solid #ccc;border-radius:4px;margin-bottom:.75rem;text-align:center;font-size:1.2rem;box-sizing:border-box;" />' +
+      '<button id="ss2faVerify" style="background:#00723f;color:#fff;border:none;padding:.5rem 1.5rem;border-radius:8px;cursor:pointer;width:100%;">Verify</button>' +
+      '<p style="margin:.75rem 0 0;font-size:.9rem;"><a href="#" id="ss2faResend" style="color:#00723f;">Resend code</a></p></div>' +
+      '<p id="ss2faErr" style="color:#b91c1c;font-size:.9rem;margin:.5rem 0 0;display:none;"></p></div></div>');
+    const $ = (id) => document.getElementById(id);
+    const setErr = (m) => { const e = $('ss2faErr'); e.textContent = m || ''; e.style.display = m ? 'block' : 'none'; };
+    let done = false;
+    const finish = (ok) => { if (done) return; done = true; const m = $('ss2faModal'); if (m) m.remove(); resolve(ok); };
+    const msg = (e, fallback) => {
+      const c = String((e && e.code) || '');
+      if (/invalid-argument$/.test(c)) return 'Incorrect code.';
+      if (/deadline-exceeded$/.test(c)) return 'Code expired. Please request a new one.';
+      if (/resource-exhausted$/.test(c)) return 'Too many requests. Please wait a minute and try again.';
+      if (/failed-precondition$/.test(c)) return 'No active code. Please request a new one.';
+      return fallback;
+    };
+    const send = async () => {
+      setErr('');
+      try {
+        await callFunction('sendLoginCode', {});
+        $('ss2faMsg').textContent = 'Enter the 6-digit code we sent to your email.';
+      } catch (e) {
+        if (/resource-exhausted$/.test(String((e && e.code) || ''))) $('ss2faMsg').textContent = 'A code was sent recently. Check your email and enter it below.';
+        else { $('ss2faMsg').textContent = 'Could not send the code.'; setErr(msg(e, 'Please try again.')); }
+      }
+      $('ss2faStep2').style.display = 'block';
+      $('ss2faCode').focus();
+    };
+    $('ss2faClose').onclick = () => finish(false);
+    $('ss2faResend').onclick = (ev) => { ev.preventDefault(); $('ss2faCode').value = ''; send(); };
+    $('ss2faVerify').onclick = async () => {
+      const code = $('ss2faCode').value.trim();
+      if (!/^\d{6}$/.test(code)) { setErr('Please enter the 6-digit code.'); return; }
+      const btn = $('ss2faVerify'); btn.disabled = true; setErr('');
+      try {
+        await callFunction('verifyLoginCode', { code });
+        await auth.currentUser.getIdToken(true); // pick up the new claims
+        finish(true);
+      } catch (e) {
+        setErr(msg(e, 'Verification failed. Try again.'));
+        $('ss2faCode').value = ''; btn.disabled = false;
+      }
+    };
+    send();
+  });
+}
+
+// Sign in, check the admin role claim, then require the emailed code. Redirects to dashboard.html on success.
 export async function adminLogin(email, password) {
   const cred = await signInWithEmailAndPassword(auth, email, password);
   const user = cred.user;
-  console.debug('adminLogin: signed in user', user && user.uid, user && user.email);
-  const ok = await isAdminUid(user.uid);
-  if (!ok) {
-    try { await signOut(auth); } catch (e) {}
-    throw new Error('Access denied. User is not an admin.');
+  const fail = async (m) => { try { await signOut(auth); } catch (e) {} throw new Error(m); };
+  const info = await getSessionInfo(user, true);
+  if (info.role !== 'admin') await fail('Access denied. User is not an admin.');
+  if (!hasTwoFA(info)) {
+    const ok = await promptTwoFA('Admin sign-in verification');
+    if (!ok) await fail('Sign-in cancelled. Admin accounts require email verification.');
   }
-  // authorized
-  // redirect to the actual appointment page in this project
   window.location.href = 'dashboard.html';
 }
 
@@ -303,7 +348,7 @@ export function redirectIfAuthenticated() {
   onAuthStateChanged(auth, async (user) => {
     if (!user) return;
     try {
-      const ok = await isAdminUid(user.uid);
+      const ok = await isAdminSession(user);
       if (ok) {
         window.location.href = 'dashboard.html';
       }
@@ -321,7 +366,7 @@ export function requireAdminAuth() {
       return;
     }
     try {
-      const ok = await isAdminUid(user.uid);
+      const ok = await isAdminSession(user);
       if (!ok) {
         try { await signOut(auth); } catch(e){}
         window.location.href = 'login.html';

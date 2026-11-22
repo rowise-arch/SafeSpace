@@ -1,7 +1,7 @@
 'use strict';
 const crypto = require('node:crypto');
 const { onCall } = require('firebase-functions/v2/https');
-const { db, auth, HttpsError, requireRole, hasStamp, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail } = require('./core');
+const { db, auth, HttpsError, requireRole, requireAdmin, findUserKey, hasStamp, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail } = require('./core');
 
 const ROSTER = 'roster';
 const INVITE_TTL_MS = 5 * 24 * 60 * 60 * 1000;
@@ -90,7 +90,7 @@ const newCode = () => {
 
 /** Admin: generate activation codes server-side and email them. Codes are never returned to the browser. */
 const inviteStudents = onCall(async (req) => {
-  requireRole(req, 'admin');
+  requireAdmin(req);
   const d = req.data || {};
   const resend = d.resend === true;
   const only = Array.isArray(d.ids) ? new Set(d.ids.map(String)) : null;
@@ -129,19 +129,21 @@ const setTwoFactor = onCall(async (req) => {
   if (!hasStamp(req)) throw new HttpsError('permission-denied', 'Verify a code first.');
   const enabled = !!(req.data && req.data.enabled);
   await mergeClaims(req.auth.uid, { mfa_required: enabled ? true : null });
-  await db().ref(`students/${req.auth.uid}`).update({ email2FA: enabled });
+  const key = await findUserKey('students', req.auth.uid);
+  if (key) await db().ref(`students/${key}`).update({ email2FA: enabled });
   return { ok: true, enabled };
 });
 
 /** Admin: enable/disable a student. Disabling is enforced by Auth itself and ends their sessions. */
 const setStudentAccess = onCall(async (req) => {
-  requireRole(req, 'admin');
+  requireAdmin(req);
   const uid = str(req.data && req.data.uid, 'uid', { max: 128 });
   const enabled = !!(req.data && req.data.enabled);
-  if (!(await db().ref(`students/${uid}`).get()).exists()) throw new HttpsError('not-found', 'Student not found.');
+  const key = await findUserKey('students', uid);
+  if (!key) throw new HttpsError('not-found', 'Student not found.');
   await auth().updateUser(uid, { disabled: !enabled });
   if (!enabled) await auth().revokeRefreshTokens(uid);
-  await db().ref(`students/${uid}`).update({ login: enabled ? 'Enable' : 'Disable' });
+  await db().ref(`students/${key}`).update({ login: enabled ? 'Enable' : 'Disable' });
   return { ok: true };
 });
 

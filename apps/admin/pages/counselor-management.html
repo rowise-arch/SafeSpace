@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
       // Prevent browser caching of this page
       if (window.history && window.history.replaceState) {
@@ -23,7 +22,7 @@
     </script>
     <script>
       (function() {
-        emailjs.init("En395SjR7Jg57-J8u"); // Replace with your EmailJS Public Key
+
       })();
     </script>
     <script>
@@ -2482,30 +2481,17 @@
             photo_url: addCroppedDataURL || ""
           };
 
-          let id, password;
           try {
-            ({ id, password } = await addCounselorRecord(counselorData));
+            // Server creates the login, the profile and emails a set-password link (no password reaches the browser)
+            await addCounselorRecord(counselorData);
           } catch (err) {
-            // If error is email already in use, show alert and close modal
-            if (err && err.message && err.message.includes("auth/email-already-in-use")) {
-              alert("Failed to add counselor: " + (err.message || err));
+            if (err && (err.code === 'functions/already-exists' || /already/i.test(err.message || ''))) {
+              alert("Failed to add counselor: an account with this email already exists.");
               closeModal(addConfirmModal);
               closeModal(addModal);
               return;
-            } else {
-              throw err;
             }
-          }
-
-          try {
-            await emailjs.send("service_jlchmap", "template_t6qpo7f", {
-              name: counselorData.first_name,
-              password,
-              email: counselorData.email_address,
-              year: new Date().getFullYear()
-            });
-          } catch (error) {
-            console.error("Email sending error:", error);
+            throw err;
           }
 
           await fetchAndDisplayUsers();

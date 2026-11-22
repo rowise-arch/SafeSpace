@@ -13,7 +13,6 @@
   <script>(function(){try{var t=localStorage.getItem('safespace_theme'); if(t) document.documentElement.setAttribute('data-theme', t);}catch(e){} })();</script>
   <link rel="stylesheet" href="../css/theme.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
       // Prevent browser caching of this page
       if (window.history && window.history.replaceState) {
@@ -26,7 +25,6 @@
       });
     </script>
     <script>
-      (function(){ emailjs.init("En395SjR7Jg57-J8u"); /* EmailJS Public Key */ })();
     </script>
     <script type="module">
       import { loadAdminProfileInto, startGreetingClock } from '../js/profile-loader.js';
@@ -1322,11 +1320,16 @@
     <script type="module">
         // Use the already-initialized Firebase app from main.js and import DB helpers
   // Reuse the initialized Firebase instances and helpers from admin_main.js
-  import { db, ref, get, set, remove, update, getStorage, storageRef, getDownloadURL, requireAdminAuth } from '../js/main.js';
+  import { db, ref, get, set, remove, update, getStorage, storageRef, getDownloadURL, requireAdminAuth, callFunction } from '../js/main.js';
 
   // Protect this page — only admins may access
   requireAdminAuth();
         
+        // Rows come from `students` (activated accounts) and from `roster` (imported, not yet activated).
+        const rowSource = new Map();
+        const rowUid = new Map();
+        const pathFor = (id) => `${rowSource.get(id) || 'students'}/${id}`;
+
         function cleanKeys(row) {
           const cleaned = {};
           for (let key in row) {
@@ -1342,9 +1345,22 @@
           const tableBody = document.getElementById("userTableBody");
           if (!tableBody) return;
           tableBody.innerHTML = "";
-          const snapshot = await get(ref(db, "students"));
-          if (!snapshot.exists()) return;
-          const users = snapshot.val();
+          const [snapshot, rosterSnap] = await Promise.all([get(ref(db, "students")), get(ref(db, "roster"))]);
+          const users = Object.assign({}, snapshot.exists() ? snapshot.val() : {});
+          rowSource.clear(); rowUid.clear();
+          Object.keys(users).forEach((id) => { rowSource.set(id, 'students'); if (users[id] && users[id].uid) rowUid.set(id, users[id].uid); });
+          const activatedIds = new Set(Object.values(users).map((u) => String((u && (u.student_id || u.Student_ID)) || '')));
+          if (rosterSnap.exists()) {
+            const roster = rosterSnap.val();
+            for (const rid in roster) {
+              const r = roster[rid] || {};
+              if (Number(r.status) === 2 || activatedIds.has(String(r.student_id || rid)) || users[rid]) continue; // already shown as a student
+              const { activation_code, ...safe } = r; // eslint-disable-line no-unused-vars
+              users[rid] = { ...safe, role: safe.role || 'Student (not activated)' };
+              rowSource.set(rid, 'roster');
+            }
+          }
+          if (!Object.keys(users).length) return;
           for (const studentId in users) {
             const user = users[studentId] || {};
             const firstName = user.first_name ?? user.First_Name ?? user.firstname ?? user.FirstName ?? "";
@@ -1418,7 +1434,7 @@
               <td>${role}</td>
               <td>
                 <label class="switch">
-                  <input type="checkbox" class="login-switch" data-id="${studentId}" ${login.toLowerCase()==="enable" ? "checked" : ""} />
+                  <input type="checkbox" class="login-switch" data-id="${studentId}" ${login.toLowerCase()==="enable" ? "checked" : ""} ${rowSource.get(studentId) === "roster" ? 'disabled title="Not activated yet"' : ""} />
                   <span class="slider"></span>
                 </label>
                 <span class="login-label">${login.toLowerCase()==="enable" ? "On" : "Off"}</span>
@@ -1529,7 +1545,7 @@
           const ok = await showConfirm(`Delete student ${studentId}? Are you sure?`, "Confirm Delete");
           if (!ok) return;
           try {
-            await remove(ref(db, `students/${studentId}`));
+            await remove(ref(db, pathFor(studentId)));
             row.remove();
             await showMessage("Record deleted.", "Deleted");
           } catch (err) {
@@ -1595,8 +1611,8 @@
             for (const rawRow of result) {
               const studentId = (rawRow["Student ID"] || rawRow["student id"] || rawRow["student_id"] || "").toString().trim();
               if (!studentId) continue;
-              const studentRef = ref(db, `students/${studentId}`);
-              const exists = (await get(studentRef)).exists();
+              const studentRef = ref(db, `roster/${studentId}`);
+              const exists = (await get(studentRef)).exists() || (await get(ref(db, `students/${studentId}`))).exists();
               if (exists) { skippedCount++; continue; }
               const cleanedRow = cleanKeys(rawRow);
               cleanedRow.course = cleanedRow.course ?? cleanedRow.course_of_study ?? cleanedRow["course"] ?? cleanedRow["Course"] ?? "";
@@ -1604,10 +1620,10 @@
               Object.assign(cleanedRow, {
                 gender: cleanedRow.gender || "",
                 username: cleanedRow.username || "",
-                activation_code: cleanedRow.activation_code || "",
-                expiry_date: cleanedRow.expiry_date || "",
-                status: cleanedRow.status || 0,
+                status: 0,
               });
+              // activation codes are generated by the server when invitations are sent, never taken from the file
+              delete cleanedRow.activation_code; delete cleanedRow.expiry_date;
               await set(studentRef, cleanedRow);
               importedCount++;
             }
@@ -1645,72 +1661,26 @@
             processingModal.style.display = "flex";
             processingModal.setAttribute("aria-hidden", "false");
         
-            let snapshot;
+            lines.appendChild(Object.assign(document.createElement("div"), { textContent: "Sending invitations from the server..." }));
             try {
-                snapshot = await get(ref(db, "students"));
+                // The server picks the pending roster entries, creates the codes and emails them (codes are never returned here)
+                const res = await callFunction('inviteStudents', {});
+                lines.innerHTML = "";
+                const failed = (res.failed || []);
+                failed.forEach((f) => lines.appendChild(Object.assign(document.createElement("div"), { style: "color:#b91c1c;font-weight:600;", textContent: `Failed for ${f.id}: ${f.error}` })));
+                const summary = Object.assign(document.createElement("div"), { style: "font-weight:700;margin-bottom:8px;", textContent: `Send emails finished — Sent: ${res.sent}, Failed: ${failed.length}` });
+                processingBody.insertBefore(summary, processingBody.firstChild);
+                const progEl = document.getElementById("processingProgress");
+                if (progEl) progEl.style.width = "100%";
+                fetchAndDisplayUsers();
             } catch (err) {
-                lines.appendChild(Object.assign(document.createElement("div"), { textContent: "Failed to read students: " + (err.message || err) }));
-                massEmailBtn.disabled = false;
-                return;
+                lines.innerHTML = "";
+                lines.appendChild(Object.assign(document.createElement("div"), { style: "color:#b91c1c;font-weight:600;", textContent: "Could not send invitations: " + (err.message || err) }));
             }
-            if (!snapshot.exists()) {
-                lines.appendChild(Object.assign(document.createElement("div"), { textContent: "No students found." }));
-                massEmailBtn.disabled = false;
-                return;
-            }
-        
-              const users = snapshot.val();
-              let validRecipients = [];
-              Object.keys(users || {}).forEach(id => {
-                const u = users[id];
-                const email = (u.Email_Address || u.email_address || u.email || "").toString().trim();
-                const status = (typeof u.status === 'string' ? parseInt(u.status) : u.status);
-                if (!u || !email || status === 1 || status === 2) return;
-                validRecipients.push(id);
-              });
-
-              console.log('Valid recipients:', validRecipients);
-              if (validRecipients.length === 0) {
-                // Mark as processing-empty so CSS can make it visible on dark backgrounds
-                lines.appendChild(Object.assign(document.createElement("div"), { textContent: "No pending recipients to send. Check console for details.", className: 'processing-empty' }));
-                massEmailBtn.disabled = false;
-                return;
-              }
-
-              let sent = 0, failed = 0, done = 0, total = validRecipients.length;
-              for (const id of validRecipients) {
-                const u = users[id];
-                const email = (u.Email_Address || u.email_address || u.email || "").toString().trim();
-                const firstname = u.First_Name || u.first_name || u.firstname || "";
-                const code = Math.random().toString(36).substring(2, 10).toUpperCase();
-                const expiry = (function(){ const d = new Date(); d.setDate(d.getDate()+5); return d.getTime(); })();
-
-                try {
-                  await update(ref(db, `students/${id}`), { activation_code: code, expiry_date: expiry, status: 1,statuse: 2 });
-                  await emailjs.send("service_jlchmap", "template_1qcpgyr", { passcode: code, firstname: firstname, email: email });
-                  const okLine = Object.assign(document.createElement("div"), { style: "color:#0b7a44;font-weight:600;", textContent: `Sent to ${email} (code ${code})`});
-                  lines.appendChild(okLine);
-                  sent++;
-                } catch (err) {
-                  const failLine = Object.assign(document.createElement("div"), { style: "color:#b91c1c;font-weight:600;", textContent: `Failed for ${email}: ${err?.text || err?.message || JSON.stringify(err)}`});
-                  lines.appendChild(failLine);
-                  console.error("EmailJS error for", email, err);
-                  failed++;
-                } finally {
-                  done++;
-                  const pct = Math.round((done / total) * 100);
-                  const progEl = document.getElementById("processingProgress");
-                  if (progEl) progEl.style.width = pct + "%";
-                  await new Promise(r => setTimeout(r, 180));
-                }
-              }
-
-              const summary = Object.assign(document.createElement("div"), { style: "font-weight:700;margin-bottom:8px;", textContent: `Send emails finished — Sent: ${sent}, Failed: ${failed}`});
-              processingBody.insertBefore(summary, processingBody.firstChild);
-              massEmailBtn.disabled = false;
+            massEmailBtn.disabled = false;
         }
-        
-        massEmailBtn.addEventListener("click", function(e) {
+
+                massEmailBtn.addEventListener("click", function(e) {
           const confirmModal = document.getElementById("confirmSendModal");
           if (confirmModal) {
             confirmModal.style.display = "flex";
@@ -2486,7 +2456,7 @@
               updateObj.photoURL = ve_selectedPhotoDataUrl;
             }
 
-            await update(ref(db, `students/${id}`), updateObj);
+            await update(ref(db, pathFor(id)), updateObj);
             // clear temporary cropped blob after successful save
             try { if (ve_photoInput && ve_photoInput.croppedBlob) delete ve_photoInput.croppedBlob; } catch(_){}
 
@@ -2525,7 +2495,10 @@
           const checked = !!input.checked;
           input.disabled = true;
           try {
-            await update(ref(db, `students/${id}`), { login: checked ? "Enable" : "Disable" });
+            const uid = rowUid.get(id);
+            if (!uid) throw new Error("This student has no login account yet.");
+            // Server-side: disables the Firebase account (and ends their sessions) and mirrors the flag in the record
+            await callFunction('setStudentAccess', { uid, enabled: checked });
             const lbl = input.closest("td")?.querySelector(".login-label");
             if (lbl) lbl.textContent = checked ? "On" : "Off";
           } catch (err) {
