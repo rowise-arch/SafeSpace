@@ -46,6 +46,22 @@ await auth.currentUser.getIdToken(true);                      // pick up the two
 counselor-owned path, so skipping the 2FA screen no longer gets a counselor any data. Students and admins are not
 enforced yet (admins have no 2FA UI; student 2FA is optional per account).
 
+## Cutover checklist (production, once there is access)
+Do these in order; steps 3 and 4 are the data migration and are safe to repeat.
+1. Take a full export of the Realtime Database (Console > Realtime Database > Export JSON) and keep it.
+2. Deploy `firebase/functions` and `firebase/database.rules.json`, and configure SMTP for the functions.
+3. `node functions/scripts/migrate-data.js` (dry run: prints every move it would make), review, then
+   `node functions/scripts/migrate-data.js --apply --backup before-migration.json`. It re-keys activated students and
+   counselors to their uid (psych tests follow), moves pre-registered students to `roster`, deletes leftover 2FA codes,
+   TOTP secrets and activation codes of activated students, and sets the `role` / `mfa_required` claims. Records whose
+   target already exists are reported and skipped. Re-running after `--apply` does nothing.
+4. Give every admin the claim: `node functions/scripts/set-role.js <email> admin` (the migration also does this for
+   anyone listed under `admins/`).
+5. Deploy the web apps from this branch (Vercel). Test with one student, one counselor and one admin account first.
+
+Rollback: restore the export from step 1 (the app code from `main` needs the old rules too), or the backup file for
+just the moved records.
+
 ## Switching the counselor login over
 The counselor login (`apps/counselor/pages/login.html`) now signs in with the Firebase SDK, then calls
 `sendLoginCode`/`verifyLoginCode`. It needs, in this order:
@@ -64,7 +80,7 @@ Local browser testing: serve `apps/counselor` and open `/pages/login.html?emulat
 Done on this branch: `verify`, `signup`, `signin`, `settings` (2FA toggle) and `profile` (2FA setup) now call the
 functions; `complete-profile` reads `students/{uid}`; `index` gets the shared session guard. Student 2FA is optional:
 turning it on stores an `mfa_required` claim, and the rules then require a code for every new sign-in of that student.
-The student pages need the roster in `/roster` (move pre-registered `students` records there) and the claims backfill.
+The student pages need the roster in `/roster` and the claims; `scripts/migrate-data.js` does both (see the cutover checklist).
 `js/two-factor.js` holds the shared code dialog. The fake authenticator-app (TOTP) option on the profile page was
 removed: it never took part in sign-in. Local testing: open any student page with `?emulator=1`;
 `tests/e2e/student_flow.py` runs the whole journey in Chrome (16 checks).

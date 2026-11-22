@@ -1,5 +1,9 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { initializeApp, deleteApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -284,4 +288,61 @@ test('admin: functions need a 2FA code for this sign-in', async () => {
   assert.equal(await code(call('setStudentAccess', { uid: stu.uid, enabled: false })), 'functions/permission-denied');
   await signOut(cauth);
   assert.ok(uid);
+});
+
+// ---------------------------------------------------------------- data migration script
+test('migrate-data: dry run changes nothing; apply re-keys, cleans, sets claims, backs up; second run is a no-op', async () => {
+  const script = new URL('../functions/scripts/migrate-data.js', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+  const backup = join(tmpdir(), `migration-backup-test-${Date.now()}.json`);
+  const run = (...args) => spawnSync(process.execPath, [script, ...args], { encoding: 'utf8', env: process.env });
+  const mk = async (email) => (await aauth.createUser({ email, password: PW })).uid;
+  const k = Date.now();
+  const stuA = await mk(`mig.a${k}@example.com`), stuB = await mk(`mig.b${k}@example.com`), cou = await mk(`mig.c${k}@example.com`), taken = await mk(`mig.t${k}@example.com`);
+  await adb.ref().update({
+    [`students/OLD-${k}A`]: { uid: stuA, first_name: 'Ana', status: 2, activation_code: 'LEFTOVER', temp2FACode: '123456', email2FACodeExpiry: 1 },
+    [`students/OLD-${k}B`]: { uid: stuB, first_name: 'Ben', status: 2, email2FA: true },
+    [`students/PRE-${k}`]: { student_id: `PRE-${k}`, email_address: 'pre@example.com', status: 1, activation_code: 'ABCD2345', expiry_date: 1 },
+    [`counselors/C-${k}`]: { uid: cou, first_name: 'Cora', login: 'Enable' },
+    [`psych_tests/OLD-${k}A/t1`]: { title: 'Test' },
+    [`students/OLD-${k}T`]: { uid: taken, first_name: 'Dup' },
+    [`students/${taken}`]: { uid: taken, first_name: 'Already new' },
+  });
+
+  const dry = run();
+  assert.equal(dry.status, 0, dry.stderr);
+  assert.match(dry.stdout, /Dry run only/);
+  assert.equal((await adb.ref(`students/OLD-${k}A`).get()).exists(), true, 'dry run must not move anything');
+  assert.equal((await adb.ref(`students/${stuA}`).get()).exists(), false);
+  assert.equal((await aauth.getUser(stuA)).customClaims, undefined, 'dry run must not set claims');
+
+  const res = run('--apply', '--backup', backup);
+  assert.equal(res.status, 0, res.stderr + res.stdout);
+  const a = (await adb.ref(`students/${stuA}`).get()).val();
+  assert.equal(a.student_id, `OLD-${k}A`);
+  assert.equal(a.activation_code, undefined);
+  assert.equal(a.temp2FACode, undefined);
+  assert.equal(a.email2FACodeExpiry, undefined);
+  assert.equal((await adb.ref(`students/OLD-${k}A`).get()).exists(), false);
+  assert.equal((await adb.ref(`psych_tests/${stuA}/t1/title`).get()).val(), 'Test');
+  assert.equal((await adb.ref(`psych_tests/OLD-${k}A`).get()).exists(), false);
+  const pre = (await adb.ref(`roster/PRE-${k}`).get()).val();
+  assert.equal(pre.activation_code, 'ABCD2345', 'invitations in flight keep their code');
+  assert.equal((await adb.ref(`students/PRE-${k}`).get()).exists(), false);
+  const c = (await adb.ref(`counselors/${cou}`).get()).val();
+  assert.equal(c.counselor_id, `C-${k}`);
+  assert.equal((await adb.ref(`counselors/C-${k}`).get()).exists(), false);
+  assert.equal((await adb.ref(`students/OLD-${k}T`).get()).exists(), true, 'conflicting record is left alone');
+  assert.equal((await adb.ref(`students/${taken}/first_name`).get()).val(), 'Already new');
+  assert.deepEqual((await aauth.getUser(stuA)).customClaims, { role: 'student' });
+  assert.deepEqual((await aauth.getUser(stuB)).customClaims, { role: 'student', mfa_required: true });
+  assert.deepEqual((await aauth.getUser(cou)).customClaims, { role: 'counselor' });
+  assert.equal(existsSync(backup), true);
+  assert.equal(JSON.parse(readFileSync(backup, 'utf8')).nodes[`students/OLD-${k}A`].temp2FACode, '123456', 'backup holds the original record');
+  rmSync(backup);
+
+  const again = run('--apply', '--backup', backup);
+  assert.equal(again.status, 0, again.stderr);
+  assert.doesNotMatch(again.stdout, /students_moved|students_to_roster|counselors_moved/);
+  assert.equal(existsSync(backup), false, 'nothing to move, so no backup is written');
+  assert.equal((await adb.ref(`students/${stuA}/student_id`).get()).val(), `OLD-${k}A`);
 });
