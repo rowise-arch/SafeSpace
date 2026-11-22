@@ -26,7 +26,7 @@
       "$uid": {
         ".read": "auth != null && ((auth.uid === $uid && ((auth.token.role !== 'counselor' && auth.token.role !== 'admin' && auth.token.mfa_required !== true) || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) && (auth.token.role === 'student' && (auth.token.mfa_required !== true || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))) || ((auth.token.role === 'counselor' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))))",
         ".write": "auth != null && ((auth.uid === $uid && ((auth.token.role !== 'counselor' && auth.token.role !== 'admin' && auth.token.mfa_required !== true) || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) && (auth.token.role === 'student' && (auth.token.mfa_required !== true || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))",
-        ".validate": "newData.hasChildren() && (!newData.child('uid').exists() || newData.child('uid').val() === $uid) && (!data.child('student_id').exists() || newData.child('student_id').val() === data.child('student_id').val() || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))"
+        ".validate": "newData.hasChildren() && (!newData.child('uid').exists() || newData.child('uid').val() === $uid || newData.child('uid').val() === data.child('uid').val()) && (!data.child('student_id').exists() || newData.child('student_id').val() === data.child('student_id').val() || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))"
       }
     },
     "counselors": {
@@ -44,7 +44,7 @@
           ".validate": "(data.exists() && data.val() === newData.val()) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))"
         },
         "uid": {
-          ".validate": "newData.val() === $uid"
+          ".validate": "newData.val() === $uid || (data.exists() && data.val() === newData.val())"
         },
         "rating_avg": {
           ".write": "auth != null && (auth.token.role === 'student' && (auth.token.mfa_required !== true || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))"
@@ -71,6 +71,7 @@
       }
     },
     "appointments_by_student": {
+      ".read": "auth != null && (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))",
       "$uid": {
         ".read": "auth != null && (auth.uid === $uid && ((auth.token.role !== 'counselor' && auth.token.role !== 'admin' && auth.token.mfa_required !== true) || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))",
         ".write": "auth != null && (auth.uid === $uid && ((auth.token.role !== 'counselor' && auth.token.role !== 'admin' && auth.token.mfa_required !== true) || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))",
@@ -81,6 +82,7 @@
       }
     },
     "appointments_by_counselor": {
+      ".read": "auth != null && (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))",
       "$cuid": {
         ".read": "auth != null && (auth.uid === $cuid && ((auth.token.role !== 'counselor' && auth.token.role !== 'admin' && auth.token.mfa_required !== true) || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))",
         ".write": "auth != null && (auth.uid === $cuid && ((auth.token.role !== 'counselor' && auth.token.role !== 'admin' && auth.token.mfa_required !== true) || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))",
@@ -111,9 +113,10 @@
       }
     },
     "Session_report": {
+      ".read": "auth != null && (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))",
       "$studentUid": {
         ".read": "((auth.token.role === 'counselor' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))",
-        ".write": "(auth.token.role === 'counselor' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))"
+        ".write": "(auth.token.role === 'counselor' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))"
       }
     },
     "notifications": {
@@ -188,8 +191,11 @@
       }
     },
     "psych_tests": {
-      ".read": "auth != null",
-      ".write": "(auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))"
+      ".read": "auth != null && ((auth.token.role === 'counselor' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) || (auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)))",
+      ".write": "(auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))",
+      "$sid": {
+        ".read": "auth != null && ((auth.token.role !== 'counselor' && auth.token.role !== 'admin' && auth.token.mfa_required !== true) || (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time)) && ($sid === auth.uid || root.child('students').child($sid).child('uid').val() === auth.uid)"
+      }
     },
     "resources": {
       ".read": "auth != null",

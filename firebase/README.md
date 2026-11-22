@@ -87,9 +87,16 @@ Admin functions find records keyed by the old ids through their stored `uid` (`.
 after the key migration. **Before switching over, give every admin account the claim:**
 `node functions/scripts/set-role.js <email> admin` (the old `admins/{uid}` record alone no longer grants access).
 
-Still on the old model: admin pages other than user/counselor management (dashboard, content, reports, psych tests,
-session reports read data the rules may now refuse; not yet audited), deleting an activated student's login account,
-and counselor writes to another user's `activity/{uid}` (`js/main.js` log helper).
+The other admin pages are audited too: the dashboard totals now come from `appointments_by_counselor` (the old global
+`appointments` node has no rule), and admins may read the `appointments_by_*` and `Session_report` collections and correct
+session records from the reports page. `psych_tests` used to be readable by every signed-in user; now staff read all and a
+student only their own (key = uid, or an old key whose student record carries their uid). `content-management`,
+`report-management`, `profile` and `settings` already matched the rules. The students/counselors rules no longer reject
+writes to records keyed by old ids (admin edits of `students/2024-0001` used to fail the `uid === key` check).
+
+Still open: deleting an activated student's login account; counselor writes to another user's `activity/{uid}`
+(`js/main.js` log helper); **students and counselors editing their own profile while their record is still keyed by an old
+id** (the rules let owners write only `students/{uid}` / `counselors/{uid}`), which the data migration fixes.
 
 ## Configuration
 Copy `functions/.env.example` to `functions/.env` for SMTP. With no SMTP configured the emulator writes mail to

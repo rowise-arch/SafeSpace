@@ -48,6 +48,10 @@ req(f'{DB}/students/{act_id}.json?ns={NS}', {'uid': stu_uid, 'student_id': act_i
 cou = f'cou{t}@example.com'
 cou_uid = make_user(cou, 'counselor')
 req(f'{DB}/counselors/007.json?ns={NS}', {'uid': cou_uid, 'counselor_id': '007', 'email_address': cou, 'first_name': 'Old', 'last_name': 'Keyed', 'login': 'Enable', 'login_access': True, 'status': 'Active'}, method='PUT')
+for i, st in enumerate(['completed', 'completed', 'pending']):
+    req(f'{DB}/appointments_by_counselor/{cou_uid}/ap{i}.json?ns={NS}', {'student_uid': stu_uid, 'counselor_uid': cou_uid, 'status': st, 'date': '2026-01-0%d' % (i + 1)}, method='PUT')
+req(f'{DB}/Session_report/{stu_uid}/case1/sessions/s1.json?ns={NS}', {'student_name': 'Active Student', 'personel_name': 'Old Keyed', 'session_number': 1, 'status': 'Completed', 'date': 1767225600000}, method='PUT')
+req(f'{DB}/psych_tests/{act_id}/t1.json?ns={NS}', {'title': 'Test One'}, method='PUT')
 req(f'{DB}/roster/{pend_id}.json?ns={NS}', {'student_id': pend_id, 'email_address': pend, 'first_name': 'Pending', 'last_name': 'Roster', 'status': 0}, method='PUT')
 
 results = []
@@ -133,6 +137,21 @@ with sync_playwright() as p:
         page.wait_for_timeout(500)
     check('counselor login toggle disables the Firebase account', auth_disabled(cou_uid))
     check('counselor record mirrors it', db_get('counselors/007/login') == 'Disable')
+
+    # 5c. dashboard totals, session reports, psych tests load for the admin without permission errors
+    denied = []
+    page.on('console', lambda m: denied.append(m.text[:120]) if 'permission_denied' in m.text.lower() else None)
+    page.goto(BASE + 'dashboard.html' + EMU)
+    page.wait_for_timeout(8000)
+    cards = page.eval_on_selector_all('.summary-card', 'els => els.map(e => e.innerText)')
+    check('dashboard counts 3 appointments (2 completed, 1 pending)', any(re.search(r'(^|\s)3(\s|$)', c) for c in cards), str(cards)[:200])
+    page.goto(BASE + 'session-report.html' + EMU)
+    page.wait_for_timeout(8000)
+    check('session-report page lists the record', 'Active Student' in page.inner_text('body'))
+    page.goto(BASE + 'psych-test.html' + EMU)
+    page.wait_for_timeout(8000)
+    check('psych-test page stays signed in', 'psych-test' in page.url, page.url)
+    check('no permission errors on dashboard, session reports, psych tests', not denied, str(denied[:3]))
 
     # 6. closing the dialog on a fresh sign-in signs the admin out
     ctx2 = b.new_context(); p2 = ctx2.new_page(); p2.on('dialog', lambda d: d.accept())

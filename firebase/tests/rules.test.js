@@ -148,7 +148,8 @@ test('session reports are staff-only', async () => {
   await assertFails(get(ref(as('stu1', 'student'), 'Session_report/stu1')));
   await assertSucceeds(get(ref(as('cou1', 'counselor'), 'Session_report/stu1')));
   await assertSucceeds(get(ref(as('adm1', 'admin'), 'Session_report/stu1')));
-  await assertFails(set(ref(as('adm1', 'admin'), 'Session_report/stu1/case2'), { x: 1 }));
+  await assertSucceeds(set(ref(as('adm1', 'admin'), 'Session_report/stu1/case3'), { x: 1 })); // admin reports page edits records
+  await assertFails(set(ref(as('stu1', 'student'), 'Session_report/stu1/case4'), { x: 1 }));
   await assertSucceeds(set(ref(as('cou1', 'counselor'), 'Session_report/stu1/case2'), { x: 1 }));
 });
 
@@ -200,4 +201,48 @@ test('admin rights need the 2FA stamp of this sign-in', async () => {
   await assertFails(get(ref(as('adm1', 'admin', { twofa_until: 0 }), 'students')));
   await assertFails(get(ref(as('adm1', 'admin', { twofa_auth_time: 1 }), 'students')));
   await assertFails(set(ref(as('adm1', 'admin', { twofa_until: 0 }), 'config/loginEnabled'), false));
+});
+
+test('admin can read the collections behind the dashboard and reports; others cannot', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await set(ref(ctx.database(), 'appointments_by_counselor/cou1/a1'), { student_uid: 'stu1', counselor_uid: 'cou1' });
+    await set(ref(ctx.database(), 'Session_report/stu1/case1/meta'), { x: 1 });
+  });
+  for (const path of ['appointments_by_counselor', 'appointments_by_student', 'Session_report']) {
+    await assertSucceeds(get(ref(as('adm1', 'admin'), path)));
+    await assertFails(get(ref(as('cou1', 'counselor'), path)));
+    await assertFails(get(ref(as('stu1', 'student'), path)));
+    await assertFails(get(ref(as('adm1', 'admin', { twofa_until: 0 }), path)));
+  }
+  await assertSucceeds(update(ref(as('adm1', 'admin'), 'Session_report/stu1/case1/meta'), { x: 2 }));
+  await assertFails(update(ref(as('stu1', 'student'), 'Session_report/stu1/case1/meta'), { x: 3 }));
+});
+
+test('psych test results: staff read all, a student only their own', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await set(ref(ctx.database(), 'psych_tests/stu1/t1'), { score: 5 });
+    await set(ref(ctx.database(), 'psych_tests/2024-0002/t1'), { score: 9 });
+    await set(ref(ctx.database(), 'students/2024-0002'), { uid: 'stu2' });
+  });
+  await assertSucceeds(get(ref(as('stu1', 'student'), 'psych_tests/stu1')));          // keyed by their uid
+  await assertSucceeds(get(ref(as('stu2', 'student'), 'psych_tests/2024-0002')));      // old key, record carries their uid
+  await assertFails(get(ref(as('stu1', 'student'), 'psych_tests/2024-0002')));         // someone else's
+  await assertFails(get(ref(as('stu1', 'student'), 'psych_tests')));                    // the whole collection
+  await assertSucceeds(get(ref(as('cou1', 'counselor'), 'psych_tests')));
+  await assertSucceeds(get(ref(as('adm1', 'admin'), 'psych_tests')));
+  await assertFails(set(ref(as('stu1', 'student'), 'psych_tests/stu1/t2'), { score: 1 }));
+});
+
+test('records keyed by old ids stay writable by admins; their uid cannot change', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await set(ref(ctx.database(), 'students/2024-0009'), { uid: 'stuX', student_id: '2024-0009', first_name: 'Old' });
+    await set(ref(ctx.database(), 'counselors/009'), { uid: 'couX', login: 'Enable', login_access: true });
+  });
+  const admin = as('adm1', 'admin');
+  await assertSucceeds(update(ref(admin, 'students/2024-0009'), { testsUploaded: 2 }));
+  await assertSucceeds(set(ref(admin, 'students/2024-0009'), { uid: 'stuX', student_id: '2024-0009', first_name: 'Old', testsUploaded: 3 }));
+  await assertFails(set(ref(admin, 'students/2024-0009'), { uid: 'someone-else', student_id: '2024-0009' }));
+  await assertSucceeds(update(ref(admin, 'counselors/009'), { specialization: 'x' }));
+  await assertSucceeds(set(ref(admin, 'counselors/009'), { uid: 'couX', login: 'Enable', login_access: true, specialization: 'y' }));
+  await assertFails(set(ref(admin, 'counselors/009'), { uid: 'someone-else', login: 'Enable', login_access: true }));
 });

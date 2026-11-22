@@ -1359,12 +1359,12 @@
                 let totalAppts = 0;
                 let completedAppts = 0;
                 try {
-                    const globalRef = typeof ref === 'function' ? ref(db, 'appointments') : null;
+                    const globalRef = typeof ref === 'function' ? ref(db, 'appointments_by_counselor') : null; // one copy of each appointment
                     let globalSnap = null;
                     if (globalRef && typeof get === 'function') globalSnap = await get(globalRef);
                     if (globalSnap && globalSnap.exists && globalSnap.exists()) {
                         const appts = globalSnap.val() || {};
-                        const items = Object.values(appts);
+                        const items = Object.values(appts).flatMap(function (perCounselor) { return Object.values(perCounselor || {}); });
                         totalAppts = items.length;
                         // count completed using common fields
                         items.forEach(a => {
