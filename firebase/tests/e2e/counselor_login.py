@@ -1,7 +1,8 @@
 # Browser end-to-end test for the counselor login (needs Python + playwright + Chrome).
 # 1) cd firebase && npx firebase emulators:start --only auth,database,functions --project demo-safespace
-# 2) cd apps/counselor && python -m http.server 8080 --bind 127.0.0.1
+# 2) cd <repo root> && python -m http.server 8090 --bind 127.0.0.1  (set COUNSELOR_BASE=http://127.0.0.1:8090/apps/counselor/pages/)
 # 3) python firebase/tests/e2e/counselor_login.py
+import os
 import json, time, urllib.request, sys
 from playwright.sync_api import sync_playwright
 
@@ -9,7 +10,7 @@ AUTH = 'http://127.0.0.1:9099'
 DB = 'http://127.0.0.1:9000'
 NS = 'demo-safespace-default-rtdb'
 PW = 'Sup3r-secret!'
-BASE = 'http://127.0.0.1:8080/pages/login.html?emulator=1'
+BASE = os.environ.get('COUNSELOR_BASE', 'http://127.0.0.1:8080/pages/') + 'login.html?emulator=1'
 
 
 def req(url, body=None, method=None, headers=None):
@@ -120,7 +121,7 @@ with sync_playwright() as p:
     ctx, page = fresh()
     sign_in(page, cou, PW)
     page.wait_for_selector('#twoFAModal.active', timeout=20000)
-    page.goto('http://127.0.0.1:8080/pages/index.html')
+    page.goto(os.environ.get('COUNSELOR_BASE', 'http://127.0.0.1:8080/pages/') + 'index.html')
     page.wait_for_url('**/login.html**', timeout=20000)
     check('dashboard redirects to login when 2FA is not completed', True)
     ctx.close()

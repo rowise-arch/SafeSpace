@@ -20,23 +20,39 @@
     return fallback || 'Something went wrong. Please try again.';
   }
 
+  // This script is used on several pages; make sure the shared design system is present.
+  var scriptSrc = (document.currentScript && document.currentScript.src) || '';
+  function ensureStyles() {
+    if (document.getElementById('ss-2fa-styles') || !scriptSrc) return;
+    var base = scriptSrc.replace(/apps\/student\/js\/[^/]*$/, 'shared/assets/css/');
+    ['safespace.css', 'components.css'].forEach(function (name) {
+      if (document.querySelector('link[href$="' + name + '"]')) return;
+      var l = document.createElement('link');
+      l.rel = 'stylesheet'; l.href = base + name; l.id = name === 'components.css' ? 'ss-2fa-styles' : '';
+      document.head.appendChild(l);
+    });
+    if (!document.getElementById('ss-2fa-styles')) { var m = document.createElement('meta'); m.id = 'ss-2fa-styles'; document.head.appendChild(m); }
+  }
+
   function showCodeModal(options, done) {
     var old = document.getElementById(MODAL_ID);
     if (old) old.remove();
     var title = options.title || 'Verify your email';
+    ensureStyles();
     document.body.insertAdjacentHTML('beforeend',
-      '<div id="' + MODAL_ID + '" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:10000;display:flex;align-items:center;justify-content:center;">' +
-      '<div role="dialog" aria-modal="true" aria-labelledby="ss2faTitle" style="background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:1.5rem 2rem;min-width:320px;max-width:90vw;text-align:center;position:relative;">' +
-      '<button id="ss2faClose" aria-label="Close" style="position:absolute;top:8px;right:14px;font-size:1.3rem;cursor:pointer;background:none;border:none;">&times;</button>' +
-      '<h3 id="ss2faTitle" style="margin-bottom:0.75rem;color:#00723f;">' + esc(title) + '</h3>' +
-      '<p id="ss2faMsg" style="margin-bottom:1rem;">We will email you a 6-digit code.</p>' +
-      '<div id="ss2faStep1"><button id="ss2faSend" style="background:#00723f;color:white;border:none;padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;">Send verification code</button></div>' +
+      '<div id="' + MODAL_ID + '" class="ss-modal ss-page" style="z-index:10000">' +
+      '<div class="ss-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="ss2faTitle" aria-describedby="ss2faMsg">' +
+      '<button type="button" id="ss2faClose" class="ss-modal__close" aria-label="Close">&times;</button>' +
+      '<h2 id="ss2faTitle" class="ss-modal__title">' + esc(title) + '</h2>' +
+      '<p id="ss2faMsg" class="ss-modal__body" style="margin-bottom:var(--ss-space-4)">We will email you a 6-digit code.</p>' +
+      '<div id="ss2faStep1"><button type="button" id="ss2faSend" class="ss-btn ss-btn--primary ss-btn--block">Send verification code</button></div>' +
       '<div id="ss2faStep2" style="display:none;">' +
-      '<input type="text" id="ss2faCode" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter code" maxlength="6" style="width:100%;padding:0.5rem;border:1px solid #ccc;border-radius:4px;margin-bottom:0.75rem;text-align:center;font-size:1.2rem;" />' +
-      '<button id="ss2faVerify" style="background:#00723f;color:white;border:none;padding:0.5rem 1.5rem;border-radius:8px;cursor:pointer;width:100%;">Verify</button>' +
-      '<p style="margin-top:0.75rem;font-size:0.9rem;"><a href="#" id="ss2faResend" style="color:#00723f;">Resend code</a></p>' +
+      '<label class="ss-label" for="ss2faCode" style="display:block;margin-bottom:8px">Verification code</label>' +
+      '<input type="text" id="ss2faCode" class="ss-control__input" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" maxlength="6" style="padding-left:16px;text-align:center;font-size:1.4rem;letter-spacing:0.3em;font-weight:800;margin-bottom:var(--ss-space-4)" />' +
+      '<button type="button" id="ss2faVerify" class="ss-btn ss-btn--primary ss-btn--block">Verify</button>' +
+      '<p style="margin:var(--ss-space-4) 0 0;text-align:center;font-size:var(--ss-text-sm);"><a href="#" id="ss2faResend" class="ss-link">Resend code</a></p>' +
       '</div>' +
-      '<p id="ss2faErr" style="color:#b91c1c;font-size:0.9rem;margin-top:0.5rem;display:none;"></p>' +
+      '<p id="ss2faErr" role="alert" style="color:var(--ss-danger);font-weight:700;font-size:var(--ss-text-sm);margin:var(--ss-space-3) 0 0;display:none;"></p>' +
       '</div></div>');
 
     var $ = function (id) { return document.getElementById(id); };
@@ -56,10 +72,10 @@
       if (!link) return;
       var until = Date.now() + 60000;
       link.dataset.locked = '1';
-      link.style.opacity = '0.5';
+      link.style.opacity = '0.5'; link.style.pointerEvents = 'none';
       clearInterval(resendTimer);
       resendTimer = setInterval(function () {
-        if (Date.now() >= until) { clearInterval(resendTimer); link.dataset.locked = ''; link.style.opacity = '1'; }
+        if (Date.now() >= until) { clearInterval(resendTimer); link.dataset.locked = ''; link.style.opacity = '1'; link.style.pointerEvents = ''; }
       }, 1000);
     }
 

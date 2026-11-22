@@ -241,22 +241,36 @@ export async function isAdminUid(uid) {
 
 function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
+// Pages that call promptTwoFA may not load the shared design system; make sure it is there.
+function ensureDesignStyles() {
+  const base = new URL('../../../shared/assets/css/', import.meta.url).href;
+  ['safespace.css', 'components.css'].forEach((name) => {
+    if (document.querySelector('link[href$="' + name + '"]')) return;
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = base + name;
+    document.head.appendChild(l);
+  });
+}
+
 // Email-code dialog. Resolves true once the server accepted the code for this sign-in, false if the user closed it.
 export function promptTwoFA(title) {
   return new Promise((resolve) => {
     const old = document.getElementById('ss2faModal');
     if (old) old.remove();
+    ensureDesignStyles();
     document.body.insertAdjacentHTML('beforeend',
-      '<div id="ss2faModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100000;display:flex;align-items:center;justify-content:center;">' +
-      '<div role="dialog" aria-modal="true" style="background:#fff;color:#222;border-radius:10px;padding:1.5rem 2rem;min-width:320px;max-width:90vw;text-align:center;position:relative;box-shadow:0 4px 16px rgba(0,0,0,.25);">' +
-      '<button id="ss2faClose" aria-label="Close" style="position:absolute;top:8px;right:14px;font-size:1.3rem;cursor:pointer;background:none;border:none;">&times;</button>' +
-      '<h3 style="margin:0 0 .75rem;color:#00723f;">' + esc(title || 'Two-Factor Authentication') + '</h3>' +
-      '<p id="ss2faMsg" style="margin:0 0 1rem;">Sending a 6-digit code to your email...</p>' +
+      '<div id="ss2faModal" class="ss-modal ss-page" style="z-index:100000">' +
+      '<div class="ss-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="ss2faTitle" aria-describedby="ss2faMsg">' +
+      '<button type="button" id="ss2faClose" class="ss-modal__close" aria-label="Close">&times;</button>' +
+      '<h2 id="ss2faTitle" class="ss-modal__title">' + esc(title || 'Two-Factor Authentication') + '</h2>' +
+      '<p id="ss2faMsg" class="ss-modal__body" style="margin-bottom:var(--ss-space-4)">Sending a 6-digit code to your email...</p>' +
       '<div id="ss2faStep2" style="display:none;">' +
-      '<input id="ss2faCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter code" style="width:100%;padding:.5rem;border:1px solid #ccc;border-radius:4px;margin-bottom:.75rem;text-align:center;font-size:1.2rem;box-sizing:border-box;" />' +
-      '<button id="ss2faVerify" style="background:#00723f;color:#fff;border:none;padding:.5rem 1.5rem;border-radius:8px;cursor:pointer;width:100%;">Verify</button>' +
-      '<p style="margin:.75rem 0 0;font-size:.9rem;"><a href="#" id="ss2faResend" style="color:#00723f;">Resend code</a></p></div>' +
-      '<p id="ss2faErr" style="color:#b91c1c;font-size:.9rem;margin:.5rem 0 0;display:none;"></p></div></div>');
+      '<label class="ss-label" for="ss2faCode" style="display:block;margin-bottom:8px">Verification code</label>' +
+      '<input id="ss2faCode" class="ss-control__input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit code" style="padding-left:16px;text-align:center;font-size:1.4rem;letter-spacing:0.3em;font-weight:800;margin-bottom:var(--ss-space-4)" />' +
+      '<button type="button" id="ss2faVerify" class="ss-btn ss-btn--primary ss-btn--block">Verify</button>' +
+      '<p style="margin:var(--ss-space-4) 0 0;text-align:center;font-size:var(--ss-text-sm);"><a href="#" id="ss2faResend" class="ss-link">Resend code</a></p></div>' +
+      '<p id="ss2faErr" role="alert" style="color:var(--ss-danger);font-weight:700;font-size:var(--ss-text-sm);margin:var(--ss-space-3) 0 0;display:none;"></p></div></div>');
     const $ = (id) => document.getElementById(id);
     const setErr = (m) => { const e = $('ss2faErr'); e.textContent = m || ''; e.style.display = m ? 'block' : 'none'; };
     let done = false;

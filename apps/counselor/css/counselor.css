@@ -1,0 +1,102 @@
+/*
+ * Counselor app shell, "calm & soft". Loaded after each page's inline <style> and shared/assets/css/safespace.css.
+ * JS hooks kept: body.collapsed, body.show-sidebar, .nav-item[data-name], .icon-btn, #notifBadge, #profileBtn
+ * Denser than the student app: smaller type in tables/lists, tighter cards.
+ */
+body {
+  --co-sidebar: 256px; --co-sidebar-collapsed: 84px; --co-topbar: 68px;
+  background: var(--ss-bg) !important; color: var(--ss-text); font-family: var(--ss-font); -webkit-font-smoothing: antialiased;
+}
+body button, body input, body select, body textarea { font-family: inherit; }
+
+/* ---- Sidebar ---------------------------------------------------------------------------------------------- */
+body .sidebar { width: var(--co-sidebar); background: var(--ss-surface); border-right: 1px solid var(--ss-border); box-shadow: none; z-index: 60; }
+body .sidebar .top { background: transparent; color: var(--ss-text); padding: 14px 16px; min-height: var(--co-topbar); }
+body .logo { font-size: var(--ss-text-xl); font-weight: 800; color: var(--ss-primary); letter-spacing: -0.01em; }
+body .burger { width: 44px; height: 44px; border-radius: 12px; color: var(--ss-text); font-size: 1.25rem; display: grid; place-items: center; padding: 0; }
+body .burger:hover { background: var(--ss-sage-100); }
+
+body .nav { padding: var(--ss-space-3); gap: var(--ss-space-1); }
+body .nav button, body .bottom .nav-item {
+  min-height: 48px; padding: 6px 12px; gap: var(--ss-space-3); border-radius: 14px; color: var(--ss-text-muted); font-weight: 700; font-size: var(--ss-text-md);
+  transition: background-color var(--ss-dur) var(--ss-ease-out), color var(--ss-dur) var(--ss-ease-out);
+}
+body .nav button:hover { background: var(--ss-sage-100); color: var(--ss-text); }
+body .nav button.active { background: var(--ss-primary-soft); color: var(--ss-primary); font-weight: 800; }
+body .nav .label { font-size: var(--ss-text-md); }
+
+/* Material Icons ligatures replace the emoji (the page already loads that font; one icon family, inherits colour) */
+body .nav .icon, body.collapsed .nav .icon { width: 36px; height: 36px; font-size: 0; display: inline-grid; place-items: center; border-radius: 12px; flex: none; }
+body .nav .icon::before {
+  content: "circle"; font-family: "Material Icons"; font-size: 22px; line-height: 1; font-weight: 400; font-style: normal; letter-spacing: normal;
+  text-transform: none; white-space: nowrap; font-feature-settings: "liga"; -webkit-font-feature-settings: "liga";
+}
+body .nav button.active .icon { background: var(--ss-surface); box-shadow: var(--ss-shadow-1); }
+body .nav [data-name="Home"] .icon::before         { content: "home"; }
+body .nav [data-name="Appointments"] .icon::before { content: "event"; }
+body .nav [data-name="Students"] .icon::before     { content: "groups"; }
+body .nav [data-name="Messages"] .icon::before     { content: "chat_bubble"; }
+body .nav [data-name="Settings"] .icon::before     { content: "settings"; }
+
+body.collapsed .sidebar { width: var(--co-sidebar-collapsed); }
+body.collapsed .nav button, body.collapsed .bottom .nav-item { justify-content: center; padding: 6px 0; }
+
+body .sidebar .bottom { border-top: 1px solid var(--ss-border); padding: var(--ss-space-3); }
+body .logged { font-size: var(--ss-text-sm); color: var(--ss-text-muted); }
+body .logged strong { color: var(--ss-text); font-weight: 800; }
+
+/* ---- Top bar ---------------------------------------------------------------------------------------------- */
+body .topbar {
+  background: var(--ss-surface); color: var(--ss-text); padding: 0 var(--ss-space-6); min-height: var(--co-topbar);
+  border-bottom: 1px solid var(--ss-border); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+body .brand .title { font-size: var(--ss-text-xl); font-weight: 800; color: var(--ss-text); letter-spacing: -0.01em; line-height: 1.2; }
+body .brand .sub { font-size: var(--ss-text-sm); color: var(--ss-text-muted); opacity: 1; }
+body .top-right { gap: var(--ss-space-3); }
+body .top-right #greeting { font-size: var(--ss-text-md) !important; font-weight: 800 !important; color: var(--ss-text); }
+body .top-right #datetime { font-size: var(--ss-text-sm) !important; opacity: 1 !important; color: var(--ss-text-muted); }
+body .top-right > div:first-child { color: var(--ss-text) !important; }
+body .icon-btn { color: var(--ss-text) !important; border-radius: 12px; min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; }
+body .icon-btn:hover { background: var(--ss-sage-100); }
+body .icon-btn .material-icons { color: var(--ss-text) !important; font-size: 24px !important; }
+body #notifBadge { background: var(--ss-danger) !important; color: #fff; font-weight: 800; }
+body #userAvatar, body .avatar {
+  width: 44px !important; height: 44px !important; border-radius: 50%; background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important;
+  font-weight: 800; font-size: var(--ss-text-md); box-shadow: 0 0 0 1.5px var(--ss-sage-200) !important; overflow: hidden; display: grid; place-items: center;
+}
+body .avatar img, body #userAvatarImg { width: 100% !important; height: 100% !important; object-fit: cover; }
+
+/* ---- Content ---------------------------------------------------------------------------------------------- */
+body .card {
+  background: var(--ss-surface); border: 1px solid var(--ss-border); border-radius: var(--ss-radius); box-shadow: var(--ss-shadow-1);
+}
+body .card h3, body .card h2 { color: var(--ss-text); font-weight: 800; }
+body .card > h3 { font-size: var(--ss-text-lg); }
+
+body .appt-badge, body [class*="appt-badge--"] { border-radius: 999px; font-weight: 800; box-shadow: none; }
+body .appt-badge--confirmed { background: var(--ss-success-soft); color: var(--ss-success); }
+body .appt-badge--pending   { background: var(--ss-sand-100); color: var(--ss-warning); }
+body .appt-badge--missed    { background: var(--ss-danger-soft); color: var(--ss-danger); }
+body .appt-badge--ongoing, body .appt-badge--rescheduled, body .appt-badge--default { background: var(--ss-info-soft); color: var(--ss-info); }
+
+/* Primary actions: pill, brand colour (replaces the old blue "View All" etc.) */
+body #viewAllAppts, body .view-btn .btn, body .events .view-btn .btn {
+  background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important; border: 0 !important; border-radius: 999px !important; font-weight: 800; min-height: var(--ss-target); box-shadow: none !important;
+}
+body .view-btn .btn:hover { background: var(--ss-sage-200) !important; filter: none !important; }
+/* avatar image that failed to load: do not leak its alt text into the circle */
+body .avatar img, body #userAvatarImg { font-size: 0; color: transparent; }
+
+/* Mobile bottom navigation */
+body .bottom-nav { background: var(--ss-surface) !important; border-top: 1px solid var(--ss-border) !important; box-shadow: 0 -6px 20px rgba(0, 60, 35, 0.08) !important; }
+body .bottom-nav .bn-item { color: var(--ss-text-muted) !important; border-radius: 14px; min-height: 52px; text-decoration: none; }
+body .bottom-nav .bn-item .label { font-size: var(--ss-text-xs); font-weight: 700; color: inherit; }
+body .bottom-nav .bn-item .material-icons { color: inherit; }
+body .bottom-nav .bn-item.active, body .bottom-nav .bn-item[aria-current="page"] { background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important; }
+
+@media (max-width: 720px) {
+  body .topbar { padding: 0 var(--ss-space-4); }
+  body .sidebar { box-shadow: var(--ss-shadow-3); }
+  body .nav button .label { display: inline; }
+}
+@media (prefers-reduced-motion: reduce) { body .sidebar { transition: none !important; } }

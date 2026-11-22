@@ -1,11 +1,12 @@
 # Browser check: a signed-in (2FA-verified) counselor can load the pages that read consultations/appointments
 # without permission errors, and sees only their own records.
 # Start emulators + `python -m http.server 8080 --bind 127.0.0.1` in apps/counselor first (see counselor_login.py).
+import os
 import json, re, sys, time, urllib.request
 from playwright.sync_api import sync_playwright
 
 AUTH = 'http://127.0.0.1:9099'; DB = 'http://127.0.0.1:9000'; NS = 'demo-safespace-default-rtdb'; PW = 'Sup3r-secret!'
-BASE = 'http://127.0.0.1:8080/pages/'; EMU = '?emulator=1'
+BASE = os.environ.get('COUNSELOR_BASE', 'http://127.0.0.1:8080/pages/'); EMU = '?emulator=1'
 
 
 def req(url, body=None, method=None):

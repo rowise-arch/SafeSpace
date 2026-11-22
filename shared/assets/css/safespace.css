@@ -8,23 +8,48 @@
  *
  * Link it last in <head>:  <link rel="stylesheet" href="../../../shared/assets/css/safespace.css">
  *
+ * Direction: "calm & soft" - warm sage-tinted neutrals, generous radius, soft green-tinted shadows, Nunito.
+ *
  * Contrast (WCAG 2.1, computed): text/surface 17.7, muted/surface 7.6, primary/white 6.0, white/primary 6.0,
  * danger/white 6.5, success/white 5.0, warning/white 5.0, info/white 6.7, input border/white 4.8 (needs 3),
  * dark: text 16.1, muted 7.0, primary 10.2, danger 6.4. The old #10b981 (2.5), #ef4444 (3.8) and #1e8e3e (4.2) fail
  * AA as TEXT; keep them for fills and icons only.
  */
+/* Nunito (SIL Open Font License 1.1), variable weight 400-800, self-hosted so no visitor data goes to Google Fonts. */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../fonts/nunito-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../fonts/nunito-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   /* brand */
   --ss-primary: #00723f;
   --ss-primary-hover: #005c33;
-  --ss-primary-soft: #e6f4ec;
+  --ss-primary-soft: #e5f2ea;
+  --ss-sage-100: #eef5f0;          /* calm surfaces, selected rows, aside panels */
+  --ss-sage-200: #d8eadf;
+  --ss-sand-100: #fbf6ec;          /* warm highlight for friendly notices */
+  --ss-sand-200: #f1e4c8;
   --ss-on-primary: #ffffff;
   --ss-accent: #10b981;            /* fills and icons only, never text on light surfaces */
 
   /* neutrals */
-  --ss-bg: #f3f4f6;
+  --ss-bg: #f4f7f4;
   --ss-surface: #ffffff;
-  --ss-surface-2: #f9fafb;
+  --ss-surface-2: #f8faf8;
   --ss-text: #111827;
   --ss-text-muted: #4b5563;
   --ss-border: #e5e7eb;            /* decorative dividers */
@@ -45,7 +70,7 @@
   --ss-scrim: rgba(0, 0, 0, 0.5);
 
   /* type: 12 14 16 18 20 24 32, body 16px / 1.5 */
-  --ss-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ss-font: 'Nunito', ui-rounded, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --ss-text-xs: 0.75rem;
   --ss-text-sm: 0.875rem;
   --ss-text-md: 1rem;
@@ -60,17 +85,18 @@
   --ss-space-2: 8px;
   --ss-space-3: 12px;
   --ss-space-4: 16px;
+  --ss-space-5: 20px;
   --ss-space-6: 24px;
   --ss-space-8: 32px;
   --ss-space-12: 48px;
 
   /* shape and elevation */
-  --ss-radius-sm: 6px;
-  --ss-radius: 10px;
-  --ss-radius-lg: 16px;
-  --ss-shadow-1: 0 1px 2px rgba(17, 24, 39, 0.08);
-  --ss-shadow-2: 0 4px 12px rgba(17, 24, 39, 0.10);
-  --ss-shadow-3: 0 12px 32px rgba(17, 24, 39, 0.16);
+  --ss-radius-sm: 10px;
+  --ss-radius: 16px;
+  --ss-radius-lg: 24px;
+  --ss-shadow-1: 0 1px 2px rgba(0, 60, 35, 0.06);
+  --ss-shadow-2: 0 6px 20px rgba(0, 60, 35, 0.08);
+  --ss-shadow-3: 0 16px 40px rgba(0, 60, 35, 0.14);
 
   /* motion: micro-interactions 150-300 ms, exits faster than entrances */
   --ss-dur-fast: 150ms;
@@ -111,6 +137,10 @@
   --ss-warning-soft: #451a03;
   --ss-info: #60a5fa;
   --ss-info-soft: #172554;
+  --ss-sage-100: #0f2a1d;
+  --ss-sage-200: #14532d;
+  --ss-sand-100: #2a2312;
+  --ss-sand-200: #4a3d1c;
   --ss-focus: #86efac;
   --ss-focus-halo: #0b1220;
   --ss-scrim: rgba(0, 0, 0, 0.6);

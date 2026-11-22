@@ -1,10 +1,11 @@
 # Browser end-to-end test for the admin app: sign-in with 2FA, student table, login toggle, invitations.
 # Start first: emulators (auth,database,functions) and `python -m http.server 8082 --bind 127.0.0.1` in apps/admin.
+import os
 import json, re, sys, time, urllib.request
 from playwright.sync_api import sync_playwright
 
 AUTH = 'http://127.0.0.1:9099'; DB = 'http://127.0.0.1:9000'; NS = 'demo-safespace-default-rtdb'; PW = 'Sup3r-secret!'
-BASE = 'http://127.0.0.1:8082/pages/'; EMU = '?emulator=1'
+BASE = os.environ.get('ADMIN_BASE', 'http://127.0.0.1:8082/pages/'); EMU = '?emulator=1'
 
 
 def req(url, body=None, method=None):
@@ -77,6 +78,8 @@ with sync_playwright() as p:
     page.goto(BASE + 'login.html' + EMU)
     page.fill('#email', stu); page.fill('#password', PW); page.click('#signinBtn')
     for _ in range(40):  # page.wait_for_timeout (not time.sleep) lets Playwright deliver the dialog event
+        if page.query_selector('#alertModal'):  # the login page shows its message in an in-page dialog
+            alerts.append(page.inner_text('#alertModal'))
         if alerts: break
         page.wait_for_timeout(500)
     check('student cannot sign in to the admin app', any('not an admin' in a for a in alerts), str(alerts))

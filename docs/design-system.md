@@ -37,3 +37,33 @@ All token pairs meet WCAG AA (ratios are listed in the CSS header). Three colour
 5. Forms: visible labels instead of placeholder-only fields, errors next to the field with `aria-live`.
 6. Dark theme for student and counselor apps (admin already switches `data-theme`); tokens exist, pages do not use them yet.
 7. Charts on the admin dashboard: colour-independent encoding and a table alternative.
+
+## "Calm & soft" pilot (student app)
+
+Direction: warm sage-tinted neutrals, rounded corners (10/16/24px), soft green-tinted shadows, Nunito (self-hosted, `shared/assets/fonts`, OFL), pill buttons, one icon family (Font Awesome, inherits text colour).
+
+| Layer | File | Use |
+|---|---|---|
+| Tokens, a11y baseline, font-face | `shared/assets/css/safespace.css` | every page |
+| Components (`ss-auth`, `ss-field`, `ss-control`, `ss-btn`, `ss-alert`, `ss-modal`, `ss-card`, `ss-badge`) | `shared/assets/css/components.css` | rebuilt pages |
+| `SafeSpaceUI.alert/confirm/setLoading`, password toggle, `showModal` shim | `shared/assets/js/ui.js` | rebuilt pages |
+| Student app shell overrides (sidebar, top bar, cards, dashboard parts) | `apps/student/css/student.css` | student shell pages |
+| Landmarks, skip link, keyboard access for the menu/notification/profile controls | `apps/student/js/shell.js` | student shell pages |
+
+Rebuilt so far: student sign-in, verify, sign-up, forgot password, the 2FA dialog, and the student shell (dashboard, messages, history, assessments, resources, settings, profile get the new sidebar/top bar/cards). Phones now have a working menu button.
+Not yet: complete-profile, the inner content of messages/history/assessments/resources/profile, counselor app, admin app.
+
+Notes for the roll-out: the old pages stack several inline `<style>` layers, so `student.css` prefixes selectors with `body` to win on specificity; new pages should use the `ss-` components instead of overriding. Use only tokens that exist in `safespace.css` (an undefined `var()` silently becomes 0/none).
+
+## Roll-out to counselor and admin
+
+| App | Login | Shell |
+|---|---|---|
+| Counselor | rebuilt on `ss-auth` (script and 2FA dialog unchanged; dialog restyled by the `.modal*` classes in `components.css`) | `apps/counselor/css/counselor.css`: sidebar, top bar, Material Icons replace the emoji nav icons, cards, badges, phone bottom nav |
+| Admin | rebuilt on `ss-auth`; the 2FA dialog in `apps/admin/js/main.js` uses the shared modal classes | `apps/admin/css/admin.css`: header and sidebar, calm action buttons, tables |
+
+Admin's `theme.css` forces the old green header with `!important` even in dark mode, so `admin.css` uses `html body` plus `!important` to override it. Remove that from `theme.css` once the admin pages are rebuilt on components instead of overridden.
+
+Screenshots for review: `shared/tests/shots.py` (student) and `shared/tests/shots_staff.py` (admin and counselor; signs in through the real emailed-code flow). Browser suites now take `STUDENT_BASE`, `COUNSELOR_BASE`, `ADMIN_BASE` so they can run against the repo root like the deployed site.
+
+Still on the old inline styles (shell is new, page content is not): the inner content of every page apart from the shells and login pages, plus counselor `landing`, `video`, `privacy`, `individual-inventory`, `student-profile` content, and admin `counselor-student` and `student-profile` (no shared shell markup, so they have no new shell yet).

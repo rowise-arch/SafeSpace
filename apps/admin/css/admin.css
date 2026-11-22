@@ -1,0 +1,103 @@
+/*
+ * Admin app shell, "calm & soft". Loaded AFTER css/theme.css and each page's inline <style>.
+ * theme.css forces the old green header with !important (and keeps it green even in dark mode), so these rules use
+ * `html body` + !important to win. Colours come from the shared --ss-* tokens, which already have a dark theme.
+ * JS hooks kept: .sidebar.collapsed, .sidebar-top.collapsed, .main-content.shifted, .sidebar.mobile-open, .sidebar-overlay.active
+ */
+html body {
+  --ad-sidebar: 264px; --ad-sidebar-collapsed: 84px; --ad-topbar: 68px;
+  background: var(--ss-bg) !important; color: var(--ss-text) !important; font-family: var(--ss-font) !important; -webkit-font-smoothing: antialiased;
+}
+html body button, html body input, html body select, html body textarea { font-family: inherit; }
+
+/* ---- Header (brand + title + user) ------------------------------------------------------------------------ */
+html body .header-and-sidebar-top {
+  height: var(--ad-topbar) !important; background: var(--ss-surface) !important; color: var(--ss-text) !important;
+  border-bottom: 1px solid var(--ss-border); box-shadow: none !important;
+}
+html body .sidebar-top {
+  width: var(--ad-sidebar) !important; height: var(--ad-topbar) !important; padding: 0 var(--ss-space-4) !important; background: var(--ss-surface) !important;
+  border-right: 1px solid var(--ss-border) !important; justify-content: space-between;
+}
+html body .sidebar-top.collapsed { width: var(--ad-sidebar-collapsed) !important; justify-content: center; }
+html body .sidebar-top .sidebar-logo { display: flex; align-items: center; gap: var(--ss-space-3); }
+html body .sidebar-top .sidebar-logo img { height: 36px !important; width: 36px; object-fit: contain; }
+html body .sidebar-top .sidebar-logo span { color: var(--ss-primary) !important; font-size: var(--ss-text-xl); font-weight: 800; letter-spacing: -0.01em; }
+html body .menu-icon {
+  color: var(--ss-text) !important; width: 44px; height: 44px; border-radius: 12px; display: grid !important; place-items: center; cursor: pointer; font-size: 24px;
+}
+html body .menu-icon:hover { background: var(--ss-sage-100); }
+html body .main-top-bar { padding: 0 var(--ss-space-6) !important; }
+html body .header-and-sidebar-top .portal-title, html body .header-and-sidebar-top .main-top-bar .portal-title {
+  color: var(--ss-text) !important; font-size: var(--ss-text-xl) !important; font-weight: 800 !important; letter-spacing: -0.01em;
+}
+html body .header-and-sidebar-top .user-info, html body .header-and-sidebar-top .top-greeting { color: var(--ss-text) !important; }
+html body .header-and-sidebar-top .top-greeting #topGreetingName { font-size: var(--ss-text-md) !important; font-weight: 800 !important; }
+html body .header-and-sidebar-top .top-greeting #topGreetingTime { font-size: var(--ss-text-sm) !important; opacity: 1 !important; color: var(--ss-text-muted); }
+html body .header-and-sidebar-top .material-icons, html body .header-and-sidebar-top .icon-btn { color: var(--ss-text) !important; }
+html body .header-and-sidebar-top .icon-btn { min-width: 44px; min-height: 44px; border-radius: 12px; }
+html body .header-and-sidebar-top .icon-btn:hover { background: var(--ss-sage-100) !important; }
+html body .main-top-bar .user-avatar {
+  width: 44px !important; height: 44px !important; background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important;
+  font-weight: 800; font-size: var(--ss-text-md); box-shadow: 0 0 0 1.5px var(--ss-sage-200); overflow: hidden;
+}
+
+/* ---- Sidebar ---------------------------------------------------------------------------------------------- */
+html body .sidebar {
+  top: var(--ad-topbar) !important; height: calc(100vh - var(--ad-topbar)) !important; width: var(--ad-sidebar); background: var(--ss-surface) !important;
+  border-right: 1px solid var(--ss-border); z-index: 900;
+}
+html body .sidebar.collapsed { width: var(--ad-sidebar-collapsed); }
+html body .nav-item {
+  min-height: 48px; padding: 6px 12px !important; gap: var(--ss-space-3); border-radius: 14px !important; color: var(--ss-text-muted); font-weight: 700; font-size: var(--ss-text-md);
+}
+html body .nav-item .label { font-size: var(--ss-text-md) !important; }
+html body .nav-item .icon { width: 36px; height: 36px; font-size: 22px !important; border-radius: 12px; color: var(--ss-text-muted) !important; }
+html body .nav-item:hover { background: var(--ss-sage-100) !important; color: var(--ss-text) !important; font-weight: 700 !important; }
+html body .nav-item.active { background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important; font-weight: 800 !important; }
+html body .nav-item.active .icon, html body .nav-item:hover .icon { color: var(--ss-primary) !important; }
+html body .nav-item.active .icon { background: var(--ss-surface); box-shadow: var(--ss-shadow-1); }
+html body .sidebar.collapsed .nav-item { justify-content: center; padding: 6px 0 !important; }
+html body .sidebar .nav, html body .sidebar #nav { padding: var(--ss-space-3) !important; gap: var(--ss-space-1) !important; }
+html body .sidebar-footer { border-top: 1px solid var(--ss-border); padding: var(--ss-space-3); }
+
+/* ---- Content ---------------------------------------------------------------------------------------------- */
+html body .main-content { top: var(--ad-topbar) !important; left: var(--ad-sidebar) !important; padding: var(--ss-space-6) !important; }
+html body .main-content.shifted { left: var(--ad-sidebar-collapsed) !important; }
+
+html body .card, html body .stat-card, html body .chart-card, html body .content-card, html body .bg-white {
+  border-radius: var(--ss-radius) !important; box-shadow: var(--ss-shadow-1) !important; border-color: var(--ss-border);
+}
+html body .card h2, html body .card h3 { color: var(--ss-text); font-weight: 800; }
+
+/* Gradient action buttons in the old dashboard become calm pills (one primary look, differentiated by icon) */
+html body .quick-actions .action-btn, html body .quick-actions .action-btn.add-counselor, html body .quick-actions .action-btn.manage-student, html body .quick-actions .action-btn.settings {
+  background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important; border: 0 !important; border-radius: 999px !important; box-shadow: none !important;
+  font-weight: 800; min-height: var(--ss-target);
+}
+html body .quick-actions .action-btn:hover { background: var(--ss-sage-200) !important; transform: none !important; }
+html body .quick-actions .action-btn .material-icons { color: var(--ss-primary) !important; }
+html body a.view-all, html body .view-all {
+  background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important; border-radius: 999px !important; padding: 6px 14px !important; font-size: var(--ss-text-sm); font-weight: 800; text-decoration: none;
+}
+html body a.view-all:hover { background: var(--ss-sage-200) !important; }
+
+/* Tables: dense but calm. The pages' own `.user-table th/td` rules break words anywhere, so these use a higher specificity. */
+html body .main-content table { border-collapse: separate; border-spacing: 0; display: block; max-width: 100%; overflow-x: auto; }
+html body .main-content table th, html body .main-content table td { padding: 10px 6px !important; }
+html body .main-content table th { white-space: nowrap; color: var(--ss-text-muted); font-size: var(--ss-text-sm); font-weight: 800; text-transform: none; letter-spacing: 0; border-bottom: 1px solid var(--ss-border-strong); }
+html body .main-content table td { border-bottom: 1px solid var(--ss-border); word-break: normal; overflow-wrap: normal; white-space: nowrap; overflow: visible; text-overflow: clip; }
+html body .main-content table tbody tr:hover td { background: var(--ss-sage-100); }
+html body .main-content h1, html body .main-content h2 { color: var(--ss-text) !important; font-weight: 800; letter-spacing: -0.01em; }
+
+@media (max-width: 768px) {
+  html body .sidebar:not(.mobile-open) { box-shadow: none !important; }
+  html body .sidebar-top .sidebar-logo span { display: none; }
+  html body .header-and-sidebar-top .portal-title, html body .header-and-sidebar-top .main-top-bar .portal-title { font-size: var(--ss-text-lg) !important; white-space: nowrap; }
+  html body .sidebar-top { width: auto !important; border-right: 0 !important; }
+  html body .main-top-bar { padding: 0 var(--ss-space-3) !important; }
+  html body .top-greeting { display: none !important; }
+  html body .sidebar { top: var(--ad-topbar) !important; }
+  html body .main-content { left: 0 !important; padding: var(--ss-space-4) var(--ss-space-3) !important; }
+}
+@media (prefers-reduced-motion: reduce) { html body .main-content, html body .sidebar { transition: none !important; } }

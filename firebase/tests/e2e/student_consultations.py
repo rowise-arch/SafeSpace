@@ -1,10 +1,10 @@
 # Browser check: student messages/history pages only read the student's own consultations (scoped queries).
 # Start the emulators and `python -m http.server 8081 --bind 127.0.0.1` in apps/student first (see student_flow.py).
-import json, sys, time, urllib.request
+import os, json, sys, time, urllib.request
 from playwright.sync_api import sync_playwright
 
 AUTH = 'http://127.0.0.1:9099'; DB = 'http://127.0.0.1:9000'; NS = 'demo-safespace-default-rtdb'; PW = 'Sup3r-secret!'
-BASE = 'http://127.0.0.1:8081/pages/'; EMU = '?emulator=1'
+BASE = os.environ.get('STUDENT_BASE', 'http://127.0.0.1:8081/pages/'); EMU = '?emulator=1'
 
 
 def req(url, body=None, method=None):

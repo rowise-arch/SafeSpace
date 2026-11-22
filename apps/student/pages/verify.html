@@ -1,340 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Student Verification - SafeSpace Portal</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <style>
-    /* Use styles from signin/signup for consistency */
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body {
-      background: #f4f6f9;
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .header {
-      background: linear-gradient(135deg, #004c27, #00723f);
-      color: white;
-      padding: 2rem 1rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
-      opacity: 0.3;
-    }
-    .header-content { position: relative; z-index: 1; }
-    .logo-section {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-    .logo {
-      width: 48px;
-      height: 48px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #00723f;
-      font-weight: bold;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .header h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .header p { font-size: 1rem; opacity: 0.9; font-weight: 300; }
-    .main-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
-    }
-    .container {
-      max-width: 420px;
-      width: 100%;
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .signin-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #00723f;
-      text-align: center;
-    }
-    .signin-subtitle {
-      font-size: 0.9rem;
-      color: #666;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .form-group { margin-bottom: 1.5rem; }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #333;
-    }
-    .input-wrapper { position: relative; }
-    input {
-      width: 100%;
-      padding: 0.875rem 1rem;
-      padding-left: 3rem;
-      border: 2px solid #e1e5e9;
-      border-radius: 10px;
-      font-size: 1rem;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      background: #f9f9f9;
-    }
-    input:focus {
-      outline: none;
-      border-color: #00723f;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(0, 114, 63, 0.1);
-    }
-    .input-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #666;
-      font-size: 1rem;
-    }
-    .signin-btn {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #00723f, #004c27);
-      color: white;
-      cursor: pointer;
-      margin-bottom: 1.5rem;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .signin-btn.loading {
-      pointer-events: none;
-      opacity: 0.7;
-    }
-    .signin-btn.loading::after {
-      content: '';
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      margin: auto;
-      border: 2px solid transparent;
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
-    .footer {
-      background: #f8f9fa;
-      padding: 1rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #666;
-      border-top: 1px solid #e1e5e9;
-    }
-    @media (max-width: 768px) {
-      .header { padding: 1.5rem 1rem; }
-      .header h1 { font-size: 1.8rem; }
-      .logo { width: 40px; height: 40px; font-size: 1rem; }
-      .main-container { padding: 1rem; }
-      .container {
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      }
-      .signin-title { font-size: 1.3rem; }
-      input {
-        padding: 0.75rem 1rem;
-        padding-left: 2.75rem;
-        font-size: 0.95rem;
-      }
-      .input-icon { left: 0.875rem; font-size: 0.9rem; }
-      .signin-btn { padding: 0.875rem; font-size: 1rem; }
-    }
-    @media (max-width: 480px) {
-      .header h1 { font-size: 1.6rem; }
-      .container {
-        margin: 0;
-        border-radius: 0;
-        box-shadow: none;
-        border: none;
-      }
-      .main-container { padding: 0.5rem; }
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="../../../shared/assets/css/safespace.css">
+  <link rel="stylesheet" href="../../../shared/assets/css/components.css">
 </head>
-<body>
-  <div class="header">
-    <div class="header-content">
-      <div class="logo-section">
-        <div class="logo">SS</div>
-        <h1>SafeSpace</h1>
+<body class="ss-page">
+  <a class="ss-skip-link" href="#main">Skip to main content</a>
+  <div class="ss-auth">
+    <aside class="ss-auth__aside">
+      <a class="ss-brand" href="signin.html">
+        <span class="ss-brand__mark"><img src="../../../shared/assets/safespace.png" alt=""></span>
+        <span class="ss-brand__name">SafeSpace</span>
+      </a>
+      <p class="ss-auth__headline">Welcome to SafeSpace.</p>
+      <p class="ss-auth__sub">Let us confirm it is you, then you can set up your account in a minute.</p>
+      <ul class="ss-auth__points">
+        <li><span class="ss-auth__icon"><i class="fas fa-envelope-open-text" aria-hidden="true"></i></span><div><strong>Check your invitation email</strong><span>It has the invitation code you need below.</span></div></li>
+        <li><span class="ss-auth__icon"><i class="fas fa-user-check" aria-hidden="true"></i></span><div><strong>Use your school details</strong><span>Your student ID, school email and last name.</span></div></li>
+        <li><span class="ss-auth__icon"><i class="fas fa-lock" aria-hidden="true"></i></span><div><strong>Your details stay private</strong><span>They are only used to match your student record.</span></div></li>
+      </ul>
+    </aside>
+
+    <main class="ss-auth__main" id="main">
+      <div class="ss-auth__card">
+        <h1 class="ss-title">Student verification</h1>
+        <p class="ss-lead">Verify your student details to begin registration.</p>
+
+        <form id="verifyForm" class="ss-form">
+          <div class="ss-field">
+            <label class="ss-label" for="studentId">Student ID</label>
+            <div class="ss-control">
+              <i class="fas fa-id-card ss-control__icon" aria-hidden="true"></i>
+              <input class="ss-control__input" type="text" id="studentId" name="studentId" autocomplete="off" placeholder="e.g. 2024-00123" required>
+            </div>
+          </div>
+          <div class="ss-field">
+            <label class="ss-label" for="email">School email address</label>
+            <div class="ss-control">
+              <i class="fas fa-envelope ss-control__icon" aria-hidden="true"></i>
+              <input class="ss-control__input" type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+            </div>
+          </div>
+          <div class="ss-field">
+            <label class="ss-label" for="lastname">Last name</label>
+            <div class="ss-control">
+              <i class="fas fa-user ss-control__icon" aria-hidden="true"></i>
+              <input class="ss-control__input" type="text" id="lastname" name="lastname" autocomplete="family-name" placeholder="Your last name" required>
+            </div>
+          </div>
+          <div class="ss-field">
+            <label class="ss-label" for="code">Invitation code</label>
+            <div class="ss-control">
+              <i class="fas fa-key ss-control__icon" aria-hidden="true"></i>
+              <input class="ss-control__input" type="text" id="code" name="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="From your invitation email" required>
+            </div>
+            <p class="ss-help">Codes are valid for 5 days after the invitation was sent.</p>
+          </div>
+
+          <button type="submit" class="ss-btn ss-btn--primary ss-btn--block" id="verifyBtn">Verify and continue</button>
+        </form>
+
+        <p class="ss-auth__alt">Already have an account? <a class="ss-link" href="signin.html">Sign in</a></p>
       </div>
-      <p>Your mental wellness companion</p>
-    </div>
+      <p class="ss-auth__foot">&copy; SafeSpace. Your privacy and wellbeing come first.</p>
+    </main>
   </div>
 
-  <div class="main-container">
-    <div class="container">
-      <h2 class="signin-title">Student Verification</h2>
-      <p class="signin-subtitle">Verify your student details to begin registration</p>
-      <form id="verifyForm">
-        <div class="form-group">
-          <label for="studentId">Student ID</label>
-          <div class="input-wrapper">
-            <i class="fas fa-id-card input-icon"></i>
-            <input type="text" id="studentId" placeholder="Enter your student ID" required />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <div class="input-wrapper">
-            <i class="fas fa-envelope input-icon"></i>
-            <input type="email" id="email" placeholder="Enter your email address" required />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="lastname">Last Name</label>
-          <div class="input-wrapper">
-            <i class="fas fa-user input-icon"></i>
-            <input type="text" id="lastname" placeholder="Enter your last name" required />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="code">Invitation Code</label>
-          <div class="input-wrapper">
-            <i class="fas fa-key input-icon"></i>
-            <input type="text" id="code" placeholder="Enter your invitation code" required />
-          </div>
-        </div>
-        <button type="submit" class="signin-btn" id="verifyBtn">
-          Verify & Continue
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <div class="footer">
-    <p>&copy; 2025 SafeSpace. Your privacy and mental wellness are our priority.</p>
-  </div>
-
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs (the shared initializer keeps keys out of the HTML) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <!-- Shared project Firebase initializer (keeps keys out of HTML) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
   <script src="../js/firebase-config.js"></script>
-
+  <script src="../../../shared/assets/js/ui.js"></script>
   <script>
-    // Use database reference exposed by firebase_config.js if available.
-    // Fallback to firebase.database() if not.
-    const db = window.db || (window.firebase && firebase.database && firebase.database());
-    if (!db) console.error('Firebase database not initialized. Ensure firebase SDKs and firebase_config.js are loaded.');
+    document.getElementById('verifyForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const studentId = document.getElementById('studentId').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const lastname = document.getElementById('lastname').value.trim();
+      const code = document.getElementById('code').value.trim();
+      const btn = document.getElementById('verifyBtn');
 
+      if (!studentId || !email || !lastname || !code) {
+        showModal('Please fill in all fields.');
+        return;
+      }
 
-    // Modal function for alerts
-    function showModal(message, callback) {
-  const oldModal = document.getElementById('alertModal');
-  if (oldModal) oldModal.remove();
-  const modalHtml = `
-    <div id="alertModal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:9999;display:flex;align-items:center;justify-content:center;">
-      <div style="background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:1.2rem 1.5rem;min-width:280px;max-width:90vw;text-align:center;position:relative;">
-        <span style="position:absolute;top:10px;right:18px;font-size:1.3rem;cursor:pointer;" onclick="document.getElementById('alertModal').remove()">&times;</span>
-        <div style="margin-bottom:1rem;">${message}</div>
-        <button id="modalOkBtn" style="background:#00723f;color:white;border:none;padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;">OK</button>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
-  document.getElementById('modalOkBtn').onclick = function() {
-    document.getElementById('alertModal').remove();
-    if (callback) callback();
-  };
-}
-
-document.getElementById('verifyForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const studentId = document.getElementById("studentId").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const lastname = document.getElementById("lastname").value.trim();
-  const code = document.getElementById("code").value.trim();
-  const btn = document.getElementById("verifyBtn");
-
-  if (!studentId || !email || !lastname || !code) {
-    showModal("Please fill in all fields.");
-    return;
-  }
-
-  btn.classList.add('loading');
-  btn.innerHTML = '';
-
-  try {
-    // The server checks student ID, email, last name and activation code (rate limited).
-    const res = await callFunction('checkStudentActivation', { studentId: studentId, email: email, lastName: lastname, code: code });
-    // Carry the details to the sign-up step in this tab only; they are re-checked there.
-    sessionStorage.setItem('ss_activation', JSON.stringify({ studentId: studentId, email: email, lastName: lastname, code: code, firstName: (res && res.firstName) || '' }));
-    window.location.href = 'signup.html';
-    return;
-  } catch (err) {
-    var errCode = String((err && err.code) || '');
-    if (/already-exists$/.test(errCode)) {
-      showModal("Student Account already verified. Redirecting to sign in...", function() { window.location.href = "signin.html"; });
-    } else if (/not-found$/.test(errCode)) {
-      showModal("No valid match found. Please check your details.");
-    } else if (/deadline-exceeded$/.test(errCode)) {
-      showModal("Your activation code has expired.");
-    } else if (/resource-exhausted$/.test(errCode)) {
-      showModal("Too many attempts. Please try again later.");
-    } else {
-      showModal("Error verifying student. Please try again.");
-    }
-    showModal("Error verifying student. Please try again.<br><br>" + (err.message || err));
-    btn.classList.remove('loading');
-    btn.innerHTML = 'Verify & Continue';
-  }
-});
-
-    // Add smooth focus animations
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('focus', function() {
-        this.parentElement.style.transform = 'scale(1.02)';
-      });
-      input.addEventListener('blur', function() {
-        this.parentElement.style.transform = 'scale(1)';
-      });
+      SafeSpaceUI.setLoading(btn, true);
+      try {
+        // The server checks student ID, email, last name and activation code (rate limited).
+        const res = await callFunction('checkStudentActivation', { studentId: studentId, email: email, lastName: lastname, code: code });
+        // Carry the details to the sign-up step in this tab only; they are re-checked there.
+        sessionStorage.setItem('ss_activation', JSON.stringify({ studentId: studentId, email: email, lastName: lastname, code: code, firstName: (res && res.firstName) || '' }));
+        window.location.href = 'signup.html';
+        return;
+      } catch (err) {
+        const errCode = String((err && err.code) || '');
+        if (/already-exists$/.test(errCode)) {
+          showModal('Student account already verified. Redirecting to sign in...', function () { window.location.href = 'signin.html'; });
+        } else if (/not-found$/.test(errCode)) {
+          showModal('No valid match found. Please check your details.');
+        } else if (/deadline-exceeded$/.test(errCode)) {
+          showModal('Your activation code has expired.');
+        } else if (/resource-exhausted$/.test(errCode)) {
+          showModal('Too many attempts. Please try again later.');
+        } else {
+          showModal('Error verifying student. Please try again.');
+        }
+        SafeSpaceUI.setLoading(btn, false);
+      }
     });
   </script>
 </body>

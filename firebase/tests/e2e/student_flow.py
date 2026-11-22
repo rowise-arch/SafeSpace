@@ -1,16 +1,17 @@
 # Browser end-to-end test for the student journey: activation -> sign-up -> sign-in -> enable 2FA -> sign-in with 2FA.
 # Needs Python + playwright + Chrome. Start first:
 #   1) cd firebase && npx firebase emulators:start --only auth,database,functions --project demo-safespace
-#   2) cd apps/student && python -m http.server 8081 --bind 127.0.0.1
+#   2) cd <repo root> && python -m http.server 8090 --bind 127.0.0.1   (pages load ../../../shared/assets)
+#      then set STUDENT_BASE=http://127.0.0.1:8090/apps/student/pages/
 #   3) python firebase/tests/e2e/student_flow.py
-import json, re, sys, time, urllib.request
+import os, json, re, sys, time, urllib.request
 from playwright.sync_api import sync_playwright
 
 AUTH = 'http://127.0.0.1:9099'
 DB = 'http://127.0.0.1:9000'
 NS = 'demo-safespace-default-rtdb'
 PW = 'Sup3r-secret!'
-BASE = 'http://127.0.0.1:8081/pages/'
+BASE = os.environ.get('STUDENT_BASE', 'http://127.0.0.1:8081/pages/')
 EMU = '?emulator=1'
 
 
@@ -153,7 +154,13 @@ with sync_playwright() as p:
             break
         time.sleep(0.5)
     check('mfa_required claim is set on the account', claims.get('mfa_required') is True, str(claims))
-    check('students/{uid}/email2FA mirrors it', db_get(f'students/{uid}/email2FA') is True)
+    mirrored = None
+    for _ in range(20):  # the database mirror is written just after the claim
+        mirrored = db_get(f'students/{uid}/email2FA')
+        if mirrored is True:
+            break
+        time.sleep(0.5)
+    check('students/{uid}/email2FA mirrors it', mirrored is True)
 
     # ---- 5. new sign-in now requires the code
     open_signin(page)

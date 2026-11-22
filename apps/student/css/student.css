@@ -1,0 +1,174 @@
+/*
+ * Student app shell, "calm & soft". Loaded AFTER each page's inline <style> and after shared/assets/css/safespace.css.
+ * The pages still carry several layers of older inline CSS, so rules here use `body` in front to win on specificity.
+ * JS hooks kept: .sidebar.collapsed, .topbar.shifted, .content.shifted, .sidebar.mobile-open, .sidebar-overlay.active
+ */
+body {
+  --st-sidebar: 264px;
+  --st-sidebar-collapsed: 84px;
+  --st-topbar: 68px;
+  background: var(--ss-bg);
+  color: var(--ss-text);
+  font-family: var(--ss-font);
+  line-height: var(--ss-leading);
+  -webkit-font-smoothing: antialiased;
+}
+body button, body input, body select, body textarea { font-family: inherit; }
+
+/* ---- Sidebar ---------------------------------------------------------------------------------------------- */
+body .sidebar {
+  top: 0; height: 100%; width: var(--st-sidebar); padding: var(--ss-space-4); background: var(--ss-surface); color: var(--ss-text);
+  border-right: 1px solid var(--ss-border); box-shadow: none; gap: var(--ss-space-1);
+  z-index: 900; overflow-y: auto;
+}
+body .sidebar .brand { display: flex; align-items: center; gap: var(--ss-space-3); padding: var(--ss-space-2) var(--ss-space-2) var(--ss-space-5); margin: 0; }
+body .sidebar .logo { width: 44px; height: 44px; border-radius: 14px; background: var(--ss-primary-soft); display: grid; place-items: center; flex: none; }
+body .sidebar .logo img { width: 30px; height: 30px; object-fit: contain; }
+body .sidebar .brand span { font-size: var(--ss-text-xl); font-weight: 800; color: var(--ss-text); letter-spacing: -0.01em; }
+
+body .sidebar a {
+  display: flex; align-items: center; gap: var(--ss-space-3); min-height: 48px; padding: 8px 12px; margin: 0;
+  border-radius: 14px; color: var(--ss-text-muted); font-size: var(--ss-text-md); font-weight: 700; text-decoration: none;
+  transition: background-color var(--ss-dur) var(--ss-ease-out), color var(--ss-dur) var(--ss-ease-out);
+}
+body .sidebar a:hover { background: var(--ss-sage-100); color: var(--ss-text); }
+body .sidebar a.active { background: var(--ss-primary-soft); color: var(--ss-primary); font-weight: 800; }
+body .sidebar a span { color: inherit; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* Icons: Font Awesome glyphs replace the old emoji (one consistent icon family, inherits text colour) */
+body .sidebar a::before {
+  content: "\f111"; font-family: "Font Awesome 6 Free", "Font Awesome 5 Free"; font-weight: 900; font-style: normal;
+  width: 36px; height: 36px; flex: none; margin: 0; display: grid; place-items: center; border-radius: 12px; font-size: 1rem;
+  background: transparent; transition: background-color var(--ss-dur) var(--ss-ease-out);
+}
+body .sidebar a.active::before { background: var(--ss-surface); box-shadow: var(--ss-shadow-1); }
+body .sidebar a[href^="index"]::before       { content: "\f073"; }
+body .sidebar a[href^="history"]::before     { content: "\f1da"; }
+body .sidebar a[href^="assessments"]::before { content: "\f46c"; }
+body .sidebar a[href^="resources"]::before   { content: "\f518"; }
+body .sidebar a[href^="messages"]::before    { content: "\f4ad"; }
+body .sidebar a[href^="settings"]::before    { content: "\f013"; }
+body .sidebar a[href^="profile"]::before     { content: "\f007"; }
+
+body .sidebar.collapsed { width: var(--st-sidebar-collapsed); padding: var(--ss-space-3); }
+body .sidebar.collapsed .brand { justify-content: center; padding-inline: 0; }
+body .sidebar.collapsed .brand span, body .sidebar.collapsed a span { display: none; }
+body .sidebar.collapsed a { justify-content: center; padding: 8px 0; }
+body .sidebar.collapsed a::before { margin: 0; font-size: 1.05rem; }
+
+/* ---- Top bar ---------------------------------------------------------------------------------------------- */
+body .topbar {
+  left: var(--st-sidebar); right: 0; width: auto; height: var(--st-topbar); padding: 0 var(--ss-space-6);
+  background: var(--ss-surface); color: var(--ss-text); border-bottom: 1px solid var(--ss-border); box-shadow: none;
+  display: flex; align-items: center; justify-content: space-between; z-index: 880;
+}
+body .topbar.shifted { left: var(--st-sidebar-collapsed); }
+body .topbar-left { display: flex; align-items: center; gap: var(--ss-space-3); min-width: 0; }
+body .hamburger {
+  display: grid !important; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: var(--ss-text);
+  cursor: pointer; font-size: 1.1rem; transition: background-color var(--ss-dur) var(--ss-ease-out);
+}
+body .hamburger:hover { background: var(--ss-sage-100); }
+body .mobile-logo { display: none; }
+body .portal-title { min-width: 0; line-height: 1.25; }
+body .portal-title strong { font-size: var(--ss-text-lg); font-weight: 800; color: var(--ss-text); }
+body .portal-title strong .safespace { color: var(--ss-text-muted); font-weight: 700; }
+body .portal-title small { font-size: var(--ss-text-sm); color: var(--ss-text-muted); opacity: 1; }
+
+body .notif-wrapper { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; cursor: pointer; }
+body .notif-wrapper:hover { background: var(--ss-sage-100); }
+body .notif-wrapper .icon-btn { font-size: 0; color: var(--ss-text); }
+body .notif-wrapper .icon-btn::before { content: "\f0f3"; font-family: "Font Awesome 6 Free", "Font Awesome 5 Free"; font-weight: 900; font-size: 1.15rem; }
+body .profile {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--ss-primary-soft); color: var(--ss-primary);
+  font-weight: 800; font-size: var(--ss-text-md); display: grid; place-items: center; cursor: pointer; border: 2px solid var(--ss-surface);
+  box-shadow: 0 0 0 1.5px var(--ss-sage-200);
+}
+body .notif-dropdown {
+  border-radius: var(--ss-radius); border: 1px solid var(--ss-border); box-shadow: var(--ss-shadow-3); background: var(--ss-surface); overflow: hidden;
+}
+body .notif-dropdown .notif-header { font-weight: 800; padding: var(--ss-space-3) var(--ss-space-4); border-bottom: 1px solid var(--ss-border); }
+
+/* ---- Content area ----------------------------------------------------------------------------------------- */
+body .content { margin-left: var(--st-sidebar); margin-top: var(--st-topbar); padding: var(--ss-space-8) var(--ss-space-8) var(--ss-space-12); }
+body .content.shifted { margin-left: var(--st-sidebar-collapsed); }
+body .content:focus { outline: none; }
+body .page-header { margin-bottom: var(--ss-space-6); }
+body .page-header h1, body .page-header h2 { font-size: var(--ss-text-2xl); line-height: 1.25; font-weight: 800; color: var(--ss-text); letter-spacing: -0.01em; margin: 0 0 var(--ss-space-1); }
+body .page-header p { color: var(--ss-text-muted); font-size: var(--ss-text-md); margin: 0; }
+
+body .card {
+  background: var(--ss-surface); border: 1px solid var(--ss-border); border-radius: var(--ss-radius); padding: var(--ss-space-6);
+  box-shadow: var(--ss-shadow-1); transform: none;
+}
+body .card:hover { box-shadow: var(--ss-shadow-2); transform: none; }
+body .card h3 { display: flex; align-items: center; gap: var(--ss-space-3); font-size: var(--ss-text-lg); font-weight: 800; color: var(--ss-text); margin: 0 0 var(--ss-space-4); }
+body .card h3 i { width: 36px; height: 36px; border-radius: 12px; background: var(--ss-primary-soft); color: var(--ss-primary); display: grid; place-items: center; font-size: 0.95rem; flex: none; }
+
+body .content-footer { margin-left: 0 !important; max-width: 100% !important; color: var(--ss-text-muted); font-size: var(--ss-text-sm); }
+
+/* ---- Phones and small tablets: off-canvas navigation ------------------------------------------------------ */
+body .sidebar-overlay { position: fixed; inset: 0; background: var(--ss-scrim); opacity: 0; pointer-events: none; transition: opacity var(--ss-dur) var(--ss-ease-out); z-index: 890; }
+body .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+@media (max-width: 768px) {
+  body .sidebar { transform: translateX(-102%); width: min(300px, 86vw); box-shadow: var(--ss-shadow-3); transition: transform var(--ss-dur-slow) var(--ss-ease-out); }
+  body .sidebar.mobile-open { transform: none; }
+  body .sidebar.collapsed { width: min(300px, 86vw); }
+  body .sidebar.collapsed .brand span, body .sidebar.collapsed a span { display: inline; }
+  body .sidebar.collapsed a { justify-content: flex-start; padding: 8px 12px; }
+  body .topbar, body .topbar.shifted { left: 0; padding: 0 var(--ss-space-3); }
+  body .mobile-logo { display: none; }
+  body .portal-title strong .safespace { display: none; }
+  body .content, body .content.shifted { margin-left: 0; padding: var(--ss-space-5) var(--ss-space-4) var(--ss-space-12); }
+  body .card { padding: var(--ss-space-5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body .sidebar, body .sidebar-overlay { transition: none; }
+}
+
+/* ---- Brand block (the old inline CSS paints it solid green) ----------------------------------------------- */
+body .sidebar .brand, body .sidebar .brand.collapsed {
+  position: static; width: auto; height: auto; background: transparent; color: var(--ss-text); border: 0; z-index: auto;
+  padding: var(--ss-space-2) var(--ss-space-2) var(--ss-space-5); box-sizing: border-box; justify-content: flex-start;
+}
+body .sidebar .brand .logo { background: var(--ss-primary-soft) url("../../../shared/assets/safespace.png") center / 30px no-repeat; color: transparent; border-radius: 14px; }
+body .sidebar .brand .logo img { display: none; }
+body .sidebar.collapsed .brand { justify-content: center; padding-inline: 0; }
+body .sidebar .brand span { margin-left: 0; }
+body #nav { margin-top: 0; padding-top: 0; }
+body .mobile-logo { display: none !important; }
+
+/* ---- Dashboard: announcement carousel --------------------------------------------------------------------- */
+body .swiper-slide { padding-inline: 64px; border-radius: var(--ss-radius); background: var(--ss-sage-100); }
+body .swiper-slide strong { color: var(--ss-primary); font-size: var(--ss-text-lg); font-weight: 800; }
+body .swiper-slide p { color: var(--ss-text-muted); }
+body .swiper-slide button {
+  min-height: var(--ss-target); border-radius: 999px; background: var(--ss-primary); color: var(--ss-on-primary);
+  font-weight: 800; border: 0; padding: 10px 22px; cursor: pointer; transition: background-color var(--ss-dur) var(--ss-ease-out);
+}
+body .swiper-slide button:hover { background: var(--ss-primary-hover); }
+body .swiper-button-prev, body .swiper-button-next { width: 44px; height: 44px; background: var(--ss-surface); color: var(--ss-primary); box-shadow: var(--ss-shadow-2); }
+@media (max-width: 768px) { body .swiper-slide { padding-inline: 56px; } }
+
+/* ---- Dashboard: report a concern (accessible contrast, 44px targets, not colour-only) --------------------- */
+body .report-buttons { display: flex; flex-wrap: wrap; gap: var(--ss-space-3); }
+body .report-btn {
+  min-height: var(--ss-target); padding: 10px 18px; border-radius: 999px; font-size: var(--ss-text-sm); font-weight: 800;
+  background: var(--ss-surface-2); color: var(--ss-text); border: 1.5px solid var(--ss-border-strong);
+}
+body .report-btn i { color: var(--ss-danger); }
+body .report-btn.report-concern i { color: var(--ss-warning); }
+body .report-btn.report-bullying, body .report-btn.report-harassment, body .report-btn.report-concern { background: var(--ss-surface-2); color: var(--ss-text); border: 1.5px solid var(--ss-border-strong); }
+body .report-btn:hover { background: var(--ss-danger-soft); border-color: var(--ss-danger); transform: none; box-shadow: none; }
+body .report-btn.report-concern:hover { background: var(--ss-sand-100); border-color: var(--ss-warning); }
+@media (max-width: 768px) { body .report-btn { flex: 1 1 100%; justify-content: center; } }
+
+/* ---- Dashboard: emergency support: warm and calm, readable ------------------------------------------------ */
+body .emergency-hotline {
+  background: var(--ss-sand-100); border: 1px solid var(--ss-sand-200); border-radius: var(--ss-radius); color: var(--ss-text);
+  padding: var(--ss-space-5) !important; text-align: left; height: auto; align-items: flex-start;
+}
+body .emergency-hotline strong { color: var(--ss-text); font-size: var(--ss-text-lg); font-weight: 800; }
+body .emergency-hotline strong i { color: var(--ss-warning); }
+body .emergency-hotline .hotline-number { color: var(--ss-primary); font-weight: 800; font-size: var(--ss-text-lg); text-decoration: underline; text-underline-offset: 3px; }
+body .emergency-hotline .hotline-number:hover { color: var(--ss-primary-hover); }
