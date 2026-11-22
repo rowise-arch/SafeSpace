@@ -2628,9 +2628,9 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/otplib@12.0.1/otplib-browser.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
 <script src="../js/firebase-config.js"></script>
+<script src="../js/two-factor.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     enforceAuthRedirect();
@@ -2975,147 +2975,26 @@
     document.body.insertAdjacentHTML('beforeend', modalHtml);
   }
 
-  // Modal for email 2FA enrollment
-  function showEmail2FAModal(onSend, onVerify) {
-    const oldModal = document.getElementById('modalEmail2FA');
-    if (oldModal) oldModal.remove();
-
-    const modalHtml = `
-      <div id="modalEmail2FA" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:9999;display:flex;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:1.2rem 1.5rem;min-width:320px;max-width:90vw;text-align:center;position:relative;">
-          <span style="position:absolute;top:10px;right:18px;font-size:1.3rem;cursor:pointer;" onclick="document.getElementById('modalEmail2FA').remove()">&times;</span>
-          <strong>Enable Email-based Two-Factor Authentication</strong><br><br>
-          <div id="email2FAstep1">
-            <button id="email2FASendBtn" style="background:#00723f;color:white;border:none;padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;">Send Verification Code to Email</button>
-          </div>
-          <div id="email2FAstep2" style="display:none;margin-top:1rem;">
-            <label style="font-size:0.98rem;">Verification Code:</label><br>
-            <input id="email2FACode" type="text" placeholder="Enter code" style="width:80%;padding:0.5rem;margin-bottom:1rem;border-radius:6px;border:1px solid #ccc;"><br>
-            <button id="email2FAVerifyBtn" style="background:#00723f;color:white;border:none;padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;">Verify & Enroll</button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    document.getElementById('email2FASendBtn').onclick = async function() {
-      this.disabled = true;
-      this.textContent = "Sending...";
-      await onSend();
-      document.getElementById('email2FAstep2').style.display = 'block';
-      document.getElementById('email2FAstep1').style.display = 'none';
-    };
-
-    document.getElementById('email2FAVerifyBtn').onclick = async function() {
-      const code = document.getElementById('email2FACode').value.trim();
-      if (!code) {
-        alert("Please enter the verification code.");
-        return;
-      }
-      this.disabled = true;
-      this.textContent = "Verifying...";
-      await onVerify(code);
-    };
-  }
-
-  // Generate a random 6-digit code
-  function generate2FACode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  }
-
   // Attach click event to all settings items
   document.querySelectorAll('.settings-item').forEach(item => {
     item.addEventListener('click', async function() {
       const label = item.querySelector('.info-label').textContent;
       if (label === "Two-Factor Authentication") {
-    const user = auth ? auth.currentUser : null;
+        const user = auth ? auth.currentUser : null;
         if (!user) return show2FAModal("You must be signed in.");
-
-        // Check if already enrolled (use your own flag in DB)
-        const snapshot = await db.ref('students').orderByChild('uid').equalTo(user.uid).once('value');
-        let studentKey = null, data = null;
-        if (snapshot.exists()) {
-          studentKey = Object.keys(snapshot.val())[0];
-          data = Object.values(snapshot.val())[0];
-          if (data.email2FAEnabled || data.totpSecret) {
-            show2FAModal("2FA is already enabled for your account.");
-            return;
-          }
+        const info = await getSessionInfo(user, true);
+        if (info.mfaRequired) {
+          show2FAModal("Two-factor authentication is already on for your account. You can turn it off in Settings.");
+          return;
         }
-
-        // Show modal for 2FA method selection
-        const modalHtml = `
-          <div id="modal2FAChoice" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:9999;display:flex;align-items:center;justify-content:center;">
-            <div style="background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:1.2rem 1.5rem;min-width:320px;max-width:90vw;text-align:center;position:relative;">
-              <span style="position:absolute;top:10px;right:18px;font-size:1.3rem;cursor:pointer;" onclick="document.getElementById('modal2FAChoice').remove()">&times;</span>
-              <strong>Choose Two-Factor Authentication Method</strong><br><br>
-              <button id="chooseEmail2FA" style="background:#00723f;color:white;border:none;padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;margin-bottom:1rem;">Email-based 2FA</button><br>
-              <button id="chooseApp2FA" style="background:#004c27;color:white;border:none;padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;">Authenticator App (TOTP)</button>
-            </div>
-          </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-        document.getElementById('chooseEmail2FA').onclick = function() {
-          document.getElementById('modal2FAChoice').remove();
-          // Call your existing email 2FA modal logic
-          let code = generate2FACode();
-          showEmail2FAModal(
-            async () => {
-              show2FAModal(`A verification code has been sent to your email.<br><br><strong>Demo code: ${code}</strong>`);
-              await db.ref('students/' + studentKey).update({ email2FACode: code });
-            },
-            async (inputCode) => {
-              const snap = await db.ref('students/' + studentKey + '/email2FACode').once('value');
-              if (snap.val() === inputCode) {
-                await db.ref('students/' + studentKey).update({ email2FAEnabled: true, email2FACode: null });
-                document.getElementById('modalEmail2FA').remove();
-                show2FAModal("Email-based 2FA enabled! You will now be required to verify your email on login.");
-              } else {
-                show2FAModal("Incorrect code. Please try again.");
-              }
-            }
-          );
-        };
-
-        document.getElementById('chooseApp2FA').onclick = async function() {
-          document.getElementById('modal2FAChoice').remove();
-          // Generate a TOTP secret (for demo, store in DB; for production, use backend)
-          const secret = otplib.authenticator.generateSecret();
-          const otpauth = otplib.authenticator.keyuri(user.email, "SafeSpace", secret);
-
-          // Generate QR code
-          let qrDataUrl = "";
-          await QRCode.toDataURL(otpauth).then(url => { qrDataUrl = url; });
-
-          // Show modal with QR code and input for code
-          const modalAppHtml = `
-            <div id="modalApp2FA" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);z-index:9999;display:flex;align-items:center;justify-content:center;">
-              <div style="background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:1.2rem 1.5rem;min-width:320px;max-width:90vw;text-align:center;position:relative;">
-                <span style="position:absolute;top:10px;right:18px;font-size:1.3rem;cursor:pointer;" onclick="document.getElementById('modalApp2FA').remove()">&times;</span>
-                <strong>Authenticator App Setup</strong><br><br>
-                <div>Scan this QR code with your authenticator app:</div>
-                <img src="${qrDataUrl}" alt="Authenticator QR" style="margin:1rem auto;max-width:180px;"><br>
-                <div style="font-size:0.95rem;margin-bottom:1rem;">Or enter this code manually:<br><strong>${secret}</strong></div>
-                <label>Enter the 6-digit code from your app:</label><br>
-                <input id="totpCodeInput" type="text" maxlength="6" placeholder="Enter 6-digit code" style="width:80%;padding:0.5rem;margin-bottom:1rem;border-radius:6px;border:1px solid #ccc;"><br>
-                <button id="totpVerifyBtn" style="background:#00723f;color:white;border:none;padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;">Verify & Enroll</button>
-              </div>
-            </div>
-          `;
-          document.body.insertAdjacentHTML('beforeend', modalAppHtml);
-
-          document.getElementById('totpVerifyBtn').onclick = async function() {
-            const code = document.getElementById('totpCodeInput').value.trim();
-            if (otplib.authenticator.check(code, secret)) {
-              await db.ref('students/' + studentKey).update({ totpSecret: secret });
-              document.getElementById('modalApp2FA').remove();
-              show2FAModal("Authenticator App 2FA enabled! You will now be required to enter a code from your app on login.");
-            } else {
-              show2FAModal("Incorrect code. Please try again.");
-            }
-          };
-        };
+        try {
+          // Server-side: emails a code, verifies it, then records the requirement on the account
+          const ok = await SafeSpace2FA.setEnabled(true);
+          if (ok) show2FAModal("Email-based 2FA enabled! You will now be asked for a code from your email when you sign in.");
+        } catch (e) {
+          console.error('enable 2FA failed', e);
+          show2FAModal("Could not enable 2FA. Please try again.");
+        }
       }
     });
   });

@@ -1,7 +1,7 @@
 'use strict';
 const crypto = require('node:crypto');
 const { onCall } = require('firebase-functions/v2/https');
-const { db, auth, HttpsError, requireRole, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail } = require('./core');
+const { db, auth, HttpsError, requireRole, hasStamp, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail } = require('./core');
 
 const ROSTER = 'roster';
 const INVITE_TTL_MS = 5 * 24 * 60 * 60 * 1000;
@@ -119,4 +119,30 @@ const inviteStudents = onCall(async (req) => {
   return { ok: true, sent, failed };
 });
 
-module.exports = { checkStudentActivation, activateStudent, inviteStudents };
+/**
+ * Student turns email 2FA on/off. Needs a 2FA stamp for this sign-in (verifyLoginCode): that proves control of the
+ * mailbox when enabling, and stops a password thief from switching it off. Stored as the `mfa_required` claim so the
+ * database rules enforce it; students/{uid}/email2FA only mirrors it for the settings UI.
+ */
+const setTwoFactor = onCall(async (req) => {
+  requireRole(req, 'student');
+  if (!hasStamp(req)) throw new HttpsError('permission-denied', 'Verify a code first.');
+  const enabled = !!(req.data && req.data.enabled);
+  await mergeClaims(req.auth.uid, { mfa_required: enabled ? true : null });
+  await db().ref(`students/${req.auth.uid}`).update({ email2FA: enabled });
+  return { ok: true, enabled };
+});
+
+/** Admin: enable/disable a student. Disabling is enforced by Auth itself and ends their sessions. */
+const setStudentAccess = onCall(async (req) => {
+  requireRole(req, 'admin');
+  const uid = str(req.data && req.data.uid, 'uid', { max: 128 });
+  const enabled = !!(req.data && req.data.enabled);
+  if (!(await db().ref(`students/${uid}`).get()).exists()) throw new HttpsError('not-found', 'Student not found.');
+  await auth().updateUser(uid, { disabled: !enabled });
+  if (!enabled) await auth().revokeRefreshTokens(uid);
+  await db().ref(`students/${uid}`).update({ login: enabled ? 'Enable' : 'Disable' });
+  return { ok: true };
+});
+
+module.exports = { checkStudentActivation, activateStudent, inviteStudents, setTwoFactor, setStudentAccess };

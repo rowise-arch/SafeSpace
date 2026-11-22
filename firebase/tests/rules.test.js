@@ -62,6 +62,32 @@ test('counselor without a valid 2FA stamp is treated as unauthorised', async () 
   }
 });
 
+// ---- student 2FA preference (mfa_required claim) ----
+test('student with 2FA enabled needs a stamp for this sign-in', async () => {
+  const noStamp = as('stu1', 'student', { mfa_required: true });
+  const stamped = as('stu1', 'student', { mfa_required: true, twofa_until: Date.now() + 3600e3, twofa_auth_time: 1700000000 });
+  const otherSignIn = as('stu1', 'student', { mfa_required: true, twofa_until: Date.now() + 3600e3, twofa_auth_time: 1699999999 });
+  for (const db of [noStamp, otherSignIn]) {
+    await assertFails(get(ref(db, 'students/stu1')));
+    await assertFails(get(ref(db, 'consultations/c1')));
+    await assertFails(get(ref(db, 'appointments_by_student/stu1')));
+    await assertFails(update(ref(db, 'students/stu1'), { first_name: 'x' }));
+  }
+  await assertSucceeds(get(ref(stamped, 'students/stu1')));
+  await assertSucceeds(get(ref(stamped, 'consultations/c1')));
+  // a student who never enabled 2FA is unaffected
+  await assertSucceeds(get(ref(as('stu1', 'student'), 'students/stu1')));
+});
+
+test('a student can look up only their own record by uid', async () => {
+  const db = as('stu1', 'student');
+  await assertSucceeds(get(query(ref(db, 'students'), orderByChild('uid'), equalTo('stu1'))));
+  await assertFails(get(query(ref(db, 'students'), orderByChild('uid'), equalTo('stu2'))));
+  await assertFails(get(query(ref(db, 'students'), orderByChild('student_id'), equalTo('2021-0002'))));
+  await assertFails(get(ref(db, 'students')));
+  await assertFails(get(query(ref(anon(), 'students'), orderByChild('uid'), equalTo('stu1'))));
+});
+
 // ---- students ----
 test('student reads/writes only their own profile', async () => {
   const db = as('stu1', 'student');

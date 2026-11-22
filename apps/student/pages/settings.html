@@ -1825,7 +1825,9 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-functions.js"></script>
 <script src="../js/firebase-config.js"></script>
+<script src="../js/two-factor.js"></script>
 <script src="../js/notification.js"></script>
 <script>
   // Global functions for inline onclick
@@ -2143,23 +2145,23 @@
     }
 
     if (confirmTwoFAConfirm) {
-      confirmTwoFAConfirm.addEventListener('click', () => {
+      confirmTwoFAConfirm.addEventListener('click', async () => {
         const intendedState = twoFAConfirmModal.dataset.intendedState === 'true';
-        isEmail2FAEnabled = intendedState;
-        // Save to database
-        const user = firebase.auth().currentUser;
-        if (user) {
-          const uid = user.uid;
-          firebase.database().ref('students').orderByChild('uid').equalTo(uid).once('value').then(function(snapshot) {
-            if (snapshot.exists()) {
-              snapshot.forEach(function(child) {
-                const key = child.key;
-                firebase.database().ref('students/' + key).update({ email2FA: isEmail2FAEnabled });
-              });
-            }
-          });
-        }
         twoFAConfirmModal.style.display = 'none';
+        try {
+          // Server-side: asks for an emailed code for this sign-in, then updates the account's 2FA requirement
+          const ok = await SafeSpace2FA.setEnabled(intendedState);
+          if (ok) {
+            isEmail2FAEnabled = intendedState;
+            showActionCard('Success', intendedState ? 'Email 2FA enabled.' : 'Email 2FA disabled.');
+          } else {
+            email2FASwitch.checked = isEmail2FAEnabled;
+          }
+        } catch (e) {
+          console.error('setTwoFactor failed', e);
+          email2FASwitch.checked = isEmail2FAEnabled;
+          showActionCard('Error', 'Could not update two-factor authentication. Please try again.');
+        }
         showActionCard('Success', intendedState ? 'Email 2FA enabled.' : 'Email 2FA disabled.');
       });
     }

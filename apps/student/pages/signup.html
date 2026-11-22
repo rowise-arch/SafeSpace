@@ -351,6 +351,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
   <script src="../js/firebase-config.js"></script>
 
   <script>
@@ -359,14 +360,10 @@
     const auth = window.auth || (window.firebase ? firebase.auth() : null);
     const db = window.db || (window.firebase ? firebase.database() : null);
 
-    // Get key and email from URL
-    const params = new URLSearchParams(window.location.search);
-    const studentKey = params.get("key");
-    const email = params.get("email");
-
-    // if (!studentKey || !email) {
-    //   window.location.href = "verify.html";
-    // }
+    // The verify step leaves the activation details in this tab's sessionStorage (they are re-checked by the server)
+    let activation = null;
+    try { activation = JSON.parse(sessionStorage.getItem('ss_activation') || 'null'); } catch (e) { activation = null; }
+    if (!activation) { window.location.replace('verify.html'); }
 
     // Modal function for alerts
     function showModal(message, callback) {
@@ -409,30 +406,25 @@
   submitBtn.classList.add('loading');
   submitBtn.disabled = true;
       try {
-        if (!auth || typeof auth.createUserWithEmailAndPassword !== 'function') {
-          throw new Error('Firebase Auth not initialized.');
-        }
-        if (!db) {
-          throw new Error('Firebase Database not initialized.');
-        }
+        if (!activation) { window.location.href = 'verify.html'; return; }
 
-        // Step 1: Create Firebase Authentication account
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-
-        // Step 2: Update record in Realtime Database
-        const updates = {
-          uid: userCredential.user.uid,
+        // The server re-checks the activation details, creates the account, sets the student role
+        // and writes the student record. Nothing is created from the browser any more.
+        await callFunction('activateStudent', {
+          studentId: activation.studentId,
+          email: activation.email,
+          lastName: activation.lastName,
+          code: activation.code,
           username: username,
           gender: gender,
-          expiry_date: 0,
-          status: 2
-        };
+          password: password
+        });
+        sessionStorage.removeItem('ss_activation');
+        await auth.signInWithEmailAndPassword(activation.email, password);
+        await getSessionInfo(null, true); // pick up the role claim
 
-        await db.ref("students/" + studentKey).update(updates);
-
-        // After creating the account and updating the student record, redirect to profile completion
         showModal('Signup successful! Continue to complete your profile.', function() {
-          window.location.href = 'complete-profile.html?key=' + encodeURIComponent(studentKey);
+          window.location.href = 'complete-profile.html';
         });
       } catch (error) {
         showModal('Error: ' + (error.message || error));

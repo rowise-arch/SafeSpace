@@ -84,8 +84,8 @@
     const storage = window.storage || (window.firebase && firebase.storage ? firebase.storage() : null);
 
     const params = new URLSearchParams(window.location.search);
-    // allow optional legacy student key in URL but prefer the authenticated user's UID
-    let studentKey = params.get('key');
+    // the student record is keyed by the authenticated user's UID (resolved after sign-in below)
+    let studentKey = null;
 
     // UI state
     let step = 1;
@@ -573,14 +573,6 @@
           const q = await db.ref('students').orderByChild('uid').equalTo(user.uid).once('value');
           if (q && q.exists()) return Object.keys(q.val())[0];
         } catch(e){ console.warn('Lookup by child uid failed', e); }
-
-        // 3) try searching by email_address (useful when DB keyed by school id and email is stored)
-        if (user.email){
-          try{
-            const q2 = await db.ref('students').orderByChild('email_address').equalTo(user.email).once('value');
-            if (q2 && q2.exists()) return Object.keys(q2.val())[0];
-          } catch(e){ console.warn('Lookup by email failed', e); }
-        }
 
         return null;
       }

@@ -37,6 +37,8 @@ await auth.currentUser.getIdToken(true);                      // pick up the two
 | `activateStudent({...same, username, gender, password})` | anyone (rate limited) | `signup.html` creating the Auth user + writing the record |
 | `sendLoginCode()` / `verifyLoginCode({code})` | signed-in user with a role | browser-side 2FA (`sessionStorage`, `temp2FACode`, EmailJS) |
 | `inviteStudents({ids?, resend?})` | admin | browser-generated activation codes + EmailJS |
+| `setTwoFactor({enabled})` | student (needs a code for this sign-in) | settings/profile writing `email2FA` and `temp2FACode` into the student record |
+| `setStudentAccess({uid,enabled})` | admin | the client-side `login: Enable/Disable` flag check |
 | `createCounselor({...})` / `setCounselorAccess({uid,enabled})` / `deleteCounselor({uid})` | admin | `admin/js/main.js` creating users with a second Auth app |
 
 ## 2FA enforcement
@@ -57,6 +59,18 @@ password sign-in on another device needs its own code. Signing in again elsewher
 
 Local browser testing: serve `apps/counselor` and open `/pages/login.html?emulator=1` (`?emulator=0` to switch back).
 `tests/e2e/counselor_login.py` drives this with Playwright.
+
+## Switching the student pages over
+Done on this branch: `verify`, `signup`, `signin`, `settings` (2FA toggle) and `profile` (2FA setup) now call the
+functions; `complete-profile` reads `students/{uid}`; `index` gets the shared session guard. Student 2FA is optional:
+turning it on stores an `mfa_required` claim, and the rules then require a code for every new sign-in of that student.
+The student pages need the roster in `/roster` (move pre-registered `students` records there) and the claims backfill.
+`js/two-factor.js` holds the shared code dialog. The fake authenticator-app (TOTP) option on the profile page was
+removed: it never took part in sign-in. Local testing: open any student page with `?emulator=1`;
+`tests/e2e/student_flow.py` runs the whole journey in Chrome (16 checks).
+
+Still on the old model (will hit permission errors under the new rules until converted): `messages.html` and
+`history.html` read the whole `consultations` collection; the counselor pages beyond login; the admin pages.
 
 ## Configuration
 Copy `functions/.env.example` to `functions/.env` for SMTP. With no SMTP configured the emulator writes mail to

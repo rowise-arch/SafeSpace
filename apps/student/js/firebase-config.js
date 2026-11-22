@@ -15,6 +15,22 @@
     measurementId: "G-YY33W1QM2N"
   };
 
+  // Local development against the Firebase emulators (see firebase/README.md):
+  // open any student page on localhost with ?emulator=1 to switch on, ?emulator=0 to switch off.
+  var useEmulators = false;
+  try {
+    if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+      var emuParam = new URLSearchParams(location.search).get('emulator');
+      if (emuParam === '1') localStorage.setItem('dev_use_emulators', '1');
+      if (emuParam === '0') localStorage.removeItem('dev_use_emulators');
+      useEmulators = localStorage.getItem('dev_use_emulators') === '1';
+    }
+  } catch (e) { /* ignore */ }
+  if (useEmulators) {
+    firebaseConfig.projectId = 'demo-safespace';
+    firebaseConfig.databaseURL = 'https://demo-safespace-default-rtdb.firebaseio.com';
+  }
+
   try {
     if (!window.firebase) {
       console.warn('Firebase SDK not loaded yet. Ensure firebase-app.js and firebase-auth.js are included before firebase_config.js.');
@@ -23,12 +39,49 @@
     if (window.firebase && !firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
       console.log('Firebase initialized');
+      if (useEmulators) {
+        try { if (firebase.auth) firebase.auth().useEmulator('http://127.0.0.1:9099'); } catch (e) { /* ignore */ }
+        try { if (firebase.database) firebase.database().useEmulator('127.0.0.1', 9000); } catch (e) { /* ignore */ }
+        console.warn('[SafeSpace] Using Firebase emulators');
+      }
     }
 
     // Expose database reference for pages that expect `window.db`
     if (window.firebase && firebase.database) {
       window.db = firebase.database();
     }
+
+    // ---- Cloud Functions + server-side session state ----
+    var FUNCTIONS_REGION = 'asia-southeast1'; // keep in sync with firebase/functions/index.js
+    var _fns = null;
+    // Calls a callable Cloud Function; pages that use it must include the firebase-functions script.
+    window.callFunction = function (name, data) {
+      if (!window.firebase || !firebase.functions) return Promise.reject(new Error('Add the firebase-functions script to this page.'));
+      if (!_fns) {
+        _fns = firebase.app().functions(FUNCTIONS_REGION);
+        if (useEmulators) _fns.useEmulator('127.0.0.1', 5001);
+      }
+      return _fns.httpsCallable(name)(data || {}).then(function (r) { return r.data; });
+    };
+    // Role and 2FA state come from ID-token claims that only the server can set.
+    window.getSessionInfo = function (user, forceRefresh) {
+      user = user || (firebase.auth && firebase.auth().currentUser);
+      if (!user) return Promise.resolve({ role: null, mfaRequired: false, twofaUntil: 0, twofaAuthTime: 0, authTime: 0 });
+      return user.getIdTokenResult(!!forceRefresh).then(function (t) {
+        var c = t.claims || {};
+        return {
+          role: c.role || null,
+          mfaRequired: c.mfa_required === true,
+          twofaUntil: Number(c.twofa_until || 0),
+          twofaAuthTime: Number(c.twofa_auth_time || 0),
+          authTime: Number(c.auth_time || 0)
+        };
+      });
+    };
+    // 2FA counts only if the server stamped THIS sign-in and the stamp has not expired.
+    window.hasTwoFA = function (i) { return !!i && i.twofaUntil > Date.now() && i.twofaAuthTime > 0 && i.twofaAuthTime === i.authTime; };
+    // A usable student session: student role and, if the student turned 2FA on, this sign-in passed it.
+    window.isStudentSession = function (i) { return !!i && i.role === 'student' && (!i.mfaRequired || window.hasTwoFA(i)); };
 
     // Initialize Firebase Messaging if available
     if (window.firebase && firebase.messaging) {
@@ -72,28 +125,14 @@
             window.location.replace('signin.html');
             return;
           }
-          // Check role in database from students ref
-          var uid = user.uid;
-          firebase.database().ref('students').orderByChild('uid').equalTo(uid).once('value').then(function(snapshot) {
-            if (snapshot.exists()) {
-              let role = null;
-              snapshot.forEach(function(child) {
-                const data = child.val();
-                if (data.role) { 
-                  role = data.role;
-                }
-              });
-              console.log('[AuthRedirect] User role:', role);
-              if (role && role.toLowerCase() !== 'student') {
-                console.log('[AuthRedirect] Role is not Student, redirecting to signin.html');
-                window.location.replace('signin.html');
-              }
-            } else {
-              console.log('[AuthRedirect] Student data not found, redirecting to signin.html');
+          // Role and 2FA come from server-set claims (see firebase/functions)
+          window.getSessionInfo(user, false).then(function (info) {
+            if (!window.isStudentSession(info)) {
+              console.log('[AuthRedirect] Not a verified student session, redirecting to signin.html');
               window.location.replace('signin.html');
             }
-          }).catch(function(error) {
-            console.log('[AuthRedirect] Error fetching role:', error);
+          }).catch(function (error) {
+            console.log('[AuthRedirect] Error reading session:', error);
             window.location.replace('signin.html');
           });
         });
@@ -115,7 +154,7 @@
             const data = notifSnap.val() || { appointment: true, message: true, call: true };
             window.notificationSettings = data;
             window.inAppNotifications = data.inAppNotifications || [];
-          });
+          }).catch(function (e) { console.log('[notif] settings not readable yet', e && e.code); });
           // Get and store FCM token
           if (firebase.messaging) {
             const messaging = firebase.messaging();
@@ -134,7 +173,8 @@
             });
           }
           // Listen to consultations root and filter client-side (keeps compatibility with many data shapes)
-          const ref = window.db.ref('consultations');
+          // scoped query: database rules only allow a student to read their own consultations
+          const ref = window.db.ref('consultations').orderByChild('studentId').equalTo(uid);
           window._globalConsultListenerRef = ref;
           ref.on('value', snap => {
             const all = snap.val() || {};

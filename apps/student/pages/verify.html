@@ -253,6 +253,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <!-- Shared project Firebase initializer (keeps keys out of HTML) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
   <script src="../js/firebase-config.js"></script>
 
   <script>
@@ -261,23 +262,6 @@
     const db = window.db || (window.firebase && firebase.database && firebase.database());
     if (!db) console.error('Firebase database not initialized. Ensure firebase SDKs and firebase_config.js are loaded.');
 
-    console.log('firebase.apps.length =', firebase && firebase.apps && firebase.apps.length);
-console.log('active app options =', firebase && firebase.apps && firebase.apps[0] && firebase.apps[0].options);
-console.log('window.db exists =', !!window.db);
-try {
-  const dbRef = window.db || (firebase && firebase.database && firebase.database());
-  console.log('db app name:', dbRef && dbRef.app && dbRef.app.name);
-  // Print resolved host for the root ref (stringifier may produce useful info)
-  try { console.log('root toString:', dbRef && dbRef.ref && dbRef.ref().toString()); } catch(e) { console.log('ref->toString error', e); }
-} catch(e) { console.error('db introspect error', e); }
-
-    console.log('firebase app:', firebase && firebase.app && firebase.app().name, firebase && firebase.apps && firebase.apps[0] && firebase.apps[0].options);
-    console.log('window.db:', !!window.db);
-    try {
-      (window.db || firebase.database()).ref('/students').limitToFirst(1).once('value')
-        .then(snap => console.log('sample /students ok', snap.exists()))
-        .catch(err => console.error('sample read error', err));
-    } catch(e) { console.error('read attempt failed sync', e); }
 
     // Modal function for alerts
     function showModal(message, callback) {
@@ -317,61 +301,25 @@ document.getElementById('verifyForm').addEventListener('submit', async function(
   btn.innerHTML = '';
 
   try {
-    // Query students to find the matching record
-    const studentsRef = db.ref("students");
-    const snapshot = await studentsRef.orderByChild("student_id").equalTo(studentId).once("value");
-
-    if (snapshot.exists()) {
-      let found = null;
-      let alreadyVerified = false;
-
-      snapshot.forEach(child => {
-        const data = child.val();
-
-        if (
-          data.email_address === email &&
-          data.last_name.toLowerCase() === lastname.toLowerCase() &&
-          data.activation_code === code
-        ) {
-          // Already verified check
-          if (data.status === 2) {
-            alreadyVerified = true;
-            showModal("Student Account already verified. Redirecting to sign in...", function() {
-              window.location.href = "signin.html";
-            });
-            return;
-          }
-          // Validate expiry_date (assumed to be timestamp in ms)
-          const now = Date.now();
-          if (data.expiry_date && now <= data.expiry_date) {
-            found = { key: child.key, ...data };
-          } else {
-            alreadyVerified = true;
-            showModal("Your activation code has expired.");
-          }
-        }
-      });
-
-      if (alreadyVerified) {
-        btn.classList.remove('loading');
-        btn.innerHTML = 'Verify & Continue';
-        return;
-      }
-
-      if (found) {
-        // Redirect to signup page with key + email
-        window.location.href = `signup.html?key=${found.key}&email=${encodeURIComponent(found.email_address)}`;
-      } else {
-        showModal("No valid match found. Please check your details.");
-        btn.classList.remove('loading');
-        btn.innerHTML = 'Verify & Continue';
-      }
-    } else {
-      showModal("No record found with that Student ID.");
-      btn.classList.remove('loading');
-      btn.innerHTML = 'Verify & Continue';
-    }
+    // The server checks student ID, email, last name and activation code (rate limited).
+    const res = await callFunction('checkStudentActivation', { studentId: studentId, email: email, lastName: lastname, code: code });
+    // Carry the details to the sign-up step in this tab only; they are re-checked there.
+    sessionStorage.setItem('ss_activation', JSON.stringify({ studentId: studentId, email: email, lastName: lastname, code: code, firstName: (res && res.firstName) || '' }));
+    window.location.href = 'signup.html';
+    return;
   } catch (err) {
+    var errCode = String((err && err.code) || '');
+    if (/already-exists$/.test(errCode)) {
+      showModal("Student Account already verified. Redirecting to sign in...", function() { window.location.href = "signin.html"; });
+    } else if (/not-found$/.test(errCode)) {
+      showModal("No valid match found. Please check your details.");
+    } else if (/deadline-exceeded$/.test(errCode)) {
+      showModal("Your activation code has expired.");
+    } else if (/resource-exhausted$/.test(errCode)) {
+      showModal("Too many attempts. Please try again later.");
+    } else {
+      showModal("Error verifying student. Please try again.");
+    }
     showModal("Error verifying student. Please try again.<br><br>" + (err.message || err));
     btn.classList.remove('loading');
     btn.innerHTML = 'Verify & Continue';

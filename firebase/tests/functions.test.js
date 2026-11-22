@@ -137,12 +137,59 @@ test('activation: success creates the account, claim and students/{uid}; cannot 
   await signOut(cauth);
 });
 
+// ---------------------------------------------------------------- student 2FA preference
+test('student 2FA: needs a code first, then becomes a claim that re-applies on every new sign-in', async () => {
+  const { uid, email } = await makeUser('student');
+  await adb.ref(`students/${uid}`).set({ uid, first_name: 'T' });
+  const user = await signIn(email);
+  assert.equal(await code(call('setTwoFactor', { enabled: true })), 'functions/permission-denied');
+  await call('sendLoginCode', {});
+  await call('verifyLoginCode', { code: extractCode((await lastMail(email)).text) });
+  await user.getIdToken(true);
+  assert.deepEqual(await call('setTwoFactor', { enabled: true }), { ok: true, enabled: true });
+  const claims = (await user.getIdTokenResult(true)).claims;
+  assert.equal(claims.mfa_required, true);
+  assert.equal(claims.role, 'student');
+  assert.equal((await adb.ref(`students/${uid}/email2FA`).get()).val(), true);
+  // a later sign-in has no stamp but still carries mfa_required, so the rules will demand a code
+  await signOut(cauth);
+  await new Promise((r) => setTimeout(r, 1200));
+  const again = await signIn(email);
+  const c2 = (await again.getIdTokenResult(true)).claims;
+  assert.equal(c2.mfa_required, true);
+  assert.notEqual(c2.twofa_auth_time, c2.auth_time);
+  // switching it off also needs a stamp for this sign-in
+  assert.equal(await code(call('setTwoFactor', { enabled: false })), 'functions/permission-denied');
+  await signOut(cauth);
+});
+
+test('admin: disable and re-enable a student', async () => {
+  const stu = await makeUser('student');
+  await adb.ref(`students/${stu.uid}`).set({ uid: stu.uid, login: 'Enable' });
+  const { email } = await makeUser('admin');
+  await signIn(stu.email);
+  assert.equal(await code(call('setStudentAccess', { uid: stu.uid, enabled: false })), 'functions/permission-denied');
+  await signOut(cauth);
+  await signIn(email);
+  await call('setStudentAccess', { uid: stu.uid, enabled: false });
+  assert.equal((await aauth.getUser(stu.uid)).disabled, true);
+  assert.equal((await adb.ref(`students/${stu.uid}/login`).get()).val(), 'Disable');
+  await signOut(cauth);
+  assert.equal(await signInWithEmailAndPassword(cauth, stu.email, PW).then(() => 'signed-in', (e) => e.code), 'auth/user-disabled');
+  await signIn(email);
+  await call('setStudentAccess', { uid: stu.uid, enabled: true });
+  assert.equal((await aauth.getUser(stu.uid)).disabled, false);
+  assert.equal(await code(call('setStudentAccess', { uid: 'nobody', enabled: true })), 'functions/not-found');
+  await signOut(cauth);
+});
+
 // ---------------------------------------------------------------- admin functions
 test('admin functions reject non-admins', async () => {
   const { email } = await makeUser('student');
   await signIn(email);
   for (const [fn, data] of [['createCounselor', { email_address: 'a@b.co', first_name: 'A', last_name: 'B' }],
-    ['setCounselorAccess', { uid: 'x', enabled: false }], ['deleteCounselor', { uid: 'x' }], ['inviteStudents', {}]]) {
+    ['setCounselorAccess', { uid: 'x', enabled: false }], ['deleteCounselor', { uid: 'x' }], ['inviteStudents', {}],
+    ['setStudentAccess', { uid: 'x', enabled: false }]]) {
     assert.equal(await code(call(fn, data)), 'functions/permission-denied', fn);
   }
   await signOut(cauth);

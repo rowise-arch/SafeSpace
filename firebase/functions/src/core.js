@@ -40,6 +40,12 @@ function email(value, name = 'email') {
   return v;
 }
 
+// True when the caller's token carries a 2FA stamp issued for *this* sign-in (see twofa.js).
+function hasStamp(req) {
+  const t = (req.auth && req.auth.token) || {};
+  return Number(t.twofa_until) > Date.now() && !!t.twofa_auth_time && t.twofa_auth_time === t.auth_time;
+}
+
 // ---- custom claims ----------------------------------------------------------
 async function mergeClaims(uid, patch) {
   const user = await auth().getUser(uid);
@@ -89,4 +95,4 @@ async function sendMail({ to, subject, text }) {
   throw new HttpsError('failed-precondition', 'Email is not configured.');
 }
 
-module.exports = { admin, db, auth, HttpsError, requireAuth, requireRole, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail, IN_EMULATOR };
+module.exports = { admin, db, auth, HttpsError, requireAuth, requireRole, hasStamp, str, email, mergeClaims, hitLimiter, clearLimiter, sendMail, IN_EMULATOR };
