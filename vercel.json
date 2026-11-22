@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/firebase-messaging-sw.js", "destination": "/apps/student/firebase-messaging-sw.js" }
+  ]
+}
