@@ -147,4 +147,22 @@ const setStudentAccess = onCall(async (req) => {
   return { ok: true };
 });
 
-module.exports = { checkStudentActivation, activateStudent, inviteStudents, setTwoFactor, setStudentAccess };
+/**
+ * Admin: remove a student's login and profile. Deletes the Auth account (the old client-side delete left it behind),
+ * students/{key}, their psych test results and the roster link. Appointments, session reports and consultations are
+ * clinical records and stay; they hold only ids.
+ */
+const deleteStudent = onCall(async (req) => {
+  requireAdmin(req);
+  const uid = str(req.data && req.data.uid, 'uid', { max: 128 });
+  const key = await findUserKey('students', uid);
+  if (!key) throw new HttpsError('not-found', 'Student not found.');
+  await auth().deleteUser(uid).catch((e) => { if (e.code !== 'auth/user-not-found') throw e; });
+  const updates = { [`students/${key}`]: null, [`psych_tests/${key}`]: null, [`psych_tests/${uid}`]: null };
+  const linked = await db().ref(ROSTER).orderByChild('uid').equalTo(uid).get();
+  linked.forEach((c) => { updates[`${ROSTER}/${c.key}`] = null; });
+  await db().ref().update(updates);
+  return { ok: true };
+});
+
+module.exports = { checkStudentActivation, activateStudent, inviteStudents, setTwoFactor, setStudentAccess, deleteStudent };

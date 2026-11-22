@@ -487,6 +487,11 @@ export async function recordActivity(entry = {}, uid = null) {
   try {
     // Determine target uid (explicit param > entry.uid > window.currentUser > auth.currentUser)
     const targetUid = uid || entry.uid || (typeof window !== 'undefined' && window.currentUser && window.currentUser.uid) || (auth && auth.currentUser && auth.currentUser.uid) || null;
+    // The rules only let a user write their own activity log; refuse anything else up front
+    if (targetUid && auth && auth.currentUser && targetUid !== auth.currentUser.uid) {
+      console.warn('recordActivity: refusing to write to another user\'s activity log');
+      return null;
+    }
     if (!targetUid) {
       // Try to wait for auth if possible
       try {

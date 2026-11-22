@@ -52,8 +52,7 @@ Switched over: counselor and admin sign-in (2FA), student verify/sign-up/sign-in
 and admin user/counselor management. Counselors and admins always need a server-issued `twofa_until` stamp bound to the
 current sign-in; students need it only if they turned 2FA on. The data itself is moved by
 `firebase/functions/scripts/migrate-data.js` (uid keys, `roster`, claims, leftover secrets removed; tested, dry run by
-default; see the cutover checklist in `firebase/README.md`). Still open: deleting an activated student's login account
-and the counselor activity-log helper that writes to another user's `activity/{uid}`.
+default; see the cutover checklist in `firebase/README.md`). Student deletion is server-side (`deleteStudent`).
 
 These rules are stricter than what the current pages do. Deploying them to the live project **without** these
 changes will break those flows.

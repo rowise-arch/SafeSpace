@@ -39,6 +39,7 @@ await auth.currentUser.getIdToken(true);                      // pick up the two
 | `inviteStudents({ids?, resend?})` | admin | browser-generated activation codes + EmailJS |
 | `setTwoFactor({enabled})` | student (needs a code for this sign-in) | settings/profile writing `email2FA` and `temp2FACode` into the student record |
 | `setStudentAccess({uid,enabled})` | admin | the client-side `login: Enable/Disable` flag check |
+| `deleteStudent({uid})` | admin | deleting only the database record and leaving the login account behind |
 | `createCounselor({...})` / `setCounselorAccess({uid,enabled})` / `deleteCounselor({uid})` | admin | `admin/js/main.js` creating users with a second Auth app |
 
 ## 2FA enforcement
@@ -110,8 +111,11 @@ student only their own (key = uid, or an old key whose student record carries th
 `report-management`, `profile` and `settings` already matched the rules. The students/counselors rules no longer reject
 writes to records keyed by old ids (admin edits of `students/2024-0001` used to fail the `uid === key` check).
 
-Still open: deleting an activated student's login account; counselor writes to another user's `activity/{uid}`
-(`js/main.js` log helper); **students and counselors editing their own profile while their record is still keyed by an old
+Deleting an activated student now goes through `deleteStudent` (login, profile, psych tests and roster link are removed;
+appointments, session reports and consultations stay as clinical records). The counselor activity helper refuses to write
+to anyone else's log.
+
+Still open: **students and counselors editing their own profile while their record is still keyed by an old
 id** (the rules let owners write only `students/{uid}` / `counselors/{uid}`), which the data migration fixes.
 
 ## Configuration

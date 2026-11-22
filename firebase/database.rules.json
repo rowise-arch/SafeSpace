@@ -13,7 +13,8 @@
       ".write": "(auth.token.role === 'admin' && (auth.token.twofa_until > now && auth.token.twofa_auth_time === auth.token.auth_time))",
       ".indexOn": [
         "student_id",
-        "email_address"
+        "email_address",
+        "uid"
       ]
     },
     "students": {

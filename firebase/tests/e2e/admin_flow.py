@@ -127,6 +127,22 @@ with sync_playwright() as p:
     check('invitation email was sent', mail is not None)
     check('activation code is not shown in the admin page', r.get('activation_code', 'x') not in page.inner_text('body'))
 
+    # 4b. deleting an activated student removes the Firebase login too
+    page.goto(BASE + 'user-management.html' + EMU)
+    page.wait_for_selector(f'tr[data-id="{act_id}"]', timeout=30000)
+    page.locator(f'tr[data-id="{act_id}"] .delete').click()
+    page.wait_for_selector('#confirmModalYes', state='visible', timeout=10000)
+    page.click('#confirmModalYes')
+    gone = False
+    for _ in range(30):
+        users = req(f'{AUTH}/identitytoolkit.googleapis.com/v1/projects/demo-safespace/accounts:lookup', {'localId': [stu_uid]}).get('users')
+        if not users:
+            gone = True
+            break
+        page.wait_for_timeout(500)
+    check('deleting a student also deletes their Firebase login', gone)
+    check('student record removed', db_get(f'students/{act_id}') is None)
+
     # 5b. counselor management: legacy-keyed counselor is listed; the login toggle goes through the server
     page.goto(BASE + 'counselor-management.html' + EMU)
     page.wait_for_selector('tr[data-id="007"]', timeout=30000)

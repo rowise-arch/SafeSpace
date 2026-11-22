@@ -250,6 +250,31 @@ test('admin functions also find records keyed by the old ids (uid stored in the 
   await signOut(cauth);
 });
 
+test('admin: deleteStudent removes login, profile, tests and roster link but keeps clinical records', async () => {
+  const { email, uid: adminUid } = await makeUser('admin');
+  const stu = await makeUser('student');
+  const other = await makeUser('student');
+  await adb.ref().update({
+    'students/2024-DEL': { uid: stu.uid, first_name: 'Gone' },
+    'psych_tests/2024-DEL/t1': { title: 'x' },
+    'roster/2024-DEL': { student_id: '2024-DEL', uid: stu.uid, status: 2 },
+    [`appointments_by_student/${stu.uid}/a1`]: { status: 'completed' },
+    [`Session_report/${stu.uid}/case1/meta`]: { x: 1 },
+  });
+  await signIn(stu.email);
+  assert.equal(await code(call('deleteStudent', { uid: stu.uid })), 'functions/permission-denied');
+  await signOut(cauth);
+  await signInAdmin(email, adminUid);
+  assert.equal(await code(call('deleteStudent', { uid: 'nobody' })), 'functions/not-found');
+  await call('deleteStudent', { uid: stu.uid });
+  assert.equal(await aauth.getUser(stu.uid).then(() => 'exists', (e) => e.code), 'auth/user-not-found');
+  for (const path of ['students/2024-DEL', 'psych_tests/2024-DEL', 'roster/2024-DEL']) assert.equal((await adb.ref(path).get()).exists(), false, path);
+  assert.equal((await adb.ref(`appointments_by_student/${stu.uid}/a1`).get()).exists(), true);
+  assert.equal((await adb.ref(`Session_report/${stu.uid}/case1`).get()).exists(), true);
+  assert.equal((await aauth.getUser(other.uid)).uid, other.uid, 'other accounts untouched');
+  await signOut(cauth);
+});
+
 test('admin: inviteStudents emails codes server-side and never returns them', async () => {
   const { email, uid: adminUid } = await makeUser('admin');
   await signInAdmin(email, adminUid);

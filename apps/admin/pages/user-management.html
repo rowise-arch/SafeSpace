@@ -1545,7 +1545,11 @@
           const ok = await showConfirm(`Delete student ${studentId}? Are you sure?`, "Confirm Delete");
           if (!ok) return;
           try {
-            await remove(ref(db, pathFor(studentId)));
+            if (rowSource.get(studentId) === 'roster' || !rowUid.get(studentId)) {
+              await remove(ref(db, pathFor(studentId)));           // never activated: nothing but a roster entry
+            } else {
+              await callFunction('deleteStudent', { uid: rowUid.get(studentId) }); // also removes their login account
+            }
             row.remove();
             await showMessage("Record deleted.", "Deleted");
           } catch (err) {
