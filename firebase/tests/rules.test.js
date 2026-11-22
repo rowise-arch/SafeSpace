@@ -4,7 +4,9 @@ import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebas
 import { ref, get, set, update, query, orderByChild, equalTo } from 'firebase/database';
 
 let env;
-const as = (uid, role) => env.authenticatedContext(uid, role ? { role } : {}).database();
+// counselors also need the server-issued 2FA stamp (see functions/src/twofa.js)
+const as = (uid, role, extra = {}) =>
+  env.authenticatedContext(uid, role ? { role, ...(role === 'counselor' ? { twofa_until: Date.now() + 3600e3 } : {}), ...extra } : {}).database();
 const anon = () => env.unauthenticatedContext().database();
 
 before(async () => {
@@ -46,6 +48,16 @@ test('login config is publicly readable but only admin-writable', async () => {
 test('a signed-in user without a role claim gets no access', async () => {
   await assertFails(get(ref(as('stu1'), 'students/stu1/first_name')));
   await assertFails(set(ref(as('stu1'), 'students/stu1'), { uid: 'stu1', student_id: '2021-0001' }));
+});
+
+test('counselor without a valid 2FA stamp is treated as unauthorised', async () => {
+  const noTwofa = env.authenticatedContext('cou1', { role: 'counselor' }).database();
+  const expired = as('cou1', 'counselor', { twofa_until: Date.now() - 1000 });
+  for (const db of [noTwofa, expired]) {
+    await assertFails(get(ref(db, 'students')));
+    await assertFails(get(ref(db, 'Session_report/stu1')));
+    await assertFails(get(ref(db, 'appointments_by_counselor/cou1')));
+  }
 });
 
 // ---- students ----

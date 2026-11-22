@@ -47,6 +47,10 @@ confirm them against real data before locking them down further.
 
 ## 4. App changes required before deploying these rules
 
+Server side is done: the Cloud Functions in `firebase/functions` (see `firebase/README.md`) cover items 1, 2 and 5.
+What remains is switching the pages over to call them. The rules now also require a server-issued `twofa_until`
+claim for the counselor role, so the counselor login must call `sendLoginCode`/`verifyLoginCode`.
+
 These rules are stricter than what the current pages do. Deploying them to the live project **without** these
 changes will break those flows.
 
