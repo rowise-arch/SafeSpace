@@ -172,3 +172,69 @@ body .emergency-hotline strong { color: var(--ss-text); font-size: var(--ss-text
 body .emergency-hotline strong i { color: var(--ss-warning); }
 body .emergency-hotline .hotline-number { color: var(--ss-primary); font-weight: 800; font-size: var(--ss-text-lg); text-decoration: underline; text-underline-offset: 3px; }
 body .emergency-hotline .hotline-number:hover { color: var(--ss-primary-hover); }
+
+/* ======================================================================================================
+   Inner pages (history, assessments, resources, messages, profile, settings)
+   ====================================================================================================== */
+body .page-title { font-size: var(--ss-text-2xl); line-height: 1.25; font-weight: 800; color: var(--ss-text); letter-spacing: -0.01em; }
+body .page-subtitle, body .page-header p { color: var(--ss-text-muted); }
+body .content > .container, body .content .container { max-width: 1160px; }
+
+/* Resources: calm cards (the column wrappers stay transparent; the cards carry the style) */
+body .resources-grid { gap: var(--ss-space-6); }
+body .resources-card {
+  background: var(--ss-surface); border: 1px solid var(--ss-border); border-radius: var(--ss-radius); box-shadow: var(--ss-shadow-1); padding: var(--ss-space-6);
+}
+body .resources-card::before { display: none; }
+body .resources-card:hover { transform: none; box-shadow: var(--ss-shadow-2); }
+body .resources-card h3 { color: var(--ss-text); font-size: var(--ss-text-lg); font-weight: 800; margin-bottom: var(--ss-space-4); }
+body .resources-card h3 i { background: var(--ss-primary-soft); color: var(--ss-primary); }
+body .resources-card p, body .resources-card li, body .resources-card .resource-list, body .resources-card .forms-list { color: var(--ss-text-muted); }
+
+/* History: progress chart panel and stat tiles */
+body .chart-container { background: var(--ss-sage-100) !important; border: 1px solid var(--ss-border); border-radius: var(--ss-radius); box-shadow: none !important; }
+body .content h4, body .content .section-title { color: var(--ss-text); font-weight: 800; }
+
+/* Buttons (Tailwind green buttons on profile/assessments become the shared pill) */
+body .content .edit-btn, body .content button.bg-green-700, body .content .btn-primary, body .content button[type="submit"] {
+  background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; border: 0 !important; border-radius: 999px !important;
+  min-height: var(--ss-target); padding: 8px 22px !important; font-weight: 800; transition: background-color var(--ss-dur) var(--ss-ease-out);
+}
+body .content .edit-btn:hover, body .content button.bg-green-700:hover, body .content .btn-primary:hover, body .content button[type="submit"]:hover { background: var(--ss-primary-hover) !important; }
+body .content button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Form controls (inside the bordered label/value tables the cell is the field, so the input stays flat) */
+body .content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), body .content select, body .content textarea {
+  min-height: var(--ss-target); padding: 10px 14px; font-size: var(--ss-text-md); color: var(--ss-text); background: var(--ss-surface-2);
+  border: 1.5px solid var(--ss-border-strong); border-radius: var(--ss-radius-sm); transition: border-color var(--ss-dur) var(--ss-ease-out), background-color var(--ss-dur) var(--ss-ease-out);
+}
+/* Inputs that live inside a bordered label/value row (Tailwind `border-none`) stay flat; the row is the field */
+body .content input.border-none, body .content select.border-none { min-height: 0; padding: 10px 12px; border: 0 !important; border-radius: 0; background: transparent; }
+body .content .form-row { border: 1.5px solid var(--ss-border-strong) !important; border-radius: var(--ss-radius-sm); overflow: hidden; background: var(--ss-surface-2); }
+body .content .form-row [class*="border-r"], body .content .form-row .divide-x > * { border-color: var(--ss-border) !important; }
+body .content .form-row .divide-x { --tw-divide-opacity: 1; }
+body .content .form-row label.bg-gray-100 { background: var(--ss-sage-100); color: var(--ss-text); font-size: var(--ss-text-sm); font-weight: 800; }
+body .content .form-row:focus-within { border-color: var(--ss-primary) !important; }
+body .content .label-nowrap { white-space: nowrap; width: auto !important; min-width: 7rem; flex: none; padding-left: 12px; padding-right: 12px; }
+body .content input[placeholder^="Year ("] { min-width: 9rem; }
+body .content input:focus, body .content select:focus, body .content textarea:focus { border-color: var(--ss-primary); background: var(--ss-surface); }
+body .content input[readonly], body .content input:disabled, body .content select:disabled { background: var(--ss-sage-100); color: var(--ss-text-muted); }
+body .content input[type="checkbox"], body .content input[type="radio"] { accent-color: var(--ss-primary); width: 20px; height: 20px; }
+body .content label { font-weight: 700; color: var(--ss-text); }
+
+/* Profile / individual inventory: the bordered label cells become soft */
+body .content table { border-collapse: separate; border-spacing: 0; border-color: var(--ss-border); }
+body .content table th, body .content table td { border-color: var(--ss-border) !important; }
+body .content table th { background: var(--ss-sage-100); color: var(--ss-text); font-weight: 800; }
+body .content .border, body .content .border-gray-300 { border-color: var(--ss-border) !important; }
+body .content .rounded { border-radius: var(--ss-radius-sm); }
+body .content .text-green-700, body .content .text-green-800 { color: var(--ss-primary) !important; }
+body .content h2, body .content h3 { color: var(--ss-text); }
+
+/* Settings rows and switches */
+body .content .switch input:checked + .slider, body .content input[type="checkbox"].toggle:checked { background: var(--ss-primary); }
+
+@media (max-width: 768px) {
+  body .page-title { font-size: var(--ss-text-xl) !important; }
+  body .resources-grid > div { padding: var(--ss-space-5); }
+}
