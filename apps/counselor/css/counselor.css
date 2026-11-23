@@ -100,3 +100,78 @@ body .bottom-nav .bn-item.active, body .bottom-nav .bn-item[aria-current="page"]
   body .nav button .label { display: inline; }
 }
 @media (prefers-reduced-motion: reduce) { body .sidebar { transition: none !important; } }
+
+/* ======================================================================================================
+   Inner pages (appointment, students, message, settings, account, inventory)
+   ====================================================================================================== */
+/* Tailwind colour utilities used by the old pages are mapped to the brand (purple/blue buttons, toasts, links) */
+body .bg-gradient-to-r.from-purple-600, body [class*="from-purple-"], body [class*="to-purple-"] {
+  background: var(--ss-primary) !important; background-image: none !important; color: var(--ss-on-primary) !important; box-shadow: none !important; transform: none !important;
+}
+body [class*="from-purple-"]:hover { background: var(--ss-primary-hover) !important; }
+body .bg-blue-500, body .bg-blue-600 { background: var(--ss-text) !important; color: var(--ss-surface) !important; }
+body .bg-green-500 { background: var(--ss-success) !important; }
+body .bg-red-500 { background: var(--ss-danger) !important; }
+body .bg-yellow-500 { background: var(--ss-warning) !important; }
+body .fixed.shadow-lg.rounded-lg { border-radius: var(--ss-radius-sm); box-shadow: var(--ss-shadow-3) !important; font-weight: 700; }
+body .text-blue-500, body .text-blue-600, body .text-indigo-600 { color: var(--ss-primary) !important; }
+body .bg-blue-100, body .bg-indigo-100 { background: var(--ss-primary-soft) !important; }
+body .text-blue-700, body .text-blue-800, body .text-indigo-700 { color: var(--ss-primary) !important; }
+
+/* Page header strips */
+body .page-header, body .header-card, body .page-title-card { background: var(--ss-surface); border: 1px solid var(--ss-border); border-radius: var(--ss-radius); box-shadow: var(--ss-shadow-1); }
+body h1, body .page-title { color: var(--ss-text); font-weight: 800; letter-spacing: -0.01em; }
+
+/* Appointment tabs */
+body .tab-container button, body .tab-btn { color: var(--ss-text-muted); font-weight: 700; border-radius: 999px; min-height: 40px; }
+body .tab-container button.active, body .tab-btn.active { background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important; box-shadow: none !important; border-color: transparent !important; }
+
+/* Student cards: remove the amber gradient/stripe; avatars stay readable */
+body .student-card { background: var(--ss-surface) !important; border: 1px solid var(--ss-border); border-radius: var(--ss-radius); box-shadow: var(--ss-shadow-1); }
+body .student-card::before { background: var(--ss-primary) !important; }
+body .student-card .btn, body .student-card button { border-radius: 999px; background: var(--ss-primary); color: var(--ss-on-primary); min-height: var(--ss-target); font-weight: 800; }
+body .badge--refer { background: var(--ss-sand-100); color: var(--ss-warning); border: 0; }
+
+/* Messages: calm panes instead of cream tints */
+body .conversations-list, body .conversations-wrap, body .messages-sidebar, body .chat-panel, body .chat-area { background: var(--ss-surface) !important; }
+body .conversations-list { border-right: 1px solid var(--ss-border); }
+body .chat-header { background: var(--ss-surface); border-bottom: 1px solid var(--ss-border); }
+body .chat-input-bar { background: var(--ss-surface); border-top: 1px solid var(--ss-border); }
+body .conversations-list .conv-item.card { border-radius: var(--ss-radius-sm); box-shadow: none; border: 1px solid var(--ss-border); }
+body .conversations-list .conv-item.unread { background: var(--ss-primary-soft); border-color: var(--ss-sage-200); }
+
+/* Settings and calendar */
+body .btn, body button.btn-primary { background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; border: 0; border-radius: 999px; min-height: var(--ss-target); padding: 8px 20px; font-weight: 800; }
+body .btn:hover { background: var(--ss-primary-hover) !important; }
+body .fc { --fc-border-color: var(--ss-border); --fc-today-bg-color: var(--ss-primary-soft); --fc-button-bg-color: var(--ss-primary); --fc-button-border-color: var(--ss-primary); --fc-button-hover-bg-color: var(--ss-primary-hover); --fc-button-hover-border-color: var(--ss-primary-hover); --fc-button-active-bg-color: var(--ss-primary-hover); --fc-button-active-border-color: var(--ss-primary-hover); --fc-event-bg-color: var(--ss-primary); --fc-event-border-color: var(--ss-primary); font-family: var(--ss-font); }
+body .fc .fc-event { background: var(--ss-primary-soft); border: 0; border-left: 3px solid var(--ss-primary); color: var(--ss-primary); border-radius: 6px; }
+body .fc .fc-event .fc-event-title, body .fc .fc-event .fc-event-main { color: var(--ss-primary); font-weight: 700; }
+body .fc .fc-toolbar-title { font-size: var(--ss-text-lg); font-weight: 800; color: var(--ss-text); }
+body .fc .fc-col-header-cell-cushion, body .fc .fc-daygrid-day-number { color: var(--ss-text); text-decoration: none; }
+body .fc .fc-button:disabled { background: var(--ss-sage-200); border-color: var(--ss-sage-200); color: var(--ss-text-muted); }
+body a.add-link, body .date-exceptions a, body .card a[href="#"] { color: var(--ss-primary); font-weight: 800; }
+body .logout, body .logout-btn { color: var(--ss-danger); font-weight: 800; }
+
+/* Forms */
+body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]), body select, body textarea {
+  font-family: inherit; font-size: var(--ss-text-md); color: var(--ss-text); border-color: var(--ss-border-strong); border-radius: var(--ss-radius-sm);
+}
+body input:focus, body select:focus, body textarea:focus { border-color: var(--ss-primary); outline-color: var(--ss-primary); }
+body input[type="checkbox"], body input[type="radio"] { accent-color: var(--ss-primary); }
+
+/* FullCalendar events carry inline colours from the page script; the brand tint wins with !important */
+body .fc .fc-event, body .fc .fc-daygrid-event { background: var(--ss-primary-soft) !important; border-color: var(--ss-primary) !important; border-width: 0 0 0 3px !important; }
+body .fc .fc-event * { color: var(--ss-primary) !important; }
+body #addExceptionBtn { color: var(--ss-primary) !important; font-weight: 800; }
+body [class*="text-purple-"] { color: var(--ss-primary) !important; }
+body [class*="bg-purple-"]:not([class*="from-"]) { background: var(--ss-primary-soft) !important; }
+
+/* Message page: the panes use arbitrary Tailwind cream backgrounds */
+body aside[aria-label="Conversations"], body aside.border-r { background: var(--ss-surface) !important; border-color: var(--ss-border) !important; padding: var(--ss-space-5); }
+body section.flex-col.flex-1 { background: var(--ss-bg) !important; }
+body aside h3 { font-size: var(--ss-text-lg); font-weight: 800; color: var(--ss-text); margin-bottom: var(--ss-space-3); }
+body .conversations-list { background: transparent !important; border-right: 0; }
+body aside[aria-label="Conversations"], body aside.border-r { padding: var(--ss-space-5) !important; }
+body .bg-slate-900, body .bg-gray-900, body .bg-black { background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; }
+body #saveProfileBtn, body .bg-green-600 { background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; border-radius: 999px; font-weight: 800; box-shadow: none; }
+body #saveProfileBtn:hover, body .bg-green-600:hover { background: var(--ss-primary-hover) !important; }
