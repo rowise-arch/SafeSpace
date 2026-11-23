@@ -83,7 +83,8 @@ html body a.view-all, html body .view-all {
 html body a.view-all:hover { background: var(--ss-sage-200) !important; }
 
 /* Tables: dense but calm. The pages' own `.user-table th/td` rules break words anywhere, so these use a higher specificity. */
-html body .main-content table { border-collapse: separate; border-spacing: 0; display: block; max-width: 100%; overflow-x: auto; }
+html body .main-content table { border-collapse: separate; border-spacing: 0; width: 100%; max-width: 100%; }
+@media (max-width: 900px) { html body .main-content table { display: block; overflow-x: auto; } }
 html body .main-content table th, html body .main-content table td { padding: 10px 6px !important; }
 html body .main-content table th { white-space: nowrap; color: var(--ss-text-muted); font-size: var(--ss-text-sm); font-weight: 800; text-transform: none; letter-spacing: 0; border-bottom: 1px solid var(--ss-border-strong); }
 html body .main-content table td { border-bottom: 1px solid var(--ss-border); word-break: normal; overflow-wrap: normal; white-space: nowrap; overflow: visible; text-overflow: clip; }
@@ -101,3 +102,76 @@ html body .main-content h1, html body .main-content h2 { color: var(--ss-text) !
   html body .main-content { left: 0 !important; padding: var(--ss-space-4) var(--ss-space-3) !important; }
 }
 @media (prefers-reduced-motion: reduce) { html body .main-content, html body .sidebar { transition: none !important; } }
+
+/* ======================================================================================================
+   Inner pages (students, counselors, reports, tests, content, settings, profile)
+   ====================================================================================================== */
+/* Table headers: tinted sage with readable text (the pages use Tailwind bg-green-600 + dark text) */
+html body .main-content table thead, html body .main-content table thead tr, html body .main-content table thead th, html body thead.bg-green-600 {
+  background: var(--ss-sage-100) !important; color: var(--ss-text-muted) !important;
+}
+html body .main-content table thead th { font-weight: 800; text-align: left; }
+html body [data-theme="dark"] table thead, [data-theme="dark"] html body table thead { background: var(--ss-surface-2) !important; }
+
+/* Page headings and cards */
+html body .main-content h1, html body .main-content .page-title, html body .main-content .section-title { color: var(--ss-text) !important; font-weight: 800; }
+html body .main-content .card, html body .main-content .panel, html body .main-content .table-container, html body .main-content .user-table-container, html body .main-content .bg-white {
+  background: var(--ss-surface) !important; border: 1px solid var(--ss-border); border-radius: var(--ss-radius) !important; box-shadow: var(--ss-shadow-1) !important;
+}
+
+/* Buttons: one primary look, secondary for cancel/backup */
+html body .add-user-btn, html body .add-user-btn.upload, html body .add-user-btn.email, html body .btn-check-updates, html body .btn-save-changes, html body .btn-primary,
+html body .main-content button[type="submit"], html body .main-content .bg-green-600, html body .main-content .bg-blue-600, html body .main-content .bg-blue-500 {
+  background: var(--ss-primary) !important; background-image: none !important; color: var(--ss-on-primary) !important; border: 0 !important; border-radius: 999px !important;
+  min-height: var(--ss-target); padding: 8px 20px; font-weight: 800; box-shadow: none !important; transform: none !important;
+}
+html body .add-user-btn:hover, html body .btn-check-updates:hover, html body .btn-save-changes:hover, html body .btn-primary:hover { background: var(--ss-primary-hover) !important; }
+html body .btn-cancel, html body .btn-backup, html body .btn-cancel-changes {
+  background: var(--ss-sage-100) !important; color: var(--ss-text) !important; border: 0 !important; border-radius: 999px !important; min-height: var(--ss-target); padding: 8px 20px; font-weight: 800; box-shadow: none !important;
+}
+html body .btn-cancel:hover, html body .btn-backup:hover { background: var(--ss-sage-200) !important; }
+html body .main-content .text-blue-500, html body .main-content .text-blue-600, html body .main-content a.text-blue-500 { color: var(--ss-primary) !important; font-weight: 700; }
+html body .main-content .bg-blue-100 { background: var(--ss-primary-soft) !important; color: var(--ss-primary) !important; }
+
+/* Table action icons: one colour family (view/edit neutral-brand, delete danger) */
+html body .main-content table .fa-eye, html body .main-content table .fa-edit, html body .main-content table .fa-pen-to-square { color: var(--ss-primary) !important; }
+html body .main-content table .fa-trash, html body .main-content table .fa-trash-alt { color: var(--ss-danger) !important; }
+html body .main-content table td .action-btns, html body .main-content table td .actions { display: inline-flex; gap: var(--ss-space-3); align-items: center; }
+
+/* Forms */
+html body .main-content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]), html body .main-content select, html body .main-content textarea {
+  font-family: inherit; font-size: var(--ss-text-md); min-height: var(--ss-target); color: var(--ss-text); background: var(--ss-surface-2); border: 1.5px solid var(--ss-border-strong); border-radius: var(--ss-radius-sm); padding-top: 6px; padding-bottom: 6px;
+}
+html body .main-content input:focus, html body .main-content select:focus, html body .main-content textarea:focus { border-color: var(--ss-primary); background: var(--ss-surface); outline-color: var(--ss-primary); }
+html body .main-content input[type="checkbox"], html body .main-content input[type="radio"] { accent-color: var(--ss-primary); width: 18px; height: 18px; }
+html body .main-content label { font-weight: 700; color: var(--ss-text); }
+html body .main-content input:disabled, html body .main-content input[readonly] { background: var(--ss-sage-100); color: var(--ss-text-muted); }
+
+/* Pagination */
+html body .main-content .pagination button, html body .main-content [class*="page-btn"] { border-radius: 999px; min-width: 36px; min-height: 36px; border: 1px solid var(--ss-border); background: var(--ss-surface); color: var(--ss-text); font-weight: 700; }
+html body .main-content .pagination button.active, html body .main-content [class*="page-btn"].active { background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; border-color: var(--ss-primary); }
+html body .main-content input#searchInput, html body .main-content input[type="search"] { width: 100%; }
+
+/* Session report stat tiles: neutral card with a brand accent instead of green/yellow/blue washes */
+html body .main-content [class*="border-l-4"] { background: var(--ss-surface) !important; border: 1px solid var(--ss-border); border-left: 4px solid var(--ss-primary) !important; border-radius: var(--ss-radius-sm); }
+html body .main-content .text-green-600, html body .main-content .text-green-700 { color: var(--ss-primary) !important; }
+html body .main-content .text-yellow-600, html body .main-content .text-yellow-700 { color: var(--ss-warning) !important; }
+html body .main-content td.action-icons { display: table-cell !important; white-space: nowrap; }
+html body .main-content td.action-icons i { margin-right: var(--ss-space-3); cursor: pointer; }
+html body .main-content .action-icons .view, html body .main-content .action-icons .edit { color: var(--ss-primary) !important; }
+html body .main-content .action-icons .delete { color: var(--ss-danger) !important; }
+html body .add-counselor-btn, html body .btn-update-password {
+  background: var(--ss-primary) !important; background-image: none !important; color: var(--ss-on-primary) !important; border: 0 !important; border-radius: 999px !important;
+  min-height: var(--ss-target); padding: 8px 20px; font-weight: 800; box-shadow: none !important; white-space: nowrap;
+}
+html body .add-counselor-btn:hover, html body .btn-update-password:hover { background: var(--ss-primary-hover) !important; }
+@media (max-width: 768px) {
+  html body .table-controls { flex-wrap: wrap !important; }
+  html body .table-controls > * { max-width: 100%; }
+  html body .add-counselor-btn, html body .add-user-btn { width: 100%; justify-content: center; }
+}
+@media (max-width: 768px) {
+  html body .right-controls { flex-wrap: wrap !important; width: 100%; }
+  html body .right-controls > div, html body .search-actions { width: 100%; }
+  html body .right-controls input#searchInput { min-width: 0 !important; width: 100%; }
+}
