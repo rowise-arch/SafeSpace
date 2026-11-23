@@ -66,4 +66,8 @@ Admin's `theme.css` forces the old green header with `!important` even in dark m
 
 Screenshots for review: `shared/tests/shots.py` (student) and `shared/tests/shots_staff.py` (admin and counselor; signs in through the real emailed-code flow). Browser suites now take `STUDENT_BASE`, `COUNSELOR_BASE`, `ADMIN_BASE` so they can run against the repo root like the deployed site.
 
-Still on the old inline styles (shell is new, page content is not): the inner content of every page apart from the shells and login pages, plus counselor `landing`, `video`, `privacy`, `individual-inventory`, `student-profile` content, and admin `counselor-student` and `student-profile` (no shared shell markup, so they have no new shell yet).
+Still on the old inline styles (shell is new, page content is not): the inner content of every page apart from the shells and login pages, plus counselor `video`, `privacy`, `individual-inventory`, `student-profile` content, and admin `counselor-student` and `student-profile` (no shared shell markup, so they have no new shell yet).
+
+## Landing page
+
+`apps/counselor/pages/landing.html` (public marketing page) is rebuilt on the design system with `apps/counselor/css/landing.css`. Added a "choose your portal" strip (student, counselor, admin) because the old page only linked to the counselor login. The hotline list stays an image (it is the vetted source) with a full-size link and a descriptive alt text; transcribing it to HTML would make it readable on phones and let numbers be tapped to call, but the numbers must be checked by the GCSO first.
