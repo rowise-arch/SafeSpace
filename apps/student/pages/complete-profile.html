@@ -43,6 +43,24 @@
     }
   </style>
   <link rel="stylesheet" href="../../../shared/assets/css/safespace.css">
+  <style id="cp-design">
+    body { font-family: var(--ss-font); background: var(--ss-bg); color: var(--ss-text); -webkit-font-smoothing: antialiased; }
+    button, input, select, textarea { font-family: inherit; box-sizing: border-box; max-width: 100%; }
+    h1 { font-weight: 800; letter-spacing: -0.01em; color: var(--ss-text); }
+    .step { border-radius: 999px; background: var(--ss-sage-100); color: var(--ss-text-muted); font-weight: 700; }
+    .step.active { background: var(--ss-primary); color: var(--ss-on-primary); }
+    input:not([type="file"]):not([type="checkbox"]):not([type="radio"]), select, textarea { min-height: var(--ss-target); border: 1.5px solid var(--ss-border-strong); border-radius: var(--ss-radius-sm); background: var(--ss-surface-2); color: var(--ss-text); padding: 8px 12px; }
+    input:focus, select:focus, textarea:focus { border-color: var(--ss-primary); background: var(--ss-surface); outline-color: var(--ss-primary); }
+    input:disabled, select:disabled, input[readonly] { background: var(--ss-sage-100); color: var(--ss-text-muted); }
+    button { border-radius: 999px; min-height: var(--ss-target); font-weight: 800; }
+    button.primary, #nextBtn, .btn-primary { background: var(--ss-primary); color: var(--ss-on-primary); border: 0; padding: 8px 22px; }
+    #prevBtn, .btn-secondary { background: var(--ss-sage-100); color: var(--ss-text); border: 0; padding: 8px 22px; }
+    label { font-weight: 700; color: var(--ss-text); }
+    .container { box-sizing: border-box; overflow-x: clip; }
+    .row > *, .col, .col > * { min-width: 0; }
+    input[type="file"] { max-width: 100%; }
+    @media (max-width: 768px) { .row { flex-wrap: nowrap; } }
+  </style>
 </head>
 <body>
   <div class="container">

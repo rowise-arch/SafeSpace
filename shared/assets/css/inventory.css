@@ -1,0 +1,21 @@
+/* Standalone "individual inventory" pages (admin student-profile, counselor individual-inventory): Tailwind-built forms on the design tokens. */
+body { font-family: var(--ss-font); background: var(--ss-bg); color: var(--ss-text); -webkit-font-smoothing: antialiased; }
+body input, body select, body textarea, body button { font-family: inherit; }
+body h1, body h2, body h3 { color: var(--ss-primary); font-weight: 800; letter-spacing: -0.01em; }
+body .bg-white.rounded, body .bg-white.rounded-lg, body .bg-white.shadow { border: 1px solid var(--ss-border); border-radius: var(--ss-radius) !important; box-shadow: var(--ss-shadow-1) !important; }
+body .edit-btn, body button.bg-green-700, body button.bg-green-600 {
+  background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; border: 0; border-radius: 999px !important; min-height: 36px; padding: 6px 18px !important; font-weight: 800;
+}
+body .edit-btn:hover, body button.bg-green-700:hover, body button.bg-green-600:hover { background: var(--ss-primary-hover) !important; }
+body button.bg-red-500, body button.bg-red-600 { background: var(--ss-danger-soft) !important; color: var(--ss-danger) !important; border-radius: 999px !important; font-weight: 800; }
+/* bordered label/value rows become one soft field */
+body .border.border-gray-400, body .border-gray-400 { border-color: var(--ss-border-strong) !important; }
+body div.flex.border { border-radius: var(--ss-radius-sm); overflow: hidden; background: var(--ss-surface-2); }
+body label.bg-gray-100, body .bg-gray-100 { background: var(--ss-sage-100) !important; color: var(--ss-text); font-weight: 800; }
+body input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]), body select, body textarea { color: var(--ss-text); background: transparent; }
+body input:focus, body select:focus, body textarea:focus { outline: 2px solid var(--ss-primary); outline-offset: -2px; }
+body input[type="checkbox"], body input[type="radio"] { accent-color: var(--ss-primary); width: 18px; height: 18px; }
+body input:disabled, body select:disabled { color: var(--ss-text-muted); }
+body .text-green-700, body .text-green-800 { color: var(--ss-primary) !important; }
+/* photo drop area: calm instead of mint with a neon dashed border */
+body [class*="border-dashed"], body .photo-upload { background: var(--ss-sage-100) !important; border-color: var(--ss-sage-200) !important; border-radius: var(--ss-radius); }

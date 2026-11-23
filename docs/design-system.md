@@ -71,3 +71,9 @@ Still on the old inline styles (shell is new, page content is not): the inner co
 ## Landing page
 
 `apps/counselor/pages/landing.html` (public marketing page) is rebuilt on the design system with `apps/counselor/css/landing.css`. Added a "choose your portal" strip (student, counselor, admin) because the old page only linked to the counselor login. The hotline list stays an image (it is the vetted source) with a full-size link and a descriptive alt text; transcribing it to HTML would make it readable on phones and let numbers be tapped to call, but the numbers must be checked by the GCSO first.
+
+## Inner pages and the remaining pages
+
+All three apps now have their inner pages on the tokens (blocks at the end of `student.css`, `counselor.css`, `admin.css`; the old pages' Tailwind utility colours such as purple, blue and dark buttons are remapped there). The standalone inventory forms (`admin/pages/student-profile.html`, `counselor/pages/individual-inventory.html`, `counselor/pages/student-profile.html`) share `shared/assets/css/inventory.css`.
+
+Known leftovers: `apps/admin/pages/counselor-student.html` is a copy of the counselor portal's student list (old shell, nothing links to it); `counselor/pages/privacy.html` shows a hard-coded date; `counselor/pages/video.html` only renders once opened with a session id.

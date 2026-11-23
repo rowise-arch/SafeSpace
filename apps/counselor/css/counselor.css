@@ -175,3 +175,9 @@ body aside[aria-label="Conversations"], body aside.border-r { padding: var(--ss-
 body .bg-slate-900, body .bg-gray-900, body .bg-black { background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; }
 body #saveProfileBtn, body .bg-green-600 { background: var(--ss-primary) !important; color: var(--ss-on-primary) !important; border-radius: 999px; font-weight: 800; box-shadow: none; }
 body #saveProfileBtn:hover, body .bg-green-600:hover { background: var(--ss-primary-hover) !important; }
+
+/* Student profile (individual inventory inside the shell) */
+body .form-row { border: 1.5px solid var(--ss-border-strong) !important; border-radius: var(--ss-radius-sm); overflow: hidden; background: var(--ss-surface-2); }
+body .form-row label.bg-gray-100 { background: var(--ss-sage-100); color: var(--ss-text); font-weight: 800; font-size: var(--ss-text-sm); }
+body .form-row input.border-none, body .form-row select.border-none { background: transparent; border: 0 !important; }
+body .text-green-700, body .text-green-800 { color: var(--ss-primary) !important; }

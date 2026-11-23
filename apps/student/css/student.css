@@ -238,3 +238,8 @@ body .content .switch input:checked + .slider, body .content input[type="checkbo
   body .page-title { font-size: var(--ss-text-xl) !important; }
   body .resources-grid > div { padding: var(--ss-space-5); }
 }
+
+/* Assessments: cards lose the green top bar (assessments.html draws it with .card::before) */
+body .content .card::before { display: none; }
+body .content .card { border: 1px solid var(--ss-border); }
+body .content .card h3 { color: var(--ss-text); font-weight: 800; }

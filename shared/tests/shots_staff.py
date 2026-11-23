@@ -13,9 +13,9 @@ AUTH, DB, NS, PW = 'http://127.0.0.1:9099', 'http://127.0.0.1:9000', 'demo-safes
 ROOT = 'http://127.0.0.1:8090/apps/'
 EMU = '?emulator=1'
 
-ADMIN_PAGES = ['dashboard', 'user-management', 'counselor-management', 'counselor-student', 'session-report',
+ADMIN_PAGES = ['dashboard', 'user-management', 'counselor-management', 'counselor-student', 'student-profile', 'session-report',
                'report-management', 'content-management', 'psych-test', 'settings', 'profile']
-COUNSELOR_PAGES = ['index', 'appointment', 'message', 'students', 'settings', 'account', 'individual-inventory']
+COUNSELOR_PAGES = ['index', 'appointment', 'message', 'students', 'settings', 'account', 'individual-inventory', 'video', 'privacy', 'student-profile']
 
 
 def req(url, body=None, method=None):

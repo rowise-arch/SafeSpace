@@ -61,7 +61,7 @@ with sync_playwright() as p:
         page.fill('#password', PW)
         page.click('#signinBtn')
         page.wait_for_url('**/pages/index.html**', timeout=30000)
-        for name in ('index', 'messages', 'history', 'resources', 'settings', 'profile'):
+        for name in ('index', 'messages', 'history', 'assessments', 'resources', 'settings', 'profile', 'complete-profile'):
             page.goto(BASE + name + '.html' + EMU, wait_until='load')
             page.wait_for_timeout(3500)
             page.screenshot(path=os.path.join(OUT, f'{name}-{kind}.png'), full_page=False)
