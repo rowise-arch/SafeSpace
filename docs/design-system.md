@@ -76,4 +76,4 @@ Still on the old inline styles (shell is new, page content is not): the inner co
 
 All three apps now have their inner pages on the tokens (blocks at the end of `student.css`, `counselor.css`, `admin.css`; the old pages' Tailwind utility colours such as purple, blue and dark buttons are remapped there). The standalone inventory forms (`admin/pages/student-profile.html`, `counselor/pages/individual-inventory.html`, `counselor/pages/student-profile.html`) share `shared/assets/css/inventory.css`.
 
-Known leftovers: `apps/admin/pages/counselor-student.html` is a copy of the counselor portal's student list (old shell, nothing links to it); `counselor/pages/privacy.html` shows a hard-coded date; `counselor/pages/video.html` only renders once opened with a session id.
+Known leftovers: `counselor/pages/privacy.html` shows a hard-coded date; `counselor/pages/video.html` only renders once opened with a session id.
